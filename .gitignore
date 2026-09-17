@@ -46,3 +46,18 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Firebase configuration & credentials (keep firebase.json in repo, ignore credentials)
+.firebaserc
+lib/firebase_options.dart
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+
+# Signing keys & secrets
+*.keystore
+*.jks
+key.properties
+.env
+.env.*
+

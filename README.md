@@ -1,17 +1,61 @@
-# campersit_app
+# Campersit Mobile
 
-A new Flutter project.
+<p align="center">
+  <img src="assets/images/logo.png" alt="Campersit Logo" width="160" />
+</p>
 
-## Getting Started
+A Flutter mobile application designed to monitor and manage IoT gateways, sensors, and actuators for campers and RVs using Firebase as the cloud backend.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## 📋 About the Project
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+**Campersit Mobile** allows users to:
+- Authenticate securely via Firebase (Email/Password).
+- Monitor real-time telemetry from connected sensors (temperature, air quality, motion, etc.).
+- Manage gateways and configure alert thresholds or actuators remotely.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) installed.
+- [Firebase CLI](https://firebase.google.com/docs/cli) and [FlutterFire CLI](https://firebase.flutter.dev/docs/cli/) (recommended).
+- An Android/iOS emulator or a physical device connected.
+
+### Installation & Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/dabredo/campersit-app.git
+   cd campersit-app
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   flutter pub get
+   ```
+
+3. **Configure Firebase:**
+   Generate the `lib/firebase_options.dart` file and native configuration for your Firebase project:
+   ```bash
+   flutterfire configure
+   ```
+   *(Alternatively, copy `lib/firebase_options.dart.example` to `lib/firebase_options.dart` and fill in your Firebase project credentials manually).*
+
+4. **Run the application:**
+   ```bash
+   flutter run
+   ```
+
+---
+
+## 🧪 Running Tests
+
+To run the automated widget and unit tests:
+
+```bash
+flutter test
+```
