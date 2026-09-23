@@ -1,13 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
+import 'providers/auth_providers.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
-import 'services/auth_service.dart';
 import 'theme/app_theme.dart';
-
-final applicationAuthenticationService = AuthService();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,42 +16,45 @@ void main() async {
   } catch (initializationError) {
     debugPrint('Firebase initialization warning: $initializationError');
   }
-  runApp(const CampersitApplication());
+  runApp(
+    const ProviderScope(
+      child: CampersitApplication(),
+    ),
+  );
 }
 
-class CampersitApplication extends StatelessWidget {
+class CampersitApplication extends ConsumerWidget {
   const CampersitApplication({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authStateProvider);
+
     return MaterialApp(
       title: 'Campersit',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: StreamBuilder<User?>(
-        stream: applicationAuthenticationService.observeAuthenticationState(),
-        builder: (context, authenticationSnapshot) {
-          final isWaitingForConnection =
-              authenticationSnapshot.connectionState == ConnectionState.waiting;
-          if (isWaitingForConnection) {
-            return const Scaffold(
-              backgroundColor: AppColors.mainBackground,
-              body: Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryAccent,
-                ),
-              ),
-            );
-          }
-
-          final isAuthenticated =
-              authenticationSnapshot.hasData && authenticationSnapshot.data != null;
-          if (isAuthenticated) {
+      home: authState.when(
+        data: (user) {
+          if (user != null) {
             return const HomeScreen();
           }
-
           return const LoginScreen();
         },
+        loading: () => const Scaffold(
+          backgroundColor: AppColors.mainBackground,
+          body: Center(
+            child: CircularProgressIndicator(
+              color: AppColors.primaryAccent,
+            ),
+          ),
+        ),
+        error: (error, stack) => const Scaffold(
+          backgroundColor: AppColors.mainBackground,
+          body: Center(
+            child: Text('Authentication error.'),
+          ),
+        ),
       ),
     );
   }
