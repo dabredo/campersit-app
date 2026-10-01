@@ -6,6 +6,7 @@ import 'providers/auth_providers.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'theme/app_theme.dart';
+import 'widgets/app_notification_listener.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,11 @@ class CampersitApplication extends ConsumerWidget {
       title: 'Campersit',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      builder: (context, child) {
+        return AppNotificationListener(
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
       home: authState.when(
         data: (user) {
           if (user != null) {
