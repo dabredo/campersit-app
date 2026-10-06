@@ -1,9 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/auth_providers.dart';
+import '../providers/notification_provider.dart';
 import '../theme/app_theme.dart';
+import '../widgets/app_loading_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -38,36 +39,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
   }
 
-  String _mapAuthenticationErrorToUserMessage(Object error) {
-    if (error is FirebaseAuthException) {
-      switch (error.code) {
-        case 'invalid-credential':
-        case 'user-not-found':
-        case 'wrong-password':
-        case 'invalid-login-credentials':
-          return 'Invalid email or password. Please try again.';
-        case 'user-disabled':
-          return 'This account has been disabled. Please contact support.';
-        case 'too-many-requests':
-          return 'Too many failed login attempts. Please try again later.';
-        case 'network-request-failed':
-          return 'Network error. Please check your internet connection.';
-        case 'invalid-email':
-          return 'The email address format is invalid.';
-        default:
-          return 'Authentication failed. Please verify your credentials.';
-      }
-    }
-    return 'An unexpected error occurred. Please try again.';
-  }
-
   @override
   Widget build(BuildContext context) {
+    ref.listen<AsyncValue<void>>(loginControllerProvider, (previous, next) {
+      if (next.hasError && !next.isLoading) {
+        ref.read(notificationProvider.notifier).showError(next.error!);
+      }
+    });
+
     final loginState = ref.watch(loginControllerProvider);
     final isAuthenticating = loginState.isLoading;
-    final authenticationErrorMessage = loginState.hasError
-        ? _mapAuthenticationErrorToUserMessage(loginState.error!)
-        : null;
 
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
@@ -86,10 +67,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 children: [
                   _buildHeader(),
                   const SizedBox(height: 32),
-                  if (authenticationErrorMessage != null) ...[
-                    _buildErrorMessage(authenticationErrorMessage),
-                    const SizedBox(height: 20),
-                  ],
                   _buildLoginForm(isAuthenticating),
                 ],
               ),
@@ -120,36 +97,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildErrorMessage(String message) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.red.shade50,
-        borderRadius: AppRadius.borderXl,
-        border: Border.all(color: Colors.red.shade200),
-      ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.error_outline,
-            color: Colors.red.shade700,
-            size: 20,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: TextStyle(
-                color: Colors.red.shade700,
-                fontSize: 13,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -243,18 +190,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildSubmitButton(bool isAuthenticating) {
-    return ElevatedButton(
-      onPressed: isAuthenticating ? null : _handleUserLogin,
-      child: isAuthenticating
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
-            )
-          : const Text('Login'),
+    return AppLoadingButton(
+      isLoading: isAuthenticating,
+      onPressed: _handleUserLogin,
+      label: 'Login',
     );
   }
 }
