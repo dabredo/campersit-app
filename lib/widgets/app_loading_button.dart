@@ -27,15 +27,27 @@ class AppLoadingButton extends StatelessWidget {
     return ElevatedButton(
       style: style,
       onPressed: isLoading ? null : onPressed,
-      child: isLoading
-          ? _loadingIndicator
-          : Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (icon != null) ...[icon!, const SizedBox(width: 8)],
-                Text(label),
-              ],
-            ),
+      child: Center(
+        child: isLoading
+            ? _loadingIndicator
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (icon != null) ...[
+                    icon!,
+                    const SizedBox(width: 8),
+                  ],
+                  Flexible(
+                    child: Text(
+                      label,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 }
