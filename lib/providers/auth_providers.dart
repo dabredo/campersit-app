@@ -26,6 +26,7 @@ class LoginController extends AsyncNotifier<void> {
   }
 
   Future<void> login(String email, String password) async {
+    state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final authService = ref.read(authServiceProvider);
       await authService.signInWithCredentials(
