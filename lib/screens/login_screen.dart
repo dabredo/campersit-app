@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_providers.dart';
 import '../providers/notification_provider.dart';
 import '../theme/app_theme.dart';
+import '../utils/form_validators.dart';
 import '../widgets/app_loading_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -140,19 +141,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         hintText: 'user@campersit.com',
         prefixIcon: Icon(Icons.alternate_email),
       ),
-      validator: (inputValue) {
-        final trimmedValue = inputValue?.trim() ?? '';
-        if (trimmedValue.isEmpty) {
-          return 'Please enter your email address';
-        }
-        final isEmailPatternValid = RegExp(
-          r'^[^@]+@[^@]+\.[^@]+',
-        ).hasMatch(trimmedValue);
-        if (!isEmailPatternValid) {
-          return 'Please enter a valid email format';
-        }
-        return null;
-      },
+      validator: validateEmail,
     );
   }
 
@@ -177,15 +166,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           },
         ),
       ),
-      validator: (inputValue) {
-        if (inputValue == null || inputValue.isEmpty) {
-          return 'Please enter your password';
-        }
-        if (inputValue.length < 6) {
-          return 'Password must be at least 6 characters';
-        }
-        return null;
-      },
+      validator: validatePassword,
     );
   }
 
