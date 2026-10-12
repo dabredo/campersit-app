@@ -137,4 +137,81 @@ void main() {
       });
     });
   });
+
+  group('validateMacAddress', () {
+    group('required field check', () {
+      test('returns error when value is null', () {
+        expect(
+          validateMacAddress(null),
+          equals('Please enter your Gateway ID'),
+        );
+      });
+
+      test('returns error when value is empty', () {
+        expect(
+          validateMacAddress(''),
+          equals('Please enter your Gateway ID'),
+        );
+      });
+
+      test('returns error when value is only whitespace', () {
+        expect(
+          validateMacAddress('   '),
+          equals('Please enter your Gateway ID'),
+        );
+      });
+    });
+
+    group('format check', () {
+      test('returns error when MAC is incomplete (less than 6 pairs)', () {
+        expect(
+          validateMacAddress('AA:BB:CC'),
+          equals('Please enter a valid MAC address (e.g. AA:BB:CC:11:22:33)'),
+        );
+      });
+
+      test('returns error when MAC has lowercase hex characters', () {
+        expect(
+          validateMacAddress('aa:bb:cc:11:22:33'),
+          equals('Please enter a valid MAC address (e.g. AA:BB:CC:11:22:33)'),
+        );
+      });
+
+      test('returns error when MAC has non-hex characters', () {
+        expect(
+          validateMacAddress('GG:HH:II:11:22:33'),
+          equals('Please enter a valid MAC address (e.g. AA:BB:CC:11:22:33)'),
+        );
+      });
+
+      test('returns error when MAC lacks colons', () {
+        expect(
+          validateMacAddress('AABBCC112233'),
+          equals('Please enter a valid MAC address (e.g. AA:BB:CC:11:22:33)'),
+        );
+      });
+
+      test('returns error when MAC has extra pairs', () {
+        expect(
+          validateMacAddress('AA:BB:CC:11:22:33:44'),
+          equals('Please enter a valid MAC address (e.g. AA:BB:CC:11:22:33)'),
+        );
+      });
+    });
+
+    group('valid MAC address', () {
+      test('returns null for valid uppercase MAC address', () {
+        expect(validateMacAddress('AA:BB:CC:11:22:33'), isNull);
+      });
+
+      test('returns null for valid all-digits MAC address', () {
+        expect(validateMacAddress('00:11:22:33:44:55'), isNull);
+      });
+
+      test('returns null for valid all-letters uppercase MAC address', () {
+        expect(validateMacAddress('AA:BB:CC:DD:EE:FF'), isNull);
+      });
+    });
+  });
 }
+
