@@ -22,22 +22,12 @@ String _formatEpochAsDateTime(int epochMilliseconds) {
   return '$day/$month/${dateTime.year} $hour:$minute';
 }
 
-class GatewayCard extends ConsumerStatefulWidget {
+class GatewayCard extends ConsumerWidget {
   final Gateway gateway;
 
   const GatewayCard({super.key, required this.gateway});
 
-  @override
-  ConsumerState<GatewayCard> createState() => _GatewayCardState();
-}
-
-class _GatewayCardState extends ConsumerState<GatewayCard> {
-  bool _isLocationLoading = false;
-  bool _isDeleting = false;
-
-  Future<void> _deleteGateway() async {
-    if (_isDeleting) return;
-
+  Future<void> _deleteGateway(BuildContext context, WidgetRef ref) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -69,30 +59,27 @@ class _GatewayCardState extends ConsumerState<GatewayCard> {
     );
 
     if (confirm == true) {
-      setState(() => _isDeleting = true);
       await ref
-          .read(gatewayActionControllerProvider.notifier)
-          .deleteGateway(widget.gateway.id);
-      if (mounted) setState(() => _isDeleting = false);
+          .read(deleteGatewayControllerProvider(gateway.id).notifier)
+          .deleteGateway();
     }
   }
 
-  Future<void> _toggleLocalization({required bool isCurrentlyLocalizing}) async {
-    if (_isLocationLoading) return;
-
-    setState(() => _isLocationLoading = true);
+  Future<void> _toggleLocalization(
+    WidgetRef ref, {
+    required bool isCurrentlyLocalizing,
+  }) async {
     await ref
-        .read(gatewayActionControllerProvider.notifier)
-        .toggleLocalization(
-          gatewayId: widget.gateway.id,
-          isCurrentlyLocalizing: isCurrentlyLocalizing,
-        );
-    if (mounted) setState(() => _isLocationLoading = false);
+        .read(toggleLocalizationControllerProvider(gateway.id).notifier)
+        .toggleLocalization(isCurrentlyLocalizing: isCurrentlyLocalizing);
   }
 
   @override
-  Widget build(BuildContext context) {
-    final gateway = widget.gateway;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDeleting =
+        ref.watch(deleteGatewayControllerProvider(gateway.id)).isLoading;
+    final isTogglingLocalization =
+        ref.watch(toggleLocalizationControllerProvider(gateway.id)).isLoading;
     final isLocalizing = gateway.state == 'l';
 
     return Card(
@@ -102,20 +89,28 @@ class _GatewayCardState extends ConsumerState<GatewayCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(gateway),
+            _buildHeader(context, ref, isDeleting: isDeleting),
             const SizedBox(height: 8),
             _buildStatusSection(gateway),
             _buildAlertsSection(gateway),
             const SizedBox(height: 16),
             _buildLocationSection(gateway),
-            _buildLocationActionButton(isLocalizing),
+            _buildLocationActionButton(
+              ref,
+              isLocalizing: isLocalizing,
+              isLoading: isTogglingLocalization,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildHeader(Gateway gateway) {
+  Widget _buildHeader(
+    BuildContext context,
+    WidgetRef ref, {
+    required bool isDeleting,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -129,7 +124,7 @@ class _GatewayCardState extends ConsumerState<GatewayCard> {
             ),
           ),
         ),
-        if (_isDeleting)
+        if (isDeleting)
           const SizedBox(
             width: 24,
             height: 24,
@@ -141,7 +136,7 @@ class _GatewayCardState extends ConsumerState<GatewayCard> {
         else
           IconButton(
             icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-            onPressed: _deleteGateway,
+            onPressed: () => _deleteGateway(context, ref),
           ),
       ],
     );
@@ -202,16 +197,23 @@ class _GatewayCardState extends ConsumerState<GatewayCard> {
     );
   }
 
-  Widget _buildLocationActionButton(bool isLocalizing) {
+  Widget _buildLocationActionButton(
+    WidgetRef ref, {
+    required bool isLocalizing,
+    required bool isLoading,
+  }) {
     return SizedBox(
       width: double.infinity,
       child: AppLoadingButton(
-        isLoading: _isLocationLoading,
-        onPressed: () => _toggleLocalization(isCurrentlyLocalizing: isLocalizing),
+        isLoading: isLoading,
+        onPressed: () =>
+            _toggleLocalization(ref, isCurrentlyLocalizing: isLocalizing),
         label: isLocalizing ? 'Stop Localizing' : 'Request Location',
         icon: Icon(isLocalizing ? Icons.stop_circle : Icons.location_on),
         style: ElevatedButton.styleFrom(
-          backgroundColor: isLocalizing ? Colors.orange : AppColors.primaryAccent,
+          backgroundColor: isLocalizing
+              ? Colors.orange
+              : AppColors.primaryAccent,
         ),
       ),
     );
@@ -245,11 +247,7 @@ class _SecondaryInfoText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
-        fontSize: 14,
-        color: AppColors.textSecondary,
-      ),
+      style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
     );
   }
 }
-

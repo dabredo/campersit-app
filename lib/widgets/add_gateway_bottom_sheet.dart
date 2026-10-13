@@ -38,7 +38,7 @@ class _AddGatewayBottomSheetState extends ConsumerState<AddGatewayBottomSheet> {
     if (!_formKey.currentState!.validate()) return;
 
     final isSuccess = await ref
-        .read(gatewayActionControllerProvider.notifier)
+        .read(addGatewayControllerProvider.notifier)
         .addGateway(_idController.text.trim());
 
     if (isSuccess && mounted) {
@@ -49,7 +49,7 @@ class _AddGatewayBottomSheetState extends ConsumerState<AddGatewayBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final isLoading = ref.watch(gatewayActionControllerProvider).isLoading;
+    final isLoading = ref.watch(addGatewayControllerProvider).isLoading;
 
     return Container(
       decoration: const BoxDecoration(

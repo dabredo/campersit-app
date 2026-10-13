@@ -21,7 +21,12 @@ final userGatewaysProvider = StreamProvider<List<Gateway>>((ref) {
   return repository.watchUserGateways(user.uid);
 });
 
-class GatewayActionController extends AsyncNotifier<void> {
+final addGatewayControllerProvider =
+    AsyncNotifierProvider.autoDispose<AddGatewayController, void>(
+      AddGatewayController.new,
+    );
+
+class AddGatewayController extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
 
@@ -37,11 +42,25 @@ class GatewayActionController extends AsyncNotifier<void> {
       return false;
     }
 
-    ref.read(notificationProvider.notifier).showSuccess('Gateway added successfully');
+    ref
+        .read(notificationProvider.notifier)
+        .showSuccess('Gateway added successfully');
     return true;
   }
+}
 
-  Future<bool> deleteGateway(String gatewayId) async {
+final deleteGatewayControllerProvider = AsyncNotifierProvider.autoDispose
+    .family<DeleteGatewayController, void, String>(DeleteGatewayController.new);
+
+class DeleteGatewayController extends AsyncNotifier<void> {
+  DeleteGatewayController(this.gatewayId);
+
+  final String gatewayId;
+
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> deleteGateway() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repository = ref.read(gatewayRepositoryProvider);
@@ -56,11 +75,22 @@ class GatewayActionController extends AsyncNotifier<void> {
     ref.read(notificationProvider.notifier).showSuccess('Gateway deleted');
     return true;
   }
+}
 
-  Future<bool> toggleLocalization({
-    required String gatewayId,
-    required bool isCurrentlyLocalizing,
-  }) async {
+final toggleLocalizationControllerProvider = AsyncNotifierProvider.autoDispose
+    .family<ToggleLocalizationController, void, String>(
+      ToggleLocalizationController.new,
+    );
+
+class ToggleLocalizationController extends AsyncNotifier<void> {
+  ToggleLocalizationController(this.gatewayId);
+
+  final String gatewayId;
+
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> toggleLocalization({required bool isCurrentlyLocalizing}) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
       final repository = ref.read(gatewayRepositoryProvider);
@@ -79,8 +109,3 @@ class GatewayActionController extends AsyncNotifier<void> {
     return true;
   }
 }
-
-final gatewayActionControllerProvider =
-    AsyncNotifierProvider<GatewayActionController, void>(
-  GatewayActionController.new,
-);
