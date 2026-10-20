@@ -19,6 +19,20 @@ class GatewayRepository {
         });
   }
 
+  Stream<Gateway?> watchGateway(String gatewayId) {
+    return _firestore
+        .collection('devices')
+        .doc(gatewayId)
+        .snapshots()
+        .map((snapshot) {
+          final data = snapshot.data();
+          if (!snapshot.exists || data == null) {
+            return null;
+          }
+          return Gateway.fromMap(snapshot.id, data);
+        });
+  }
+
   Future<void> addGateway(String gatewayId) async {
     final callable = _functions.httpsCallable('addDevice');
     await callable.call({'deviceId': gatewayId});

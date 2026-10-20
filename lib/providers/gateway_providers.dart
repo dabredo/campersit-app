@@ -21,6 +21,12 @@ final userGatewaysProvider = StreamProvider<List<Gateway>>((ref) {
   return repository.watchUserGateways(user.uid);
 });
 
+final singleGatewayProvider =
+    StreamProvider.family<Gateway?, String>((ref, gatewayId) {
+  final repository = ref.watch(gatewayRepositoryProvider);
+  return repository.watchGateway(gatewayId);
+});
+
 final addGatewayControllerProvider =
     AsyncNotifierProvider.autoDispose<AddGatewayController, void>(
       AddGatewayController.new,

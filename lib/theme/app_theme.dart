@@ -9,6 +9,8 @@ class AppColors {
   static const Color borderLight = Color(0xFFE2ECE4);
   static const Color textPrimary = Color(0xFF102216);
   static const Color textSecondary = Color(0xFF5A7163);
+  static const Color danger = Color(0xFFFF5252);
+  static const Color warning = Color(0xFFFF9800);
 }
 
 class AppRadius {
