@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/sensor.dart';
+import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/date_time_formatter.dart';
 
-class SensorCard extends StatelessWidget {
+class SensorCard extends ConsumerWidget {
   final Sensor sensor;
+  final String? gatewayId;
+  final Future<bool> Function(String newTag)? onUpdateTag;
 
-  const SensorCard({super.key, required this.sensor});
+  const SensorCard({
+    super.key,
+    required this.sensor,
+    this.gatewayId,
+    this.onUpdateTag,
+  });
 
   IconData _resolveSensorIcon(SensorType type) => switch (type) {
     SensorType.camera => Icons.videocam_rounded,
@@ -28,8 +37,33 @@ class SensorCard extends StatelessWidget {
     SensorState.unknown => AppColors.textSecondary,
   };
 
+  Future<void> _showEditTagDialog(BuildContext context, WidgetRef ref) async {
+    final currentGatewayId = gatewayId;
+    final saveCallback =
+        onUpdateTag ??
+        (currentGatewayId != null
+            ? (newTag) => ref
+                  .read(
+                    updateSensorTagControllerProvider(currentGatewayId)
+                        .notifier,
+                  )
+                  .updateTag(sensorId: sensor.id, tag: newTag)
+            : null);
+
+    if (saveCallback == null) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (_) => _EditSensorTagDialog(
+        initialTag: sensor.tag,
+        sensorId: sensor.id,
+        onSave: saveCallback,
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final sensorIcon = _resolveSensorIcon(sensor.type);
     final hasTag = sensor.tag != null && sensor.tag!.trim().isNotEmpty;
     final displayName = hasTag ? sensor.tag!.trim() : sensor.id;
@@ -41,7 +75,7 @@ class SensorCard extends StatelessWidget {
         color: AppColors.cardSurface,
         borderRadius: AppRadius.border2Xl,
         border: Border.all(
-          color: isTriggered ? Colors.redAccent : AppColors.borderLight,
+          color: isTriggered ? AppColors.danger : AppColors.borderLight,
           width: isTriggered ? 1.5 : 1,
         ),
       ),
@@ -58,14 +92,14 @@ class SensorCard extends StatelessWidget {
                 height: 38,
                 decoration: BoxDecoration(
                   color:
-                      (isTriggered ? Colors.redAccent : AppColors.primaryAccent)
+                      (isTriggered ? AppColors.danger : AppColors.primaryAccent)
                           .withValues(alpha: 0.1),
                   borderRadius: AppRadius.borderXl,
                 ),
                 child: Icon(
                   sensorIcon,
                   color: isTriggered
-                      ? Colors.redAccent
+                      ? AppColors.danger
                       : AppColors.primaryAccent,
                   size: 20,
                 ),
@@ -75,21 +109,32 @@ class SensorCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      displayName,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: -0.3,
-                        color: AppColors.textPrimary,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            displayName,
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.textPrimary,
+                                ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (gatewayId != null || onUpdateTag != null) ...[
+                          const SizedBox(width: 4),
+                          _EditSensorTagButton(
+                            sensorId: sensor.id,
+                            onTap: () => _showEditTagDialog(context, ref),
+                          ),
+                        ],
+                      ],
                     ),
                     Text(
                       sensor.type.label.toUpperCase(),
-                      style: const TextStyle(
-                        fontSize: 11,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.w500,
                         letterSpacing: 0.5,
                         color: AppColors.textSecondary,
@@ -227,6 +272,141 @@ class _SensorBatteryIndicator extends StatelessWidget {
         Icon(_resolveBatteryIcon(battery), size: 14, color: color),
         const SizedBox(width: 4),
         Text('${battery.toInt()}%', style: textStyle),
+      ],
+    );
+  }
+}
+
+class _EditSensorTagButton extends StatelessWidget {
+  const _EditSensorTagButton({required this.sensorId, required this.onTap});
+
+  final String sensorId;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      key: ValueKey('edit_sensor_tag_$sensorId'),
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: const Padding(
+        padding: EdgeInsets.all(2),
+        child: Icon(
+          Icons.edit_outlined,
+          size: 14,
+          color: AppColors.textSecondary,
+        ),
+      ),
+    );
+  }
+}
+
+class _EditSensorTagDialog extends StatefulWidget {
+  const _EditSensorTagDialog({
+    required this.initialTag,
+    required this.sensorId,
+    required this.onSave,
+  });
+
+  final String? initialTag;
+  final String sensorId;
+  final Future<bool> Function(String newTag) onSave;
+
+  @override
+  State<_EditSensorTagDialog> createState() => _EditSensorTagDialogState();
+}
+
+class _EditSensorTagDialogState extends State<_EditSensorTagDialog> {
+  late final TextEditingController _controller;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialTag ?? '');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSave() async {
+    setState(() => _isLoading = true);
+    final success = await widget.onSave(_controller.text.trim());
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.of(context).pop();
+    } else {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppColors.cardSurface,
+      shape: const RoundedRectangleBorder(borderRadius: AppRadius.border2Xl),
+      title: const Text(
+        'Edit Sensor Tag',
+        style: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Sensor ID: ${widget.sensorId}',
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: AppColors.textSecondary),
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _controller,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Tag',
+              hintText: 'e.g. Living Room, Cabin',
+              prefixIcon: Icon(Icons.label_outline_rounded),
+            ),
+            onFieldSubmitted: _isLoading ? null : (_) => _handleSave(),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+          child: const Text(
+            'Cancel',
+            style: TextStyle(color: AppColors.textSecondary),
+          ),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primaryAccent,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            shape: const RoundedRectangleBorder(
+              borderRadius: AppRadius.borderXl,
+            ),
+          ),
+          onPressed: _isLoading ? null : _handleSave,
+          child: _isLoading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Text('Save'),
+        ),
       ],
     );
   }

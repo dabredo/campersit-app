@@ -18,9 +18,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: SensorCard(sensor: sensor),
-          ),
+          home: Scaffold(body: SensorCard(sensor: sensor)),
         ),
       );
 
@@ -40,9 +38,7 @@ void main() {
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: SensorCard(sensor: sensor),
-          ),
+          home: Scaffold(body: SensorCard(sensor: sensor)),
         ),
       );
 
@@ -50,21 +46,80 @@ void main() {
       expect(find.text('Triggered'), findsOneWidget);
     });
 
-    testWidgets('renders sensor id as fallback when tag is absent', (tester) async {
-      const sensor = Sensor(
-        id: 'motion-2',
-        type: SensorType.motion,
-      );
+    testWidgets('renders sensor id as fallback when tag is absent', (
+      tester,
+    ) async {
+      const sensor = Sensor(id: 'motion-2', type: SensorType.motion);
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: SensorCard(sensor: sensor),
-          ),
+          home: Scaffold(body: SensorCard(sensor: sensor)),
         ),
       );
 
       expect(find.text('motion-2'), findsOneWidget);
+    });
+
+    testWidgets('shows edit button when onUpdateTag or gatewayId is provided', (
+      tester,
+    ) async {
+      const sensor = Sensor(
+        id: 'sensor-1',
+        type: SensorType.air,
+        tag: 'Bedroom Air',
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SensorCard(sensor: sensor, onUpdateTag: (_) async => true),
+          ),
+        ),
+      );
+
+      expect(
+        find.byKey(const ValueKey('edit_sensor_tag_sensor-1')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('opens edit dialog and calls onUpdateTag on save', (
+      tester,
+    ) async {
+      const sensor = Sensor(
+        id: 'sensor-1',
+        type: SensorType.air,
+        tag: 'Bedroom Air',
+      );
+
+      String? updatedTag;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SensorCard(
+              sensor: sensor,
+              onUpdateTag: (newTag) async {
+                updatedTag = newTag;
+                return true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byKey(const ValueKey('edit_sensor_tag_sensor-1')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Edit Sensor Tag'), findsOneWidget);
+      expect(find.widgetWithText(TextFormField, 'Bedroom Air'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextFormField), 'Master Bedroom Air');
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
+      await tester.pumpAndSettle();
+
+      expect(updatedTag, equals('Master Bedroom Air'));
+      expect(find.text('Edit Sensor Tag'), findsNothing);
     });
   });
 }

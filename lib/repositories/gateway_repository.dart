@@ -4,8 +4,14 @@ import 'package:cloud_functions/cloud_functions.dart';
 import '../models/gateway.dart';
 
 class GatewayRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseFunctions _functions = FirebaseFunctions.instance;
+  final FirebaseFirestore _firestore;
+  final FirebaseFunctions _functions;
+
+  GatewayRepository({
+    FirebaseFirestore? firestore,
+    FirebaseFunctions? functions,
+  }) : _firestore = firestore ?? FirebaseFirestore.instance,
+       _functions = functions ?? FirebaseFunctions.instance;
 
   Stream<List<Gateway>> watchUserGateways(String userId) {
     return _firestore
@@ -20,17 +26,15 @@ class GatewayRepository {
   }
 
   Stream<Gateway?> watchGateway(String gatewayId) {
-    return _firestore
-        .collection('devices')
-        .doc(gatewayId)
-        .snapshots()
-        .map((snapshot) {
-          final data = snapshot.data();
-          if (!snapshot.exists || data == null) {
-            return null;
-          }
-          return Gateway.fromMap(snapshot.id, data);
-        });
+    return _firestore.collection('devices').doc(gatewayId).snapshots().map((
+      snapshot,
+    ) {
+      final data = snapshot.data();
+      if (!snapshot.exists || data == null) {
+        return null;
+      }
+      return Gateway.fromMap(snapshot.id, data);
+    });
   }
 
   Future<void> addGateway(String gatewayId) async {
@@ -51,5 +55,15 @@ class GatewayRepository {
   Future<void> stopLocation(String gatewayId) async {
     final callable = _functions.httpsCallable('stopLocalize');
     await callable.call({'deviceId': gatewayId});
+  }
+
+  Future<void> updateSensorTag({
+    required String gatewayId,
+    required String sensorId,
+    required String tag,
+  }) async {
+    await _firestore.collection('devices').doc(gatewayId).update({
+      'sensors.$sensorId.tag': tag,
+    });
   }
 }

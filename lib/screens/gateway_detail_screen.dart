@@ -123,7 +123,7 @@ class _GatewayDetailContent extends StatelessWidget {
             const SizedBox(height: 20),
             _SensorsSectionHeader(sensorCount: gateway.sensors.length),
             const SizedBox(height: 12),
-            _SensorsList(sensors: gateway.sensors),
+            _SensorsList(gatewayId: gateway.id, sensors: gateway.sensors),
             const SizedBox(height: 24),
           ],
         ),
@@ -376,11 +376,11 @@ class _LocalizationButton extends ConsumerWidget {
 }
 
 class _InfoRow extends StatelessWidget {
-  const _InfoRow({
-    required this.label,
-    this.value,
-    this.trailing,
-  }) : assert(value != null || trailing != null, 'Either value or trailing must be provided');
+  const _InfoRow({required this.label, this.value, this.trailing})
+    : assert(
+        value != null || trailing != null,
+        'Either value or trailing must be provided',
+      );
 
   static const double _labelColumnWidth = 95;
 
@@ -469,12 +469,13 @@ class _SensorsSectionHeader extends StatelessWidget {
 }
 
 class _SensorsList extends StatelessWidget {
-  const _SensorsList({required this.sensors});
+  const _SensorsList({required this.gatewayId, required this.sensors});
 
   static const double _wideLayoutBreakpoint = 500;
   static const double _sensorTileHeight = 96;
   static const double _sensorSpacing = 12;
 
+  final String gatewayId;
   final List<Sensor> sensors;
 
   @override
@@ -496,7 +497,8 @@ class _SensorsList extends StatelessWidget {
               mainAxisSpacing: _sensorSpacing,
               mainAxisExtent: _sensorTileHeight,
             ),
-            itemBuilder: (_, index) => SensorCard(sensor: sensors[index]),
+            itemBuilder: (_, index) =>
+                SensorCard(sensor: sensors[index], gatewayId: gatewayId),
           );
         }
 
@@ -505,7 +507,8 @@ class _SensorsList extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: sensors.length,
           separatorBuilder: (_, _) => const SizedBox(height: _sensorSpacing),
-          itemBuilder: (_, index) => SensorCard(sensor: sensors[index]),
+          itemBuilder: (_, index) =>
+              SensorCard(sensor: sensors[index], gatewayId: gatewayId),
         );
       },
     );

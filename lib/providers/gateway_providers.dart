@@ -21,8 +21,10 @@ final userGatewaysProvider = StreamProvider<List<Gateway>>((ref) {
   return repository.watchUserGateways(user.uid);
 });
 
-final singleGatewayProvider =
-    StreamProvider.family<Gateway?, String>((ref, gatewayId) {
+final singleGatewayProvider = StreamProvider.family<Gateway?, String>((
+  ref,
+  gatewayId,
+) {
   final repository = ref.watch(gatewayRepositoryProvider);
   return repository.watchGateway(gatewayId);
 });
@@ -43,8 +45,9 @@ class AddGatewayController extends AsyncNotifier<void> {
       await repository.addGateway(gatewayId);
     });
 
-    if (state.hasError) {
-      ref.read(notificationProvider.notifier).showError(state.error!);
+    final error = state.error;
+    if (error != null) {
+      ref.read(notificationProvider.notifier).showError(error);
       return false;
     }
 
@@ -73,8 +76,9 @@ class DeleteGatewayController extends AsyncNotifier<void> {
       await repository.deleteGateway(gatewayId);
     });
 
-    if (state.hasError) {
-      ref.read(notificationProvider.notifier).showError(state.error!);
+    final error = state.error;
+    if (error != null) {
+      ref.read(notificationProvider.notifier).showError(error);
       return false;
     }
 
@@ -107,11 +111,55 @@ class ToggleLocalizationController extends AsyncNotifier<void> {
       }
     });
 
-    if (state.hasError) {
-      ref.read(notificationProvider.notifier).showError(state.error!);
+    final error = state.error;
+    if (error != null) {
+      ref.read(notificationProvider.notifier).showError(error);
       return false;
     }
 
     return true;
+  }
+}
+
+final updateSensorTagControllerProvider = AsyncNotifierProvider.autoDispose
+    .family<UpdateSensorTagController, void, String>(
+      UpdateSensorTagController.new,
+    );
+
+class UpdateSensorTagController extends AsyncNotifier<void> {
+  UpdateSensorTagController(this.gatewayId);
+
+  final String gatewayId;
+
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> updateTag({
+    required String sensorId,
+    required String tag,
+  }) async {
+    final link = ref.keepAlive();
+    try {
+      state = const AsyncLoading();
+      state = await AsyncValue.guard(() async {
+        final repository = ref.read(gatewayRepositoryProvider);
+        await repository.updateSensorTag(
+          gatewayId: gatewayId,
+          sensorId: sensorId,
+          tag: tag,
+        );
+      });
+
+      final error = state.error;
+      if (error != null) {
+        ref.read(notificationProvider.notifier).showError(error);
+        return false;
+      }
+
+      ref.read(notificationProvider.notifier).showSuccess('Sensor tag updated');
+      return true;
+    } finally {
+      link.close();
+    }
   }
 }
