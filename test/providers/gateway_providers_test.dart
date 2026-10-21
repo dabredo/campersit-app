@@ -329,5 +329,79 @@ void main() {
       );
     });
   });
+
+  group('DeleteSensorController', () {
+    const testGatewayId = 'AA:BB:CC:DD:EE:FF';
+    const testSensorId = 'sensor_01';
+
+    test(
+      'returns true and shows success notification on successful delete',
+      () async {
+        when(
+          () => mockRepository.deleteSensor(
+            gatewayId: testGatewayId,
+            sensorId: testSensorId,
+          ),
+        ).thenAnswer((_) async {});
+
+        final result = await container
+            .read(deleteSensorControllerProvider(testGatewayId).notifier)
+            .deleteSensor(testSensorId);
+
+        expect(result, isTrue);
+        verify(
+          () => mockRepository.deleteSensor(
+            gatewayId: testGatewayId,
+            sensorId: testSensorId,
+          ),
+        ).called(1);
+      },
+    );
+
+    test('returns false and resets state to null when repository throws', () async {
+      when(
+        () => mockRepository.deleteSensor(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+        ),
+      ).thenThrow(Exception('Functions call failed'));
+
+      final result = await container
+          .read(deleteSensorControllerProvider(testGatewayId).notifier)
+          .deleteSensor(testSensorId);
+
+      expect(result, isFalse);
+      final controllerState = container.read(
+        deleteSensorControllerProvider(testGatewayId),
+      );
+      expect(controllerState, isNull);
+    });
+
+    test('sets deleting sensor ID while deleting and clears on completion', () async {
+      when(
+        () => mockRepository.deleteSensor(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+        ),
+      ).thenAnswer((_) async {});
+
+      final future = container
+          .read(deleteSensorControllerProvider(testGatewayId).notifier)
+          .deleteSensor(testSensorId);
+
+      expect(
+        container.read(deleteSensorControllerProvider(testGatewayId)),
+        equals(testSensorId),
+      );
+
+      await future;
+
+      expect(
+        container.read(deleteSensorControllerProvider(testGatewayId)),
+        isNull,
+      );
+    });
+  });
 }
+
 

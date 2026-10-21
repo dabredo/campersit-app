@@ -1,10 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
 import 'package:campersit_app/models/sensor.dart';
+import 'package:campersit_app/providers/gateway_providers.dart';
+import 'package:campersit_app/repositories/gateway_repository.dart';
 import 'package:campersit_app/widgets/sensor_card.dart';
+
+class MockGatewayRepository extends Mock implements GatewayRepository {}
 
 void main() {
   group('SensorCard Widget Tests', () {
+    const defaultGatewayId = 'gw-1';
+    late MockGatewayRepository mockRepository;
+
+    setUp(() {
+      mockRepository = MockGatewayRepository();
+    });
+
+    Widget createWidget({
+      required Sensor sensor,
+      String gatewayId = defaultGatewayId,
+    }) {
+      return ProviderScope(
+        overrides: [
+          gatewayRepositoryProvider.overrideWithValue(mockRepository),
+        ],
+        child: MaterialApp(
+          home: Scaffold(
+            body: SensorCard(sensor: sensor, gatewayId: gatewayId),
+          ),
+        ),
+      );
+    }
+
     testWidgets('renders sensor tag, state badge, and battery', (tester) async {
       final seenTime = DateTime(2026, 10, 18, 14, 30);
       final sensor = Sensor(
@@ -16,11 +46,7 @@ void main() {
         seenAt: seenTime.millisecondsSinceEpoch,
       );
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(body: SensorCard(sensor: sensor)),
-        ),
-      );
+      await tester.pumpWidget(createWidget(sensor: sensor));
 
       expect(find.text('Kitchen Air Sensor'), findsOneWidget);
       expect(find.text('AIR'), findsOneWidget);
@@ -36,11 +62,7 @@ void main() {
         state: SensorState.triggered,
       );
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(body: SensorCard(sensor: sensor)),
-        ),
-      );
+      await tester.pumpWidget(createWidget(sensor: sensor));
 
       expect(find.text('motion-1'), findsOneWidget);
       expect(find.text('Triggered'), findsOneWidget);
@@ -51,39 +73,31 @@ void main() {
     ) async {
       const sensor = Sensor(id: 'motion-2', type: SensorType.motion);
 
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(body: SensorCard(sensor: sensor)),
-        ),
-      );
+      await tester.pumpWidget(createWidget(sensor: sensor));
 
       expect(find.text('motion-2'), findsOneWidget);
     });
 
-    testWidgets('shows edit button when onUpdateTag or gatewayId is provided', (
-      tester,
-    ) async {
+    testWidgets('renders edit and delete buttons', (tester) async {
       const sensor = Sensor(
         id: 'sensor-1',
         type: SensorType.air,
         tag: 'Bedroom Air',
       );
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SensorCard(sensor: sensor, onUpdateTag: (_) async => true),
-          ),
-        ),
-      );
+      await tester.pumpWidget(createWidget(sensor: sensor));
 
       expect(
         find.byKey(const ValueKey('edit_sensor_tag_sensor-1')),
         findsOneWidget,
       );
+      expect(
+        find.byKey(const ValueKey('delete_sensor_sensor-1')),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('opens edit dialog and calls onUpdateTag on save', (
+    testWidgets('opens edit dialog and calls updateSensorTag on save', (
       tester,
     ) async {
       const sensor = Sensor(
@@ -92,21 +106,15 @@ void main() {
         tag: 'Bedroom Air',
       );
 
-      String? updatedTag;
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SensorCard(
-              sensor: sensor,
-              onUpdateTag: (newTag) async {
-                updatedTag = newTag;
-                return true;
-              },
-            ),
-          ),
+      when(
+        () => mockRepository.updateSensorTag(
+          gatewayId: defaultGatewayId,
+          sensorId: 'sensor-1',
+          tag: 'Master Bedroom Air',
         ),
-      );
+      ).thenAnswer((_) async {});
+
+      await tester.pumpWidget(createWidget(sensor: sensor));
 
       await tester.tap(find.byKey(const ValueKey('edit_sensor_tag_sensor-1')));
       await tester.pumpAndSettle();
@@ -118,8 +126,104 @@ void main() {
       await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
       await tester.pumpAndSettle();
 
-      expect(updatedTag, equals('Master Bedroom Air'));
+      verify(
+        () => mockRepository.updateSensorTag(
+          gatewayId: defaultGatewayId,
+          sensorId: 'sensor-1',
+          tag: 'Master Bedroom Air',
+        ),
+      ).called(1);
       expect(find.text('Edit Sensor Tag'), findsNothing);
     });
+
+    testWidgets('opens delete dialog and calls deleteSensor when confirmed', (
+      tester,
+    ) async {
+      const sensor = Sensor(
+        id: 'sensor-1',
+        type: SensorType.air,
+        tag: 'Bedroom Air',
+      );
+
+      when(
+        () => mockRepository.deleteSensor(
+          gatewayId: defaultGatewayId,
+          sensorId: 'sensor-1',
+        ),
+      ).thenAnswer((_) async {});
+
+      await tester.pumpWidget(createWidget(sensor: sensor));
+
+      await tester.tap(find.byKey(const ValueKey('delete_sensor_sensor-1')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Delete Sensor'), findsOneWidget);
+      expect(
+        find.text(
+          'Are you sure you want to delete "Bedroom Air"? This will unpair the sensor from the gateway.',
+        ),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Delete'));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => mockRepository.deleteSensor(
+          gatewayId: defaultGatewayId,
+          sensorId: 'sensor-1',
+        ),
+      ).called(1);
+      expect(find.text('Delete Sensor'), findsNothing);
+    });
+
+    testWidgets(
+      'displays loading spinner only when its sensor ID is being deleted',
+      (tester) async {
+        const sensor1 = Sensor(id: 'sensor-1', type: SensorType.air);
+        const sensor2 = Sensor(id: 'sensor-2', type: SensorType.air);
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              gatewayRepositoryProvider.overrideWithValue(mockRepository),
+            ],
+            child: const MaterialApp(
+              home: Scaffold(
+                body: Column(
+                  key: Key('test_cards_container'),
+                  children: [
+                    SensorCard(sensor: sensor1, gatewayId: defaultGatewayId),
+                    SensorCard(sensor: sensor2, gatewayId: defaultGatewayId),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        final element = tester.element(find.byKey(const Key('test_cards_container')));
+        final container = ProviderScope.containerOf(element);
+
+        // Simulate sensor-1 deletion in progress
+        container
+            .read(deleteSensorControllerProvider(defaultGatewayId).notifier)
+            .state = 'sensor-1';
+        await tester.pump();
+
+        // Sensor 1 should show loading indicator and no delete button
+        expect(
+          find.byKey(const ValueKey('delete_sensor_sensor-1')),
+          findsNothing,
+        );
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+        // Sensor 2 should still show delete button and not be loading
+        expect(
+          find.byKey(const ValueKey('delete_sensor_sensor-2')),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }

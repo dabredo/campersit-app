@@ -99,6 +99,7 @@ class Gateway {
                   (entry.value as Map).cast<String, Object?>(),
                 ),
               )
+              .where((sensor) => sensor.state != SensorState.unpaired)
               .toList()
         : const <Sensor>[];
 

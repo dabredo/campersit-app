@@ -181,10 +181,7 @@ class AddSensorController extends AsyncNotifier<void> {
       state = const AsyncLoading();
       state = await AsyncValue.guard(() async {
         final repository = ref.read(gatewayRepositoryProvider);
-        await repository.addSensor(
-          gatewayId: gatewayId,
-          sensorId: sensorId,
-        );
+        await repository.addSensor(gatewayId: gatewayId, sensorId: sensorId);
       });
 
       final error = state.error;
@@ -203,3 +200,36 @@ class AddSensorController extends AsyncNotifier<void> {
   }
 }
 
+final deleteSensorControllerProvider = NotifierProvider.autoDispose
+    .family<DeleteSensorController, String?, String>(
+      DeleteSensorController.new,
+    );
+
+class DeleteSensorController extends Notifier<String?> {
+  DeleteSensorController(this.gatewayId);
+
+  final String gatewayId;
+
+  @override
+  String? build() => null;
+
+  Future<bool> deleteSensor(String sensorId) async {
+    final link = ref.keepAlive();
+    state = sensorId;
+    try {
+      final repository = ref.read(gatewayRepositoryProvider);
+      await repository.deleteSensor(gatewayId: gatewayId, sensorId: sensorId);
+
+      ref
+          .read(notificationProvider.notifier)
+          .showSuccess('Sensor unlinked successfully');
+      return true;
+    } catch (error) {
+      ref.read(notificationProvider.notifier).showError(error);
+      return false;
+    } finally {
+      state = null;
+      link.close();
+    }
+  }
+}

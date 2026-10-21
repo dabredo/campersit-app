@@ -106,6 +106,10 @@ class _GatewayDetailContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final activeSensors = gateway.sensors
+        .where((sensor) => sensor.state != SensorState.unpaired)
+        .toList();
+
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
       appBar: AppBar(
@@ -122,9 +126,9 @@ class _GatewayDetailContent extends StatelessWidget {
           children: [
             _GatewayOverviewCard(gateway: gateway),
             const SizedBox(height: 20),
-            _SensorsSectionHeader(sensorCount: gateway.sensors.length),
+            _SensorsSectionHeader(sensorCount: activeSensors.length),
             const SizedBox(height: 12),
-            _SensorsList(gatewayId: gateway.id, sensors: gateway.sensors),
+            _SensorsList(gatewayId: gateway.id, sensors: activeSensors),
             const SizedBox(height: 24),
           ],
         ),

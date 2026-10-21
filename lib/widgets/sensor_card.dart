@@ -8,14 +8,12 @@ import '../utils/date_time_formatter.dart';
 
 class SensorCard extends ConsumerWidget {
   final Sensor sensor;
-  final String? gatewayId;
-  final Future<bool> Function(String newTag)? onUpdateTag;
+  final String gatewayId;
 
   const SensorCard({
     super.key,
     required this.sensor,
-    this.gatewayId,
-    this.onUpdateTag,
+    required this.gatewayId,
   });
 
   IconData _resolveSensorIcon(SensorType type) => switch (type) {
@@ -38,28 +36,36 @@ class SensorCard extends ConsumerWidget {
   };
 
   Future<void> _showEditTagDialog(BuildContext context, WidgetRef ref) async {
-    final currentGatewayId = gatewayId;
-    final saveCallback =
-        onUpdateTag ??
-        (currentGatewayId != null
-            ? (newTag) => ref
-                  .read(
-                    updateSensorTagControllerProvider(currentGatewayId)
-                        .notifier,
-                  )
-                  .updateTag(sensorId: sensor.id, tag: newTag)
-            : null);
-
-    if (saveCallback == null) return;
-
     await showDialog<void>(
       context: context,
       builder: (_) => _EditSensorTagDialog(
         initialTag: sensor.tag,
         sensorId: sensor.id,
-        onSave: saveCallback,
+        onSave: (newTag) => ref
+            .read(updateSensorTagControllerProvider(gatewayId).notifier)
+            .updateTag(sensorId: sensor.id, tag: newTag),
       ),
     );
+  }
+
+  Future<void> _confirmAndDelete(BuildContext context, WidgetRef ref) async {
+    final sensorTag = sensor.tag?.trim();
+    final sensorName = (sensorTag != null && sensorTag.isNotEmpty)
+        ? sensorTag
+        : sensor.id;
+
+    final isConfirmed =
+        await showDialog<bool>(
+          context: context,
+          builder: (_) => _DeleteSensorDialog(sensorName: sensorName),
+        ) ??
+        false;
+
+    if (!isConfirmed || !context.mounted) return;
+
+    await ref
+        .read(deleteSensorControllerProvider(gatewayId).notifier)
+        .deleteSensor(sensor.id);
   }
 
   @override
@@ -69,6 +75,11 @@ class SensorCard extends ConsumerWidget {
     final displayName = hasTag ? sensor.tag!.trim() : sensor.id;
     final stateColor = _resolveStateColor(sensor.state);
     final isTriggered = sensor.state == SensorState.triggered;
+    final isDeleting = ref.watch(
+      deleteSensorControllerProvider(
+        gatewayId,
+      ).select((deletingSensorId) => deletingSensorId == sensor.id),
+    );
 
     return Container(
       decoration: BoxDecoration(
@@ -123,13 +134,19 @@ class SensorCard extends ConsumerWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        if (gatewayId != null || onUpdateTag != null) ...[
-                          const SizedBox(width: 4),
-                          _EditSensorTagButton(
-                            sensorId: sensor.id,
-                            onTap: () => _showEditTagDialog(context, ref),
-                          ),
-                        ],
+                        const SizedBox(width: 4),
+                        _EditSensorTagButton(
+                          sensorId: sensor.id,
+                          onTap: () => _showEditTagDialog(context, ref),
+                        ),
+                        const SizedBox(width: 4),
+                        _DeleteSensorButton(
+                          sensorId: sensor.id,
+                          isLoading: isDeleting,
+                          onTap: isDeleting
+                              ? () {}
+                              : () => _confirmAndDelete(context, ref),
+                        ),
                       ],
                     ),
                     Text(
@@ -297,6 +314,96 @@ class _EditSensorTagButton extends StatelessWidget {
           color: AppColors.textSecondary,
         ),
       ),
+    );
+  }
+}
+
+class _DeleteSensorButton extends StatelessWidget {
+  const _DeleteSensorButton({
+    required this.sensorId,
+    required this.onTap,
+    this.isLoading = false,
+  });
+
+  final String sensorId;
+  final VoidCallback onTap;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const SizedBox(
+        width: 14,
+        height: 14,
+        child: CircularProgressIndicator(
+          strokeWidth: 1.5,
+          color: AppColors.danger,
+        ),
+      );
+    }
+
+    return InkWell(
+      key: ValueKey('delete_sensor_$sensorId'),
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: const Padding(
+        padding: EdgeInsets.all(2),
+        child: Icon(
+          Icons.delete_outline_rounded,
+          size: 14,
+          color: AppColors.danger,
+        ),
+      ),
+    );
+  }
+}
+
+class _DeleteSensorDialog extends StatelessWidget {
+  const _DeleteSensorDialog({required this.sensorName});
+
+  final String sensorName;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return AlertDialog(
+      backgroundColor: AppColors.cardSurface,
+      shape: const RoundedRectangleBorder(borderRadius: AppRadius.border2Xl),
+      title: Text(
+        'Delete Sensor',
+        style: textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
+        ),
+      ),
+      content: Text(
+        'Are you sure you want to delete "$sensorName"? This will unpair the sensor from the gateway.',
+        style: textTheme.bodyMedium?.copyWith(
+          color: AppColors.textSecondary,
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(
+            'Cancel',
+            style: textTheme.labelLarge?.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.danger,
+            shape: const RoundedRectangleBorder(
+              borderRadius: AppRadius.borderXl,
+            ),
+          ),
+          onPressed: () => Navigator.of(context).pop(true),
+          child: const Text('Delete'),
+        ),
+      ],
     );
   }
 }

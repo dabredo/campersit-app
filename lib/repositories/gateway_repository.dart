@@ -65,6 +65,18 @@ class GatewayRepository {
     await callable.call({'deviceId': gatewayId, 'sensorId': sensorId});
   }
 
+  Future<void> deleteSensor({
+    required String gatewayId,
+    required String sensorId,
+  }) async {
+    final callable = _functions.httpsCallable('sendRequestState');
+    await callable.call({
+      'deviceId': gatewayId,
+      'sensorId': sensorId,
+      'state': SensorState.unpaired.code,
+    });
+  }
+
   Future<void> updateSensorTag({
     required String gatewayId,
     required String sensorId,

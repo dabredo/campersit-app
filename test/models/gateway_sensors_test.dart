@@ -38,6 +38,28 @@ void main() {
       expect(motionSensor.state, equals(SensorState.triggered));
     });
 
+    test('excludes sensors with unpaired state', () {
+      final map = {
+        'state': 'c',
+        'userId': 'user-123',
+        'alerts': {},
+        'sensors': {
+          'sensor_paired': {
+            'type': 3,
+            'state': 'e',
+          },
+          'sensor_unpaired': {
+            'type': 2,
+            'state': 'u',
+          },
+        },
+      };
+
+      final gateway = Gateway.fromMap('gw-001', map);
+
+      expect(gateway.sensors.length, equals(1));
+      expect(gateway.sensors.first.id, equals('sensor_paired'));
+    });
 
     test('defaults to empty list if sensors array is missing', () {
       final map = {
