@@ -160,5 +160,22 @@ void main() {
 
       verify(() => mockRepository.requestLocation(gatewayId)).called(1);
     });
+
+    testWidgets('opens add sensor bottom sheet when tapping add sensor button', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.watchGateway(gatewayId),
+      ).thenAnswer((_) => Stream.value(buildGateway()));
+
+      await pumpScreen(tester);
+      await tester.pump();
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TextFormField), findsOneWidget);
+      expect(find.text('Sensor ID'), findsOneWidget);
+    });
   });
 }
+

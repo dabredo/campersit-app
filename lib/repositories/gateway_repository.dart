@@ -57,6 +57,14 @@ class GatewayRepository {
     await callable.call({'deviceId': gatewayId});
   }
 
+  Future<void> addSensor({
+    required String gatewayId,
+    required String sensorId,
+  }) async {
+    final callable = _functions.httpsCallable('addSensor');
+    await callable.call({'deviceId': gatewayId, 'sensorId': sensorId});
+  }
+
   Future<void> updateSensorTag({
     required String gatewayId,
     required String sensorId,

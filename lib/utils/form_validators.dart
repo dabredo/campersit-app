@@ -26,8 +26,8 @@ String? validatePassword(String? value) {
   return null;
 }
 
-String? validateMacAddress(String? value) {
-  final requiredFieldError = validateRequiredField(value, 'Gateway ID');
+String? validateMacAddress(String? value, {String fieldName = 'Gateway ID'}) {
+  final requiredFieldError = validateRequiredField(value, fieldName);
   if (requiredFieldError != null) return requiredFieldError;
 
   final trimmed = value!.trim();
@@ -40,3 +40,6 @@ String? validateMacAddress(String? value) {
   return null;
 }
 
+String? validateSensorId(String? value) {
+  return validateMacAddress(value, fieldName: 'Sensor ID');
+}

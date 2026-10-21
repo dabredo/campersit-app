@@ -256,4 +256,78 @@ void main() {
       );
     });
   });
+
+  group('AddSensorController', () {
+    const testGatewayId = 'AA:BB:CC:DD:EE:FF';
+    const testSensorId = 'sensor_01';
+
+    test(
+      'returns true and shows success notification on successful add',
+      () async {
+        when(
+          () => mockRepository.addSensor(
+            gatewayId: testGatewayId,
+            sensorId: testSensorId,
+          ),
+        ).thenAnswer((_) async {});
+
+        final result = await container
+            .read(addSensorControllerProvider(testGatewayId).notifier)
+            .addSensor(testSensorId);
+
+        expect(result, isTrue);
+        verify(
+          () => mockRepository.addSensor(
+            gatewayId: testGatewayId,
+            sensorId: testSensorId,
+          ),
+        ).called(1);
+      },
+    );
+
+    test('returns false and captures error when repository throws', () async {
+      when(
+        () => mockRepository.addSensor(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+        ),
+      ).thenThrow(Exception('Functions call failed'));
+
+      final result = await container
+          .read(addSensorControllerProvider(testGatewayId).notifier)
+          .addSensor(testSensorId);
+
+      expect(result, isFalse);
+      final controllerState = container.read(
+        addSensorControllerProvider(testGatewayId),
+      );
+      expect(controllerState.hasError, isTrue);
+    });
+
+    test('state transitions to loading then settles after add', () async {
+      when(
+        () => mockRepository.addSensor(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+        ),
+      ).thenAnswer((_) async {});
+
+      final future = container
+          .read(addSensorControllerProvider(testGatewayId).notifier)
+          .addSensor(testSensorId);
+
+      expect(
+        container.read(addSensorControllerProvider(testGatewayId)),
+        isA<AsyncLoading>(),
+      );
+
+      await future;
+
+      expect(
+        container.read(addSensorControllerProvider(testGatewayId)),
+        isA<AsyncData<void>>(),
+      );
+    });
+  });
 }
+

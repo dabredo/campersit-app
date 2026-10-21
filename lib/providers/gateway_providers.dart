@@ -163,3 +163,43 @@ class UpdateSensorTagController extends AsyncNotifier<void> {
     }
   }
 }
+
+final addSensorControllerProvider = AsyncNotifierProvider.autoDispose
+    .family<AddSensorController, void, String>(AddSensorController.new);
+
+class AddSensorController extends AsyncNotifier<void> {
+  AddSensorController(this.gatewayId);
+
+  final String gatewayId;
+
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> addSensor(String sensorId) async {
+    final link = ref.keepAlive();
+    try {
+      state = const AsyncLoading();
+      state = await AsyncValue.guard(() async {
+        final repository = ref.read(gatewayRepositoryProvider);
+        await repository.addSensor(
+          gatewayId: gatewayId,
+          sensorId: sensorId,
+        );
+      });
+
+      final error = state.error;
+      if (error != null) {
+        ref.read(notificationProvider.notifier).showError(error);
+        return false;
+      }
+
+      ref
+          .read(notificationProvider.notifier)
+          .showSuccess('Sensor added successfully');
+      return true;
+    } finally {
+      link.close();
+    }
+  }
+}
+

@@ -6,6 +6,7 @@ import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/date_time_formatter.dart';
 import '../widgets/app_loading_button.dart';
+import '../widgets/add_sensor_bottom_sheet.dart';
 import '../widgets/gateway_state_chip.dart';
 import '../widgets/sensor_card.dart';
 
@@ -127,6 +128,14 @@ class _GatewayDetailContent extends StatelessWidget {
             const SizedBox(height: 24),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.primaryAccent,
+        foregroundColor: Colors.white,
+        tooltip: 'Add Sensor',
+        onPressed: () =>
+            AddSensorBottomSheet.show(context, gatewayId: gateway.id),
+        child: const Icon(Icons.add),
       ),
     );
   }

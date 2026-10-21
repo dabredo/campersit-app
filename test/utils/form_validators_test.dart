@@ -213,5 +213,30 @@ void main() {
       });
     });
   });
+
+  group('validateSensorId', () {
+    test('returns error when value is null', () {
+      expect(validateSensorId(null), equals('Please enter your Sensor ID'));
+    });
+
+    test('returns error when value is empty', () {
+      expect(validateSensorId(''), equals('Please enter your Sensor ID'));
+    });
+
+    test('returns error when value is whitespace', () {
+      expect(validateSensorId('   '), equals('Please enter your Sensor ID'));
+    });
+
+    test('returns error for invalid MAC sensor ID', () {
+      expect(
+        validateSensorId('invalid_sensor'),
+        equals('Please enter a valid MAC address (e.g. AA:BB:CC:11:22:33)'),
+      );
+    });
+
+    test('returns null for valid MAC sensor ID', () {
+      expect(validateSensorId('AA:BB:CC:11:22:33'), isNull);
+    });
+  });
 }
 
