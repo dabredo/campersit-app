@@ -5,7 +5,6 @@ void main() {
   group('Sensor Model Tests', () {
     test('parses sensor correctly with seenAt, tag, battery, type, and state', () {
       final map = {
-        'id': 'cam_01',
         'type': 1,
         'state': 'e',
         'tag': 'Front Door Camera',
@@ -13,7 +12,7 @@ void main() {
         'seenAt': 1760790600000,
       };
 
-      final sensor = Sensor.fromMap(map);
+      final sensor = Sensor.fromMap('cam_01', map);
 
       expect(sensor.id, equals('cam_01'));
       expect(sensor.type, equals(SensorType.camera));
@@ -49,7 +48,7 @@ void main() {
     });
 
     test('handles fallback when fields are missing or null', () {
-      final sensor = Sensor.fromMap(const {});
+      final sensor = Sensor.fromMap('', const {});
 
       expect(sensor.id, isEmpty);
       expect(sensor.type, equals(SensorType.unknown));
@@ -61,16 +60,16 @@ void main() {
 
     test('parses sensor correctly with int seenAt', () {
       const epochMilliseconds = 1760790600000;
-      final sensor = Sensor.fromMap(const {
-        'id': 'air_01',
+      final sensor = Sensor.fromMap('air_01', const {
         'type': 3,
         'seenAt': epochMilliseconds,
       });
 
+      expect(sensor.id, equals('air_01'));
       expect(sensor.seenAt, equals(epochMilliseconds));
     });
 
-    test('serializes to map correctly', () {
+    test('serializes to map correctly without id', () {
       final timestamp = DateTime(2026, 10, 17, 10, 30).millisecondsSinceEpoch;
       final sensor = Sensor(
         id: 'air_01',
@@ -83,7 +82,7 @@ void main() {
 
       final map = sensor.toMap();
 
-      expect(map['id'], equals('air_01'));
+      expect(map.containsKey('id'), isFalse);
       expect(map['type'], equals(3));
       expect(map['state'], equals('t'));
       expect(map['tag'], equals('Cabin Air'));

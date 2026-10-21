@@ -291,7 +291,7 @@ class _GatewayOverviewCard extends StatelessWidget {
 class _AlarmsList extends StatelessWidget {
   const _AlarmsList({required this.alerts});
 
-  final Map<String, dynamic> alerts;
+  final Map<String, Object?> alerts;
 
   @override
   Widget build(BuildContext context) {

@@ -41,7 +41,7 @@ void main() {
   Gateway buildGateway({
     String state = 'c',
     List<Sensor> sensors = const [],
-    Map<String, dynamic> alerts = const {},
+    Map<String, Object?> alerts = const {},
     GatewayLocation? location,
   }) {
     return Gateway(

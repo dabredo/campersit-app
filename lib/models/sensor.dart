@@ -11,7 +11,7 @@ enum SensorType {
 
   const SensorType(this.code, this.label);
 
-  static SensorType fromValue(dynamic rawValue) {
+  static SensorType fromValue(Object? rawValue) {
     if (rawValue == null) return SensorType.unknown;
     if (rawValue is int) {
       return switch (rawValue) {
@@ -50,7 +50,7 @@ enum SensorState {
 
   const SensorState(this.code, this.label);
 
-  static SensorState fromCode(dynamic rawCode) {
+  static SensorState fromCode(Object? rawCode) {
     if (rawCode == null) return SensorState.unknown;
     final normalized = rawCode.toString().trim().toLowerCase();
     return switch (normalized) {
@@ -83,35 +83,19 @@ class Sensor {
     this.seenAt,
   });
 
-  factory Sensor.fromMap(Map<String, dynamic> map, {String? fallbackId}) {
-    int? parsedSeenAt;
-    final rawSeenAt = map['seenAt'];
-    if (rawSeenAt is int) {
-      parsedSeenAt = rawSeenAt;
-    }
-
-    final rawBattery = map['battery'];
-    num? parsedBattery;
-    if (rawBattery is num) {
-      parsedBattery = rawBattery;
-    }
-
-    final resolvedId = fallbackId ?? '';
-
+  factory Sensor.fromMap(String id, Map<String, Object?> map) {
     return Sensor(
-      id: resolvedId,
+      id: id,
       type: SensorType.fromValue(map['type']),
-      state: SensorState.fromCode(map['state']),
-      tag: map['tag']?.toString(),
-
-      battery: parsedBattery,
-      seenAt: parsedSeenAt,
+      state: SensorState.fromCode(map['state'] as String?),
+      tag: map['tag'] as String?,
+      battery: map['battery'] as num?,
+      seenAt: map['seenAt'] as int?,
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, Object?> toMap() {
     return {
-      'id': id,
       'type': type.code,
       'state': state.code,
       if (tag != null) 'tag': tag,

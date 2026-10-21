@@ -12,7 +12,7 @@ class GatewayLocationPoint {
     required this.longitude,
   });
 
-  factory GatewayLocationPoint.fromMap(Map<String, dynamic> map) {
+  factory GatewayLocationPoint.fromMap(Map<String, Object?> map) {
     return GatewayLocationPoint(
       datetime: map['datetime'] as int? ?? 0,
       latitude: (map['latitude'] as num?)?.toDouble() ?? 0.0,
@@ -20,7 +20,7 @@ class GatewayLocationPoint {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, Object?> toMap() {
     return {'datetime': datetime, 'latitude': latitude, 'longitude': longitude};
   }
 }
@@ -32,24 +32,22 @@ class GatewayLocation {
 
   GatewayLocation({this.approx, this.exact, this.startedAt});
 
-  factory GatewayLocation.fromMap(Map<String, dynamic> map) {
-    final rawApprox = map['approx'];
-    final rawExact = map['exact'];
+  factory GatewayLocation.fromMap(Map<String, Object?> map) {
+    final approx = (map['approx'] as Map?)?.cast<String, Object?>();
+    final exact = (map['exact'] as Map?)?.cast<String, Object?>();
     return GatewayLocation(
-      approx: rawApprox is Map
-          ? GatewayLocationPoint.fromMap(Map<String, dynamic>.from(rawApprox))
-          : null,
-      exact: rawExact is Map
-          ? GatewayLocationPoint.fromMap(Map<String, dynamic>.from(rawExact))
-          : null,
+      approx: approx != null ? GatewayLocationPoint.fromMap(approx) : null,
+      exact: exact != null ? GatewayLocationPoint.fromMap(exact) : null,
       startedAt: map['startedAt'] as int?,
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, Object?> toMap() {
+    final approxPoint = approx;
+    final exactPoint = exact;
     return {
-      if (approx != null) 'approx': approx!.toMap(),
-      if (exact != null) 'exact': exact!.toMap(),
+      if (approxPoint != null) 'approx': approxPoint.toMap(),
+      if (exactPoint != null) 'exact': exactPoint.toMap(),
       if (startedAt != null) 'startedAt': startedAt,
     };
   }
@@ -73,7 +71,7 @@ class Gateway {
   final String state;
   final int? seenAt;
   final String userId;
-  final Map<String, dynamic> alerts;
+  final Map<String, Object?> alerts;
   final GatewayLocation? location;
   final List<Sensor> sensors;
 
@@ -91,63 +89,47 @@ class Gateway {
   bool get isLocalizing => state == GatewayStates.localizing;
   bool get isConnected => state == GatewayStates.connected;
 
-  factory Gateway.fromMap(String id, Map<String, dynamic> map) {
-    int? parsedSeenAt;
-    final rawSeenAt = map['seenAt'];
-    if (rawSeenAt is int) {
-      parsedSeenAt = rawSeenAt;
-    }
+  factory Gateway.fromMap(String id, Map<String, Object?> map) {
+    final rawSensors = (map['sensors'] as Map?)?.cast<String, Object?>();
+    final sensors = rawSensors != null
+        ? rawSensors.entries
+              .map(
+                (entry) => Sensor.fromMap(
+                  entry.key,
+                  (entry.value as Map).cast<String, Object?>(),
+                ),
+              )
+              .toList()
+        : const <Sensor>[];
 
-    final rawSensors = map['sensors'];
-    final parsedSensors = <Sensor>[];
-    if (rawSensors is Map) {
-      rawSensors.forEach((key, value) {
-        if (value is Map<String, dynamic>) {
-          parsedSensors.add(Sensor.fromMap(value, fallbackId: key.toString()));
-        } else if (value is Map) {
-          parsedSensors.add(
-            Sensor.fromMap(
-              Map<String, dynamic>.from(value),
-              fallbackId: key.toString(),
-            ),
-          );
-        }
-      });
-    }
-
-    final rawAlerts = map['alerts'];
-    final parsedAlerts = rawAlerts is Map
-        ? Map<String, dynamic>.from(rawAlerts)
-        : <String, dynamic>{};
-
-    final rawLocation = map['location'];
-    final parsedLocation = rawLocation is Map
-        ? GatewayLocation.fromMap(Map<String, dynamic>.from(rawLocation))
-        : null;
+    final rawLocation = (map['location'] as Map?)?.cast<String, Object?>();
 
     return Gateway(
       id: id,
       state: map['state'] as String? ?? GatewayStates.inactive,
-      seenAt: parsedSeenAt,
+      seenAt: map['seenAt'] as int?,
       userId: map['userId'] as String? ?? '',
-      alerts: parsedAlerts,
-      location: parsedLocation,
-      sensors: parsedSensors,
+      alerts: (map['alerts'] as Map?)?.cast<String, Object?>() ?? const {},
+      location: rawLocation != null
+          ? GatewayLocation.fromMap(rawLocation)
+          : null,
+      sensors: sensors,
     );
   }
 
-  Map<String, dynamic> toMap() {
-    final sensorsMap = <String, dynamic>{};
+  Map<String, Object?> toMap() {
+    final sensorsMap = <String, Object?>{};
     for (final sensor in sensors) {
       sensorsMap[sensor.id] = sensor.toMap();
     }
+    final locationData = location;
 
     return {
       'state': state,
       'seenAt': seenAt,
       'userId': userId,
       'alerts': alerts,
-      if (location != null) 'location': location!.toMap(),
+      if (locationData != null) 'location': locationData.toMap(),
       'sensors': sensorsMap,
     };
   }
