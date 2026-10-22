@@ -438,38 +438,32 @@ class _SensorsSectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final countLabel =
-        '$sensorCount ${sensorCount == 1 ? 'sensor' : 'sensors'}';
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            const Icon(
-              Icons.sensors_rounded,
-              color: AppColors.primaryAccent,
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Sensors',
-              style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                letterSpacing: -0.4,
-                color: AppColors.textPrimary,
-              ),
-            ),
-          ],
+        const Icon(
+          Icons.sensors_rounded,
+          color: AppColors.primaryAccent,
+          size: 20,
         ),
+        const SizedBox(width: 8),
+        Text(
+          'Sensors',
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.4,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        const SizedBox(width: 8),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
             color: AppColors.primaryAccent.withValues(alpha: 0.1),
             borderRadius: AppRadius.borderXl,
           ),
           child: Text(
-            countLabel,
+            '$sensorCount',
             style: textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.primaryAccent,

@@ -96,11 +96,11 @@ void main() {
       await pumpScreen(tester);
       await tester.pump();
 
-      expect(find.text('0 sensors'), findsOneWidget);
+      expect(find.text('0'), findsOneWidget);
       expect(find.text('No Sensors Configured'), findsOneWidget);
     });
 
-    testWidgets('renders one card per sensor with singular count label', (
+    testWidgets('renders one card per sensor with count label', (
       tester,
     ) async {
       final gateway = buildGateway(
@@ -115,7 +115,7 @@ void main() {
       await pumpScreen(tester);
       await tester.pump();
 
-      expect(find.text('1 sensor'), findsOneWidget);
+      expect(find.text('1'), findsOneWidget);
       expect(find.text('Front Camera'), findsOneWidget);
     });
 
@@ -140,7 +140,7 @@ void main() {
       await pumpScreen(tester);
       await tester.pump();
 
-      expect(find.text('1 sensor'), findsOneWidget);
+      expect(find.text('1'), findsOneWidget);
       expect(find.text('Front Camera'), findsOneWidget);
       expect(find.text('Old Motion Sensor'), findsNothing);
     });
