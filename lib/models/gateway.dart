@@ -12,6 +12,8 @@ class GatewayLocationPoint {
     required this.longitude,
   });
 
+  String get formattedCoordinates => '$latitude, $longitude';
+
   factory GatewayLocationPoint.fromMap(Map<String, Object?> map) {
     return GatewayLocationPoint(
       datetime: map['datetime'] as int? ?? 0,

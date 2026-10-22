@@ -121,5 +121,14 @@ void main() {
       expect(localizingGateway.isConnected, isFalse);
       expect(localizingGateway.isLocalizing, isTrue);
     });
+
+    test('formats coordinates correctly in GatewayLocationPoint', () {
+      final point = GatewayLocationPoint(
+        datetime: 12345,
+        latitude: 40.5,
+        longitude: -3.7,
+      );
+      expect(point.formattedCoordinates, equals('40.5, -3.7'));
+    });
   });
 }

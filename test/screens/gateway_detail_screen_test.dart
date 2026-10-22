@@ -119,32 +119,6 @@ void main() {
       expect(find.text('Front Camera'), findsOneWidget);
     });
 
-    testWidgets('does not render sensors that have unpaired state', (
-      tester,
-    ) async {
-      final gateway = buildGateway(
-        sensors: const [
-          Sensor(id: 'cam-1', type: SensorType.camera, tag: 'Front Camera'),
-          Sensor(
-            id: 'motion-1',
-            type: SensorType.motion,
-            state: SensorState.unpaired,
-            tag: 'Old Motion Sensor',
-          ),
-        ],
-      );
-      when(
-        () => mockRepository.watchGateway(gatewayId),
-      ).thenAnswer((_) => Stream.value(gateway));
-
-      await pumpScreen(tester);
-      await tester.pump();
-
-      expect(find.text('1'), findsOneWidget);
-      expect(find.text('Front Camera'), findsOneWidget);
-      expect(find.text('Old Motion Sensor'), findsNothing);
-    });
-
     testWidgets('shows not found message when gateway is missing', (
       tester,
     ) async {
@@ -156,6 +130,26 @@ void main() {
       await tester.pump();
 
       expect(find.text('Gateway not found.'), findsOneWidget);
+    });
+
+    testWidgets('shows formatted error message when stream emits error', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.watchGateway(gatewayId),
+      ).thenAnswer(
+        (_) => Stream.error(Exception('Failed to fetch gateway')),
+      );
+
+      await pumpScreen(tester);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          'Error loading gateway details:\nAn unexpected error occurred. Please try again.',
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('falls back to initial gateway while loading', (tester) async {

@@ -31,6 +31,20 @@ class AppTheme {
         secondary: AppColors.secondaryAccent,
         surface: AppColors.cardSurface,
       ),
+      textTheme: const TextTheme(
+        titleMedium: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          letterSpacing: -0.3,
+        ),
+        titleSmall: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          letterSpacing: -0.2,
+        ),
+      ),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.mainBackground,
         elevation: 0,
