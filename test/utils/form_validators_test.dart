@@ -143,21 +143,28 @@ void main() {
       test('returns error when value is null', () {
         expect(
           validateMacAddress(null),
-          equals('Please enter your Gateway ID'),
+          equals('Please enter your MAC address'),
         );
       });
 
       test('returns error when value is empty', () {
         expect(
           validateMacAddress(''),
-          equals('Please enter your Gateway ID'),
+          equals('Please enter your MAC address'),
         );
       });
 
       test('returns error when value is only whitespace', () {
         expect(
           validateMacAddress('   '),
-          equals('Please enter your Gateway ID'),
+          equals('Please enter your MAC address'),
+        );
+      });
+
+      test('interpolates custom field name into error message', () {
+        expect(
+          validateMacAddress(null, fieldName: 'Sensor ID'),
+          equals('Please enter your Sensor ID'),
         );
       });
     });
@@ -211,31 +218,6 @@ void main() {
       test('returns null for valid all-letters uppercase MAC address', () {
         expect(validateMacAddress('AA:BB:CC:DD:EE:FF'), isNull);
       });
-    });
-  });
-
-  group('validateSensorId', () {
-    test('returns error when value is null', () {
-      expect(validateSensorId(null), equals('Please enter your Sensor ID'));
-    });
-
-    test('returns error when value is empty', () {
-      expect(validateSensorId(''), equals('Please enter your Sensor ID'));
-    });
-
-    test('returns error when value is whitespace', () {
-      expect(validateSensorId('   '), equals('Please enter your Sensor ID'));
-    });
-
-    test('returns error for invalid MAC sensor ID', () {
-      expect(
-        validateSensorId('invalid_sensor'),
-        equals('Please enter a valid MAC address (e.g. AA:BB:CC:11:22:33)'),
-      );
-    });
-
-    test('returns null for valid MAC sensor ID', () {
-      expect(validateSensorId('AA:BB:CC:11:22:33'), isNull);
     });
   });
 }

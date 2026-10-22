@@ -26,7 +26,7 @@ String? validatePassword(String? value) {
   return null;
 }
 
-String? validateMacAddress(String? value, {String fieldName = 'Gateway ID'}) {
+String? validateMacAddress(String? value, {String fieldName = 'MAC address'}) {
   final requiredFieldError = validateRequiredField(value, fieldName);
   if (requiredFieldError != null) return requiredFieldError;
 
@@ -38,8 +38,4 @@ String? validateMacAddress(String? value, {String fieldName = 'Gateway ID'}) {
     return 'Please enter a valid MAC address (e.g. AA:BB:CC:11:22:33)';
   }
   return null;
-}
-
-String? validateSensorId(String? value) {
-  return validateMacAddress(value, fieldName: 'Sensor ID');
 }
