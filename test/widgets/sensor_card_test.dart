@@ -51,7 +51,7 @@ void main() {
       expect(find.text('Kitchen Air Sensor'), findsOneWidget);
       expect(find.text('AIR'), findsOneWidget);
       expect(find.text('Enabled'), findsOneWidget);
-      expect(find.text('88%'), findsOneWidget);
+      expect(find.text('88'), findsOneWidget);
       expect(find.text('18/10/2026 14:30'), findsOneWidget);
     });
 

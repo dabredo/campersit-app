@@ -10,11 +10,7 @@ class SensorCard extends ConsumerWidget {
   final Sensor sensor;
   final String gatewayId;
 
-  const SensorCard({
-    super.key,
-    required this.sensor,
-    required this.gatewayId,
-  });
+  const SensorCard({super.key, required this.sensor, required this.gatewayId});
 
   IconData _resolveSensorIcon(SensorType type) => switch (type) {
     SensorType.camera => Icons.videocam_rounded,
@@ -76,9 +72,8 @@ class SensorCard extends ConsumerWidget {
     final stateColor = _resolveStateColor(sensor.state);
     final isTriggered = sensor.state == SensorState.triggered;
     final isDeleting = ref.watch(
-      deleteSensorControllerProvider(
-        gatewayId,
-      ).select((deletingSensorId) => deletingSensorId == sensor.id),
+      deleteSensorControllerProvider(gatewayId)
+          .select((deletingSensorId) => deletingSensorId == sensor.id),
     );
 
     return Container(
@@ -244,51 +239,59 @@ class _SensorSeenAtIndicator extends StatelessWidget {
   }
 }
 
+enum _BatteryStatus {
+  low,
+  medium,
+  full;
+
+  // IoT sensors report battery either in millivolts (> 100) or percentage (0-100)
+  static const num _mvThreshold = 100;
+  static const num _lowMv = 1600;
+  static const num _mediumMv = 1800;
+  static const num _lowPercent = 20;
+  static const num _mediumPercent = 50;
+
+  factory _BatteryStatus.fromLevel(num value) {
+    final isMillivolts = value > _mvThreshold;
+    if (isMillivolts ? value <= _lowMv : value <= _lowPercent) {
+      return _BatteryStatus.low;
+    }
+    if (isMillivolts ? value <= _mediumMv : value <= _mediumPercent) {
+      return _BatteryStatus.medium;
+    }
+    return _BatteryStatus.full;
+  }
+
+  IconData get icon => switch (this) {
+    _BatteryStatus.low => Icons.battery_0_bar_rounded,
+    _BatteryStatus.medium => Icons.battery_3_bar_rounded,
+    _BatteryStatus.full => Icons.battery_full_rounded,
+  };
+
+  Color get color => switch (this) {
+    _BatteryStatus.low => AppColors.danger,
+    _BatteryStatus.medium => AppColors.warning,
+    _BatteryStatus.full => AppColors.secondaryAccent,
+  };
+}
+
 class _SensorBatteryIndicator extends StatelessWidget {
   const _SensorBatteryIndicator({required this.battery});
 
   final num battery;
 
-  static IconData _resolveBatteryIcon(num batteryLevel) {
-    final isLow = batteryLevel > 100
-        ? batteryLevel <= 1600
-        : batteryLevel <= 20;
-    if (isLow) return Icons.battery_0_bar_rounded;
-
-    final isMedium = batteryLevel > 100
-        ? batteryLevel <= 1800
-        : batteryLevel <= 50;
-    if (isMedium) return Icons.battery_3_bar_rounded;
-
-    return Icons.battery_full_rounded;
-  }
-
-  static Color _resolveBatteryColor(num batteryLevel) {
-    final isLow = batteryLevel > 100
-        ? batteryLevel <= 1600
-        : batteryLevel <= 20;
-    if (isLow) return AppColors.danger;
-
-    final isMedium = batteryLevel > 100
-        ? batteryLevel <= 1800
-        : batteryLevel <= 50;
-    if (isMedium) return AppColors.warning;
-
-    return AppColors.secondaryAccent;
-  }
-
   @override
   Widget build(BuildContext context) {
-    final color = _resolveBatteryColor(battery);
+    final status = _BatteryStatus.fromLevel(battery);
     final textStyle = Theme.of(context).textTheme.labelSmall
-        ?.copyWith(fontWeight: FontWeight.w600, color: color);
+        ?.copyWith(fontWeight: FontWeight.w600, color: status.color);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(_resolveBatteryIcon(battery), size: 14, color: color),
+        Icon(status.icon, size: 14, color: status.color),
         const SizedBox(width: 4),
-        Text('${battery.toInt()}%', style: textStyle),
+        Text('${battery.toInt()}', style: textStyle),
       ],
     );
   }
@@ -379,9 +382,7 @@ class _DeleteSensorDialog extends StatelessWidget {
       ),
       content: Text(
         'Are you sure you want to delete "$sensorName"? This will unpair the sensor from the gateway.',
-        style: textTheme.bodyMedium?.copyWith(
-          color: AppColors.textSecondary,
-        ),
+        style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
       ),
       actions: [
         TextButton(
