@@ -89,5 +89,37 @@ void main() {
       expect(map['battery'], equals(92));
       expect(map['seenAt'], equals(timestamp));
     });
+
+    test('parses alerts map correctly and serializes when not empty', () {
+      final map = {
+        'type': 2,
+        'state': 'e',
+        'alerts': {
+          'tamper': true,
+          'motion': false,
+          'battery': 'low',
+        },
+      };
+
+      final sensor = Sensor.fromMap('motion_01', map);
+
+      expect(
+        sensor.alerts,
+        equals({'tamper': true, 'motion': false, 'battery': 'low'}),
+      );
+
+      final serialized = sensor.toMap();
+      expect(
+        serialized['alerts'],
+        equals({'tamper': true, 'motion': false, 'battery': 'low'}),
+      );
+    });
+
+    test('defaults alerts to empty map when missing in map', () {
+      final sensor = Sensor.fromMap('cam_02', const {'type': 1});
+
+      expect(sensor.alerts, isEmpty);
+      expect(sensor.toMap().containsKey('alerts'), isFalse);
+    });
   });
 }

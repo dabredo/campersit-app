@@ -70,7 +70,10 @@ class SensorCard extends ConsumerWidget {
     final hasTag = sensor.tag != null && sensor.tag!.trim().isNotEmpty;
     final displayName = hasTag ? sensor.tag!.trim() : sensor.id;
     final stateColor = _resolveStateColor(sensor.state);
+    final hasActiveAlerts =
+        sensor.alerts.values.any(_SensorAlertsList.isAlertActive);
     final isTriggered = sensor.state == SensorState.triggered;
+    final isAlerting = isTriggered || hasActiveAlerts;
     final isDeleting = ref.watch(
       deleteSensorControllerProvider(gatewayId)
           .select((deletingSensorId) => deletingSensorId == sensor.id),
@@ -81,8 +84,8 @@ class SensorCard extends ConsumerWidget {
         color: AppColors.cardSurface,
         borderRadius: AppRadius.border2Xl,
         border: Border.all(
-          color: isTriggered ? AppColors.danger : AppColors.borderLight,
-          width: isTriggered ? 1.5 : 1,
+          color: isAlerting ? AppColors.danger : AppColors.borderLight,
+          width: isAlerting ? 1.5 : 1,
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -98,13 +101,13 @@ class SensorCard extends ConsumerWidget {
                 height: 38,
                 decoration: BoxDecoration(
                   color:
-                      (isTriggered ? AppColors.danger : AppColors.primaryAccent)
+                      (isAlerting ? AppColors.danger : AppColors.primaryAccent)
                           .withValues(alpha: 0.1),
                   borderRadius: AppRadius.borderXl,
                 ),
                 child: Icon(
                   sensorIcon,
-                  color: isTriggered
+                  color: isAlerting
                       ? AppColors.danger
                       : AppColors.primaryAccent,
                   size: 20,
@@ -181,10 +184,90 @@ class SensorCard extends ConsumerWidget {
             ],
           ),
 
+          if (hasActiveAlerts) ...[
+            const SizedBox(height: 10),
+            _SensorAlertsList(alerts: sensor.alerts),
+          ],
+
           if (sensor.seenAt != null || sensor.battery != null) ...[
             const SizedBox(height: 8),
             _SensorFooter(seenAt: sensor.seenAt, battery: sensor.battery),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _SensorAlertsList extends StatelessWidget {
+  const _SensorAlertsList({required this.alerts});
+
+  final Map<String, Object?> alerts;
+
+  static bool isAlertActive(Object? value) {
+    if (value is bool) return value;
+    if (value is String) return value.isNotEmpty;
+    return value != null;
+  }
+
+  static String formatAlertText(String key, Object? value) {
+    if (value is bool) {
+      return '- $key';
+    }
+    return '- $key: $value';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final activeAlerts = alerts.entries
+        .where((entry) => isAlertActive(entry.value))
+        .toList();
+    if (activeAlerts.isEmpty) return const SizedBox.shrink();
+
+    final textTheme = Theme.of(context).textTheme;
+    final alertTitleStyle = textTheme.labelSmall?.copyWith(
+      fontWeight: FontWeight.w600,
+      color: AppColors.danger,
+    );
+    final alertItemStyle = textTheme.bodySmall?.copyWith(
+      color: AppColors.danger,
+      fontWeight: FontWeight.w500,
+    );
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.danger.withValues(alpha: 0.08),
+        borderRadius: AppRadius.borderXl,
+        border: Border.all(
+          color: AppColors.danger.withValues(alpha: 0.25),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.warning_amber_rounded,
+                size: 14,
+                color: AppColors.danger,
+              ),
+              const SizedBox(width: 4),
+              Text('Alarms:', style: alertTitleStyle),
+            ],
+          ),
+          const SizedBox(height: 4),
+          for (final entry in activeAlerts)
+            Padding(
+              padding: const EdgeInsets.only(left: 4, top: 2),
+              child: Text(
+                formatAlertText(entry.key, entry.value),
+                style: alertItemStyle,
+              ),
+            ),
         ],
       ),
     );

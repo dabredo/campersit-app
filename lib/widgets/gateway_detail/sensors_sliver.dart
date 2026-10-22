@@ -9,7 +9,6 @@ class SensorsSliver extends StatelessWidget {
   const SensorsSliver({super.key, required this.gatewayId, required this.sensors});
 
   static const double _wideLayoutBreakpoint = 500;
-  static const double _sensorTileHeight = 96;
   static const double _sensorSpacing = 12;
 
   final String gatewayId;
@@ -27,16 +26,21 @@ class SensorsSliver extends StatelessWidget {
             constraints.crossAxisExtent >= _wideLayoutBreakpoint;
 
         if (isWideScreen) {
-          return SliverGrid.builder(
-            itemCount: sensors.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: _sensorSpacing,
-              mainAxisSpacing: _sensorSpacing,
-              mainAxisExtent: _sensorTileHeight,
-            ),
-            itemBuilder: (_, index) =>
-                SensorCard(sensor: sensors[index], gatewayId: gatewayId),
+          final rowCount = (sensors.length + 1) ~/ 2;
+          return SliverList.separated(
+            itemCount: rowCount,
+            separatorBuilder: (_, _) => const SizedBox(height: _sensorSpacing),
+            itemBuilder: (_, rowIndex) {
+              final firstIndex = rowIndex * 2;
+              final secondIndex = firstIndex + 1;
+              return _SensorGridRow(
+                firstSensor: sensors[firstIndex],
+                secondSensor:
+                    secondIndex < sensors.length ? sensors[secondIndex] : null,
+                gatewayId: gatewayId,
+                spacing: _sensorSpacing,
+              );
+            },
           );
         }
 
@@ -47,6 +51,40 @@ class SensorsSliver extends StatelessWidget {
               SensorCard(sensor: sensors[index], gatewayId: gatewayId),
         );
       },
+    );
+  }
+}
+
+class _SensorGridRow extends StatelessWidget {
+  const _SensorGridRow({
+    required this.firstSensor,
+    required this.secondSensor,
+    required this.gatewayId,
+    required this.spacing,
+  });
+
+  final Sensor firstSensor;
+  final Sensor? secondSensor;
+  final String gatewayId;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) {
+    final second = secondSensor;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: SensorCard(sensor: firstSensor, gatewayId: gatewayId),
+        ),
+        SizedBox(width: spacing),
+        Expanded(
+          child: second != null
+              ? SensorCard(sensor: second, gatewayId: gatewayId)
+              : const SizedBox.shrink(),
+        ),
+      ],
     );
   }
 }

@@ -73,6 +73,7 @@ class Sensor {
   final String? tag;
   final num? battery;
   final int? seenAt;
+  final Map<String, Object?> alerts;
 
   const Sensor({
     required this.id,
@@ -81,6 +82,7 @@ class Sensor {
     this.tag,
     this.battery,
     this.seenAt,
+    this.alerts = const {},
   });
 
   factory Sensor.fromMap(String id, Map<String, Object?> map) {
@@ -91,6 +93,7 @@ class Sensor {
       tag: map['tag'] as String?,
       battery: map['battery'] as num?,
       seenAt: map['seenAt'] as int?,
+      alerts: (map['alerts'] as Map?)?.cast<String, Object?>() ?? const {},
     );
   }
 
@@ -101,6 +104,7 @@ class Sensor {
       if (tag != null) 'tag': tag,
       if (battery != null) 'battery': battery,
       if (seenAt != null) 'seenAt': seenAt,
+      if (alerts.isNotEmpty) 'alerts': alerts,
     };
   }
 }

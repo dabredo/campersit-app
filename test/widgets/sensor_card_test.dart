@@ -68,6 +68,47 @@ void main() {
       expect(find.text('Triggered'), findsOneWidget);
     });
 
+    testWidgets('renders active alarms list for boolean and string alert values', (
+      tester,
+    ) async {
+      const sensor = Sensor(
+        id: 'motion-alert',
+        type: SensorType.motion,
+        state: SensorState.enabled,
+        alerts: {
+          'tamper': true,
+          'battery_low': false,
+          'battery': 'low',
+          'vibration': true,
+        },
+      );
+
+      await tester.pumpWidget(createWidget(sensor: sensor));
+
+      expect(find.text('Alarms:'), findsOneWidget);
+      expect(find.text('- tamper'), findsOneWidget);
+      expect(find.text('- vibration'), findsOneWidget);
+      expect(find.text('- battery: low'), findsOneWidget);
+      expect(find.text('- battery_low'), findsNothing);
+    });
+
+    testWidgets('does not render alarms list when alerts are all false', (
+      tester,
+    ) async {
+      const sensor = Sensor(
+        id: 'motion-clean',
+        type: SensorType.motion,
+        state: SensorState.enabled,
+        alerts: {
+          'tamper': false,
+        },
+      );
+
+      await tester.pumpWidget(createWidget(sensor: sensor));
+
+      expect(find.text('Alarms:'), findsNothing);
+    });
+
     testWidgets('renders sensor id as fallback when tag is absent', (
       tester,
     ) async {
