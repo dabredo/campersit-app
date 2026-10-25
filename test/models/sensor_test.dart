@@ -121,5 +121,80 @@ void main() {
       expect(sensor.alerts, isEmpty);
       expect(sensor.toMap().containsKey('alerts'), isFalse);
     });
+
+    test('isActuator correctly identifies actuators vs non-actuators', () {
+      expect(SensorType.camera.isActuator, isTrue);
+      expect(SensorType.led.isActuator, isTrue);
+      expect(SensorType.buzzer.isActuator, isTrue);
+      expect(SensorType.motion.isActuator, isFalse);
+      expect(SensorType.air.isActuator, isFalse);
+      expect(SensorType.unknown.isActuator, isFalse);
+    });
+
+    test('availableTransitions returns expected transitions based on state and type', () {
+      const pairedActuator = Sensor(
+        id: 'cam-1',
+        type: SensorType.camera,
+        state: SensorState.paired,
+      );
+      expect(
+        pairedActuator.availableTransitions,
+        equals([SensorState.enabled, SensorState.started]),
+      );
+
+      const pairedMotion = Sensor(
+        id: 'mot-1',
+        type: SensorType.motion,
+        state: SensorState.paired,
+      );
+      expect(
+        pairedMotion.availableTransitions,
+        equals([SensorState.enabled]),
+      );
+
+      const triggeredMotion = Sensor(
+        id: 'mot-2',
+        type: SensorType.motion,
+        state: SensorState.triggered,
+      );
+      expect(
+        triggeredMotion.availableTransitions,
+        equals([SensorState.enabled, SensorState.paired]),
+      );
+
+      const enabledSensor = Sensor(
+        id: 'air-1',
+        type: SensorType.air,
+        state: SensorState.enabled,
+      );
+      expect(
+        enabledSensor.availableTransitions,
+        equals([SensorState.paired]),
+      );
+
+      const startedActuator = Sensor(
+        id: 'led-1',
+        type: SensorType.led,
+        state: SensorState.started,
+      );
+      expect(
+        startedActuator.availableTransitions,
+        equals([SensorState.enabled, SensorState.paired]),
+      );
+
+      const startedMotion = Sensor(
+        id: 'mot-3',
+        type: SensorType.motion,
+        state: SensorState.started,
+      );
+      expect(startedMotion.availableTransitions, isEmpty);
+
+      const unpairedSensor = Sensor(
+        id: 'mot-4',
+        type: SensorType.motion,
+        state: SensorState.unpaired,
+      );
+      expect(unpairedSensor.availableTransitions, isEmpty);
+    });
   });
 }

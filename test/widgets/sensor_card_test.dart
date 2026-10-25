@@ -266,5 +266,122 @@ void main() {
         );
       },
     );
+
+    testWidgets('renders action buttons for paired actuator (Enable and Start) and triggers request', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.sendRequestState(
+          gatewayId: defaultGatewayId,
+          sensorId: 'cam-1',
+          state: SensorState.started,
+        ),
+      ).thenAnswer((_) async {});
+
+      const sensor = Sensor(
+        id: 'cam-1',
+        type: SensorType.camera,
+        state: SensorState.paired,
+      );
+
+      await tester.pumpWidget(createWidget(sensor: sensor));
+
+      expect(find.text('Enable'), findsOneWidget);
+      expect(find.text('Start'), findsOneWidget);
+
+      await tester.tap(find.text('Start'));
+      await tester.pump();
+
+      verify(
+        () => mockRepository.sendRequestState(
+          gatewayId: defaultGatewayId,
+          sensorId: 'cam-1',
+          state: SensorState.started,
+        ),
+      ).called(1);
+    });
+
+    testWidgets('renders only Enable button for paired non-actuator', (
+      tester,
+    ) async {
+      const sensor = Sensor(
+        id: 'motion-1',
+        type: SensorType.motion,
+        state: SensorState.paired,
+      );
+
+      await tester.pumpWidget(createWidget(sensor: sensor));
+
+      expect(find.text('Enable'), findsOneWidget);
+      expect(find.text('Start'), findsNothing);
+    });
+
+    testWidgets('renders Enable and Pair buttons for triggered motion sensor', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.sendRequestState(
+          gatewayId: defaultGatewayId,
+          sensorId: 'motion-triggered',
+          state: SensorState.enabled,
+        ),
+      ).thenAnswer((_) async {});
+
+      const sensor = Sensor(
+        id: 'motion-triggered',
+        type: SensorType.motion,
+        state: SensorState.triggered,
+      );
+
+      await tester.pumpWidget(createWidget(sensor: sensor));
+
+      expect(find.text('Enable'), findsOneWidget);
+      expect(find.text('Pair'), findsOneWidget);
+
+      await tester.tap(find.text('Enable'));
+      await tester.pump();
+
+      verify(
+        () => mockRepository.sendRequestState(
+          gatewayId: defaultGatewayId,
+          sensorId: 'motion-triggered',
+          state: SensorState.enabled,
+        ),
+      ).called(1);
+    });
+
+    testWidgets('renders Pair button for enabled sensor and handles request', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.sendRequestState(
+          gatewayId: defaultGatewayId,
+          sensorId: 'air-enabled',
+          state: SensorState.paired,
+        ),
+      ).thenAnswer((_) async {});
+
+      const sensor = Sensor(
+        id: 'air-enabled',
+        type: SensorType.air,
+        state: SensorState.enabled,
+      );
+
+      await tester.pumpWidget(createWidget(sensor: sensor));
+
+      expect(find.text('Pair'), findsOneWidget);
+      expect(find.text('Enable'), findsNothing);
+
+      await tester.tap(find.text('Pair'));
+      await tester.pump();
+
+      verify(
+        () => mockRepository.sendRequestState(
+          gatewayId: defaultGatewayId,
+          sensorId: 'air-enabled',
+          state: SensorState.paired,
+        ),
+      ).called(1);
+    });
   });
 }

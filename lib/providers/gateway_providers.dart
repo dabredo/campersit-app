@@ -233,3 +233,43 @@ class DeleteSensorController extends Notifier<String?> {
     }
   }
 }
+
+typedef SensorTargetKey = ({String gatewayId, String sensorId});
+
+final requestSensorStateControllerProvider = NotifierProvider.autoDispose
+    .family<RequestSensorStateController, SensorState?, SensorTargetKey>(
+      RequestSensorStateController.new,
+    );
+
+class RequestSensorStateController extends Notifier<SensorState?> {
+  RequestSensorStateController(this.key);
+
+  final SensorTargetKey key;
+
+  @override
+  SensorState? build() => null;
+
+  Future<bool> requestState(SensorState targetState) async {
+    final link = ref.keepAlive();
+    state = targetState;
+    try {
+      final repository = ref.read(gatewayRepositoryProvider);
+      await repository.sendRequestState(
+        gatewayId: key.gatewayId,
+        sensorId: key.sensorId,
+        state: targetState,
+      );
+
+      ref
+          .read(notificationProvider.notifier)
+          .showSuccess('State update requested: ${targetState.label}');
+      return true;
+    } catch (error) {
+      ref.read(notificationProvider.notifier).showError(error);
+      return false;
+    } finally {
+      state = null;
+      link.close();
+    }
+  }
+}

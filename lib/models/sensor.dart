@@ -33,6 +33,11 @@ enum SensorType {
       _ => SensorType.unknown,
     };
   }
+
+  bool get isActuator =>
+      this == SensorType.camera ||
+      this == SensorType.led ||
+      this == SensorType.buzzer;
 }
 
 enum SensorState {
@@ -96,6 +101,27 @@ class Sensor {
       alerts: (map['alerts'] as Map?)?.cast<String, Object?>() ?? const {},
     );
   }
+
+  bool get isActuator => type.isActuator;
+
+  List<SensorState> get availableTransitions => switch (state) {
+        SensorState.paired => [
+          SensorState.enabled,
+          if (isActuator) SensorState.started,
+        ],
+        SensorState.triggered => [
+          SensorState.enabled,
+          SensorState.paired,
+        ],
+        SensorState.enabled => [
+          SensorState.paired,
+        ],
+        SensorState.started when isActuator => [
+          SensorState.enabled,
+          SensorState.paired,
+        ],
+        _ => const [],
+      };
 
   Map<String, Object?> toMap() {
     return {

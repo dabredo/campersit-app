@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:campersit_app/models/sensor.dart';
 import 'package:campersit_app/providers/gateway_providers.dart';
 import 'package:campersit_app/repositories/gateway_repository.dart';
 
@@ -398,6 +399,81 @@ void main() {
 
       expect(
         container.read(deleteSensorControllerProvider(testGatewayId)),
+        isNull,
+      );
+    });
+  });
+
+  group('RequestSensorStateController Tests', () {
+    const testGatewayId = 'AA:BB:CC:DD:EE:FF';
+    const testSensorId = 'sensor-123';
+    const testKey = (gatewayId: testGatewayId, sensorId: testSensorId);
+
+    test('successfully sends state request and shows success notification', () async {
+      when(
+        () => mockRepository.sendRequestState(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+          state: SensorState.enabled,
+        ),
+      ).thenAnswer((_) async {});
+
+      final result = await container
+          .read(requestSensorStateControllerProvider(testKey).notifier)
+          .requestState(SensorState.enabled);
+
+      expect(result, isTrue);
+      verify(
+        () => mockRepository.sendRequestState(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+          state: SensorState.enabled,
+        ),
+      ).called(1);
+    });
+
+    test('returns false and resets state to null when repository throws', () async {
+      when(
+        () => mockRepository.sendRequestState(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+          state: SensorState.started,
+        ),
+      ).thenThrow(Exception('Failed to send state'));
+
+      final result = await container
+          .read(requestSensorStateControllerProvider(testKey).notifier)
+          .requestState(SensorState.started);
+
+      expect(result, isFalse);
+      final controllerState = container.read(
+        requestSensorStateControllerProvider(testKey),
+      );
+      expect(controllerState, isNull);
+    });
+
+    test('sets loading target state during request and clears on completion', () async {
+      when(
+        () => mockRepository.sendRequestState(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+          state: SensorState.enabled,
+        ),
+      ).thenAnswer((_) async {});
+
+      final future = container
+          .read(requestSensorStateControllerProvider(testKey).notifier)
+          .requestState(SensorState.enabled);
+
+      expect(
+        container.read(requestSensorStateControllerProvider(testKey)),
+        equals(SensorState.enabled),
+      );
+
+      await future;
+
+      expect(
+        container.read(requestSensorStateControllerProvider(testKey)),
         isNull,
       );
     });
