@@ -383,5 +383,43 @@ void main() {
         ),
       ).called(1);
     });
+
+    testWidgets('renders temperature and humidity for air sensor when values are present', (
+      tester,
+    ) async {
+      const sensor = Sensor(
+        id: 'air-with-values',
+        type: SensorType.air,
+        state: SensorState.enabled,
+        values: {
+          'temperature': 21,
+          'humidity': 48,
+        },
+      );
+
+      await tester.pumpWidget(createWidget(sensor: sensor));
+
+      expect(find.text('Temperature'), findsOneWidget);
+      expect(find.text('21'), findsOneWidget);
+      expect(find.text('ºC'), findsOneWidget);
+      expect(find.text('Humidity'), findsOneWidget);
+      expect(find.text('48'), findsOneWidget);
+      expect(find.text('%'), findsOneWidget);
+    });
+
+    testWidgets('does not render telemetry section when air sensor has no values', (
+      tester,
+    ) async {
+      const sensor = Sensor(
+        id: 'air-without-values',
+        type: SensorType.air,
+        state: SensorState.enabled,
+      );
+
+      await tester.pumpWidget(createWidget(sensor: sensor));
+
+      expect(find.text('Temperature'), findsNothing);
+      expect(find.text('Humidity'), findsNothing);
+    });
   });
 }

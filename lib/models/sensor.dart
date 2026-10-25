@@ -79,6 +79,7 @@ class Sensor {
   final num? battery;
   final int? seenAt;
   final Map<String, Object?> alerts;
+  final Map<String, Object?> values;
 
   const Sensor({
     required this.id,
@@ -88,6 +89,7 @@ class Sensor {
     this.battery,
     this.seenAt,
     this.alerts = const {},
+    this.values = const {},
   });
 
   factory Sensor.fromMap(String id, Map<String, Object?> map) {
@@ -99,8 +101,13 @@ class Sensor {
       battery: map['battery'] as num?,
       seenAt: map['seenAt'] as int?,
       alerts: (map['alerts'] as Map?)?.cast<String, Object?>() ?? const {},
+      values: (map['values'] as Map?)?.cast<String, Object?>() ?? const {},
     );
   }
+
+  // Hardware sensors lack decimal precision; values are represented as integers.
+  int? get temperature => (values['temperature'] as num?)?.round();
+  int? get humidity => (values['humidity'] as num?)?.round();
 
   bool get isActuator => type.isActuator;
 
@@ -131,6 +138,7 @@ class Sensor {
       if (battery != null) 'battery': battery,
       if (seenAt != null) 'seenAt': seenAt,
       if (alerts.isNotEmpty) 'alerts': alerts,
+      if (values.isNotEmpty) 'values': values,
     };
   }
 }

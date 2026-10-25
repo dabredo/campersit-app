@@ -4,7 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/sensor.dart';
 import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
-import '../utils/date_time_formatter.dart';
+import 'sensor_card/air_sensor_values.dart';
+import 'sensor_card/sensor_action_buttons.dart';
+import 'sensor_card/sensor_alerts_list.dart';
+import 'sensor_card/sensor_dialogs.dart';
+import 'sensor_card/sensor_footer.dart';
+
+export 'sensor_card/air_sensor_values.dart';
+export 'sensor_card/sensor_action_buttons.dart';
+export 'sensor_card/sensor_alerts_list.dart';
+export 'sensor_card/sensor_dialogs.dart';
+export 'sensor_card/sensor_footer.dart';
 
 class SensorCard extends ConsumerWidget {
   final Sensor sensor;
@@ -22,10 +32,10 @@ class SensorCard extends ConsumerWidget {
   };
 
   Color _resolveStateColor(SensorState state) => switch (state) {
-    SensorState.triggered => Colors.redAccent,
+    SensorState.triggered => AppColors.danger,
     SensorState.enabled || SensorState.started => AppColors.primaryAccent,
     SensorState.paired => AppColors.secondaryAccent,
-    SensorState.unpaired => const Color(0xFFD97706),
+    SensorState.unpaired => AppColors.warning,
     SensorState.disabled => AppColors.textSecondary,
     SensorState.deleted => AppColors.textSecondary,
     SensorState.unknown => AppColors.textSecondary,
@@ -34,7 +44,7 @@ class SensorCard extends ConsumerWidget {
   Future<void> _showEditTagDialog(BuildContext context, WidgetRef ref) async {
     await showDialog<void>(
       context: context,
-      builder: (_) => _EditSensorTagDialog(
+      builder: (_) => EditSensorTagDialog(
         initialTag: sensor.tag,
         sensorId: sensor.id,
         onSave: (newTag) => ref
@@ -53,7 +63,7 @@ class SensorCard extends ConsumerWidget {
     final isConfirmed =
         await showDialog<bool>(
           context: context,
-          builder: (_) => _DeleteSensorDialog(sensorName: sensorName),
+          builder: (_) => DeleteSensorDialog(sensorName: sensorName),
         ) ??
         false;
 
@@ -71,7 +81,7 @@ class SensorCard extends ConsumerWidget {
     final displayName = hasTag ? sensor.tag!.trim() : sensor.id;
     final stateColor = _resolveStateColor(sensor.state);
     final hasActiveAlerts =
-        sensor.alerts.values.any(_SensorAlertsList.isAlertActive);
+        sensor.alerts.values.any(SensorAlertsList.isAlertActive);
     final isTriggered = sensor.state == SensorState.triggered;
     final isAlerting = isTriggered || hasActiveAlerts;
     final isDeleting = ref.watch(
@@ -133,12 +143,12 @@ class SensorCard extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        _EditSensorTagButton(
+                        EditSensorTagButton(
                           sensorId: sensor.id,
                           onTap: () => _showEditTagDialog(context, ref),
                         ),
                         const SizedBox(width: 4),
-                        _DeleteSensorButton(
+                        DeleteSensorButton(
                           sensorId: sensor.id,
                           isLoading: isDeleting,
                           onTap: isDeleting
@@ -174,8 +184,7 @@ class SensorCard extends ConsumerWidget {
                   ),
                   child: Text(
                     sensor.state.label,
-                    style: TextStyle(
-                      fontSize: 11,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: stateColor,
                     ),
@@ -184,14 +193,23 @@ class SensorCard extends ConsumerWidget {
             ],
           ),
 
+          if (sensor.type == SensorType.air &&
+              (sensor.temperature != null || sensor.humidity != null)) ...[
+            const SizedBox(height: 10),
+            AirSensorValues(
+              temperature: sensor.temperature,
+              humidity: sensor.humidity,
+            ),
+          ],
+
           if (hasActiveAlerts) ...[
             const SizedBox(height: 10),
-            _SensorAlertsList(alerts: sensor.alerts),
+            SensorAlertsList(alerts: sensor.alerts),
           ],
 
           if (sensor.availableTransitions.isNotEmpty) ...[
             const SizedBox(height: 10),
-            _SensorActionButtons(
+            SensorActionButtons(
               sensor: sensor,
               gatewayId: gatewayId,
             ),
@@ -199,545 +217,9 @@ class SensorCard extends ConsumerWidget {
 
           if (sensor.seenAt != null || sensor.battery != null) ...[
             const SizedBox(height: 8),
-            _SensorFooter(seenAt: sensor.seenAt, battery: sensor.battery),
+            SensorFooter(seenAt: sensor.seenAt, battery: sensor.battery),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _SensorAlertsList extends StatelessWidget {
-  const _SensorAlertsList({required this.alerts});
-
-  final Map<String, Object?> alerts;
-
-  static bool isAlertActive(Object? value) {
-    if (value is bool) return value;
-    if (value is String) return value.isNotEmpty;
-    return value != null;
-  }
-
-  static String formatAlertText(String key, Object? value) {
-    if (value is bool) {
-      return '- $key';
-    }
-    return '- $key: $value';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final activeAlerts = alerts.entries
-        .where((entry) => isAlertActive(entry.value))
-        .toList();
-    if (activeAlerts.isEmpty) return const SizedBox.shrink();
-
-    final textTheme = Theme.of(context).textTheme;
-    final alertTitleStyle = textTheme.labelSmall?.copyWith(
-      fontWeight: FontWeight.w600,
-      color: AppColors.danger,
-    );
-    final alertItemStyle = textTheme.bodySmall?.copyWith(
-      color: AppColors.danger,
-      fontWeight: FontWeight.w500,
-    );
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.danger.withValues(alpha: 0.08),
-        borderRadius: AppRadius.borderXl,
-        border: Border.all(
-          color: AppColors.danger.withValues(alpha: 0.25),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.warning_amber_rounded,
-                size: 14,
-                color: AppColors.danger,
-              ),
-              const SizedBox(width: 4),
-              Text('Alarms:', style: alertTitleStyle),
-            ],
-          ),
-          const SizedBox(height: 4),
-          for (final entry in activeAlerts)
-            Padding(
-              padding: const EdgeInsets.only(left: 4, top: 2),
-              child: Text(
-                formatAlertText(entry.key, entry.value),
-                style: alertItemStyle,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SensorFooter extends StatelessWidget {
-  const _SensorFooter({this.seenAt, this.battery});
-
-  final int? seenAt;
-  final num? battery;
-
-  @override
-  Widget build(BuildContext context) {
-    final seenAtTimestamp = seenAt;
-    final batteryLevel = battery;
-
-    return Row(
-      children: [
-        if (seenAtTimestamp != null)
-          _SensorSeenAtIndicator(seenAt: seenAtTimestamp),
-        const Spacer(),
-        if (batteryLevel != null)
-          _SensorBatteryIndicator(battery: batteryLevel),
-      ],
-    );
-  }
-}
-
-class _SensorSeenAtIndicator extends StatelessWidget {
-  const _SensorSeenAtIndicator({required this.seenAt});
-
-  final int seenAt;
-
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.labelSmall
-        ?.copyWith(color: AppColors.textSecondary);
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(
-          Icons.access_time_rounded,
-          size: 13,
-          color: AppColors.textSecondary,
-        ),
-        const SizedBox(width: 4),
-        Text(formatDateTime(seenAt), style: textStyle),
-      ],
-    );
-  }
-}
-
-enum _BatteryStatus {
-  low,
-  medium,
-  full;
-
-  // IoT sensors report battery either in millivolts (> 100) or percentage (0-100)
-  static const num _mvThreshold = 100;
-  static const num _lowMv = 1600;
-  static const num _mediumMv = 1800;
-  static const num _lowPercent = 20;
-  static const num _mediumPercent = 50;
-
-  factory _BatteryStatus.fromLevel(num value) {
-    final isMillivolts = value > _mvThreshold;
-    if (isMillivolts ? value <= _lowMv : value <= _lowPercent) {
-      return _BatteryStatus.low;
-    }
-    if (isMillivolts ? value <= _mediumMv : value <= _mediumPercent) {
-      return _BatteryStatus.medium;
-    }
-    return _BatteryStatus.full;
-  }
-
-  IconData get icon => switch (this) {
-    _BatteryStatus.low => Icons.battery_0_bar_rounded,
-    _BatteryStatus.medium => Icons.battery_3_bar_rounded,
-    _BatteryStatus.full => Icons.battery_full_rounded,
-  };
-
-  Color get color => switch (this) {
-    _BatteryStatus.low => AppColors.danger,
-    _BatteryStatus.medium => AppColors.warning,
-    _BatteryStatus.full => AppColors.secondaryAccent,
-  };
-}
-
-class _SensorBatteryIndicator extends StatelessWidget {
-  const _SensorBatteryIndicator({required this.battery});
-
-  final num battery;
-
-  @override
-  Widget build(BuildContext context) {
-    final status = _BatteryStatus.fromLevel(battery);
-    final textStyle = Theme.of(context).textTheme.labelSmall
-        ?.copyWith(fontWeight: FontWeight.w600, color: status.color);
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(status.icon, size: 14, color: status.color),
-        const SizedBox(width: 4),
-        Text('${battery.toInt()}', style: textStyle),
-      ],
-    );
-  }
-}
-
-class _EditSensorTagButton extends StatelessWidget {
-  const _EditSensorTagButton({required this.sensorId, required this.onTap});
-
-  final String sensorId;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      key: ValueKey('edit_sensor_tag_$sensorId'),
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: const Padding(
-        padding: EdgeInsets.all(2),
-        child: Icon(
-          Icons.edit_outlined,
-          size: 14,
-          color: AppColors.textSecondary,
-        ),
-      ),
-    );
-  }
-}
-
-class _DeleteSensorButton extends StatelessWidget {
-  const _DeleteSensorButton({
-    required this.sensorId,
-    required this.onTap,
-    this.isLoading = false,
-  });
-
-  final String sensorId;
-  final VoidCallback onTap;
-  final bool isLoading;
-
-  @override
-  Widget build(BuildContext context) {
-    if (isLoading) {
-      return const SizedBox(
-        width: 14,
-        height: 14,
-        child: CircularProgressIndicator(
-          strokeWidth: 1.5,
-          color: AppColors.danger,
-        ),
-      );
-    }
-
-    return InkWell(
-      key: ValueKey('delete_sensor_$sensorId'),
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: const Padding(
-        padding: EdgeInsets.all(2),
-        child: Icon(
-          Icons.delete_outline_rounded,
-          size: 14,
-          color: AppColors.danger,
-        ),
-      ),
-    );
-  }
-}
-
-class _DeleteSensorDialog extends StatelessWidget {
-  const _DeleteSensorDialog({required this.sensorName});
-
-  final String sensorName;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return AlertDialog(
-      backgroundColor: AppColors.cardSurface,
-      shape: const RoundedRectangleBorder(borderRadius: AppRadius.border2Xl),
-      title: Text(
-        'Delete Sensor',
-        style: textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
-        ),
-      ),
-      content: Text(
-        'Are you sure you want to delete "$sensorName"? This will unpair the sensor from the gateway.',
-        style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text(
-            'Cancel',
-            style: textTheme.labelLarge?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.danger,
-            shape: const RoundedRectangleBorder(
-              borderRadius: AppRadius.borderXl,
-            ),
-          ),
-          onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('Delete'),
-        ),
-      ],
-    );
-  }
-}
-
-class _EditSensorTagDialog extends StatefulWidget {
-  const _EditSensorTagDialog({
-    required this.initialTag,
-    required this.sensorId,
-    required this.onSave,
-  });
-
-  final String? initialTag;
-  final String sensorId;
-  final Future<bool> Function(String newTag) onSave;
-
-  @override
-  State<_EditSensorTagDialog> createState() => _EditSensorTagDialogState();
-}
-
-class _EditSensorTagDialogState extends State<_EditSensorTagDialog> {
-  late final TextEditingController _controller;
-  bool _isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.initialTag ?? '');
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _handleSave() async {
-    setState(() => _isLoading = true);
-    final success = await widget.onSave(_controller.text.trim());
-    if (!mounted) return;
-
-    if (success) {
-      Navigator.of(context).pop();
-    } else {
-      setState(() => _isLoading = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      backgroundColor: AppColors.cardSurface,
-      shape: const RoundedRectangleBorder(borderRadius: AppRadius.border2Xl),
-      title: const Text(
-        'Edit Sensor Tag',
-        style: TextStyle(
-          color: AppColors.textPrimary,
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Sensor ID: ${widget.sensorId}',
-            style: Theme.of(context).textTheme.bodySmall
-                ?.copyWith(color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: 12),
-          TextFormField(
-            controller: _controller,
-            autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Tag',
-              hintText: 'e.g. Living Room, Cabin',
-              prefixIcon: Icon(Icons.label_outline_rounded),
-            ),
-            onFieldSubmitted: _isLoading ? null : (_) => _handleSave(),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text(
-            'Cancel',
-            style: TextStyle(color: AppColors.textSecondary),
-          ),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryAccent,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            shape: const RoundedRectangleBorder(
-              borderRadius: AppRadius.borderXl,
-            ),
-          ),
-          onPressed: _isLoading ? null : _handleSave,
-          child: _isLoading
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-              : const Text('Save'),
-        ),
-      ],
-    );
-  }
-}
-
-class _SensorActionButtons extends ConsumerWidget {
-  const _SensorActionButtons({
-    required this.sensor,
-    required this.gatewayId,
-  });
-
-  final Sensor sensor;
-  final String gatewayId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final activeTarget = ref.watch(
-      requestSensorStateControllerProvider((
-        gatewayId: gatewayId,
-        sensorId: sensor.id,
-      )),
-    );
-    final transitions = sensor.availableTransitions;
-
-    return Wrap(
-      spacing: 8,
-      runSpacing: 6,
-      children: [
-        for (final targetState in transitions)
-          _SensorStateButton(
-            gatewayId: gatewayId,
-            sensorId: sensor.id,
-            targetState: targetState,
-            isLoading: activeTarget == targetState,
-            isDisabled: activeTarget != null,
-          ),
-      ],
-    );
-  }
-}
-
-class _SensorStateButton extends ConsumerWidget {
-  const _SensorStateButton({
-    required this.gatewayId,
-    required this.sensorId,
-    required this.targetState,
-    required this.isLoading,
-    required this.isDisabled,
-  });
-
-  final String gatewayId;
-  final String sensorId;
-  final SensorState targetState;
-  final bool isLoading;
-  final bool isDisabled;
-
-  static String _resolveLabel(SensorState state) => switch (state) {
-        SensorState.enabled => 'Enable',
-        SensorState.started => 'Start',
-        SensorState.paired => 'Pair',
-        _ => state.label,
-      };
-
-  static IconData _resolveIcon(SensorState state) => switch (state) {
-        SensorState.enabled => Icons.check_circle_outline_rounded,
-        SensorState.started => Icons.play_arrow_rounded,
-        SensorState.paired => Icons.link_rounded,
-        _ => Icons.arrow_forward_rounded,
-      };
-
-  static Color _resolveColor(SensorState state) => switch (state) {
-        SensorState.enabled => AppColors.primaryAccent,
-        SensorState.started => AppColors.secondaryAccent,
-        SensorState.paired => AppColors.textSecondary,
-        _ => AppColors.textPrimary,
-      };
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final color = _resolveColor(targetState);
-    final label = _resolveLabel(targetState);
-    final icon = _resolveIcon(targetState);
-    final textTheme = Theme.of(context).textTheme;
-
-    return SizedBox(
-      height: 32,
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: color,
-          side: BorderSide(
-            color: color.withValues(alpha: 0.35),
-            width: 1,
-          ),
-          shape: const RoundedRectangleBorder(
-            borderRadius: AppRadius.borderXl,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-          backgroundColor: color.withValues(alpha: 0.06),
-        ),
-        onPressed: isDisabled
-            ? null
-            : () => ref
-                .read(
-                  requestSensorStateControllerProvider((
-                    gatewayId: gatewayId,
-                    sensorId: sensorId,
-                  )).notifier,
-                )
-                .requestState(targetState),
-        child: isLoading
-            ? SizedBox(
-                width: 14,
-                height: 14,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(color),
-                ),
-              )
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(icon, size: 14, color: color),
-                  const SizedBox(width: 4),
-                  Text(
-                    label,
-                    style: textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: color,
-                    ),
-                  ),
-                ],
-              ),
       ),
     );
   }

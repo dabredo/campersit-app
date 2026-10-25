@@ -122,6 +122,35 @@ void main() {
       expect(sensor.toMap().containsKey('alerts'), isFalse);
     });
 
+    test('parses values map correctly with temperature and humidity', () {
+      final map = {
+        'type': 3,
+        'state': 'e',
+        'values': {
+          'temperature': 21.5,
+          'humidity': 48,
+        },
+      };
+
+      final sensor = Sensor.fromMap('air_01', map);
+
+      expect(sensor.values, equals({'temperature': 21.5, 'humidity': 48}));
+      expect(sensor.temperature, equals(22));
+      expect(sensor.humidity, equals(48));
+
+      final serialized = sensor.toMap();
+      expect(serialized['values'], equals({'temperature': 21.5, 'humidity': 48}));
+    });
+
+    test('defaults values to empty map when missing and getters return null', () {
+      final sensor = Sensor.fromMap('air_02', const {'type': 3});
+
+      expect(sensor.values, isEmpty);
+      expect(sensor.temperature, isNull);
+      expect(sensor.humidity, isNull);
+      expect(sensor.toMap().containsKey('values'), isFalse);
+    });
+
     test('isActuator correctly identifies actuators vs non-actuators', () {
       expect(SensorType.camera.isActuator, isTrue);
       expect(SensorType.led.isActuator, isTrue);
