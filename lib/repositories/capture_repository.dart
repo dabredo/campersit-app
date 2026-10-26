@@ -1,12 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 import '../models/capture.dart';
 
 class CaptureRepository {
   final FirebaseFirestore _firestore;
+  final FirebaseFunctions _functions;
 
-  CaptureRepository({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+  CaptureRepository({
+    FirebaseFirestore? firestore,
+    FirebaseFunctions? functions,
+  })  : _firestore = firestore ?? FirebaseFirestore.instance,
+        _functions = functions ?? FirebaseFunctions.instance;
+
+  Future<void> deleteCapture(String captureId) async {
+    final callable = _functions.httpsCallable('deleteCapture');
+    await callable.call({'captureId': captureId});
+  }
 
   Stream<List<Capture>> watchCameraCaptures({
     required String userId,

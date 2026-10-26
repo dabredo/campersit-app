@@ -88,4 +88,47 @@ void main() {
       expect(result.first.id, equals('cap-1'));
     });
   });
+
+  group('DeleteCaptureController', () {
+    const testCaptureId = 'cap-123';
+
+    test('returns true and shows success notification on successful delete', () async {
+      when(() => mockRepository.deleteCapture(testCaptureId))
+          .thenAnswer((_) async {});
+
+      final container = ProviderContainer(
+        overrides: [
+          captureRepositoryProvider.overrideWithValue(mockRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final result = await container
+          .read(deleteCaptureControllerProvider(testCaptureId).notifier)
+          .deleteCapture();
+
+      expect(result, isTrue);
+      verify(() => mockRepository.deleteCapture(testCaptureId)).called(1);
+    });
+
+    test('returns false and shows error notification when repository throws', () async {
+      when(() => mockRepository.deleteCapture(testCaptureId))
+          .thenThrow(Exception('Function error'));
+
+      final container = ProviderContainer(
+        overrides: [
+          captureRepositoryProvider.overrideWithValue(mockRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final result = await container
+          .read(deleteCaptureControllerProvider(testCaptureId).notifier)
+          .deleteCapture();
+
+      expect(result, isFalse);
+      verify(() => mockRepository.deleteCapture(testCaptureId)).called(1);
+    });
+  });
 }
+

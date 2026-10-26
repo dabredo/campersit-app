@@ -1,11 +1,19 @@
 // ignore_for_file: subtype_of_sealed_class
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:campersit_app/repositories/capture_repository.dart';
 
 class MockFirebaseFirestore extends Mock implements FirebaseFirestore {}
+
+class MockFirebaseFunctions extends Mock implements FirebaseFunctions {}
+
+class MockHttpsCallable extends Mock implements HttpsCallable {}
+
+class MockHttpsCallableResult<T> extends Mock
+    implements HttpsCallableResult<T> {}
 
 class MockCollectionReference extends Mock
     implements CollectionReference<Map<String, dynamic>> {}
@@ -20,6 +28,8 @@ class MockQueryDocumentSnapshot extends Mock
 
 void main() {
   late MockFirebaseFirestore mockFirestore;
+  late MockFirebaseFunctions mockFunctions;
+  late MockHttpsCallable mockCallable;
   late MockCollectionReference mockCollection;
   late MockQuery mockQuery1;
   late MockQuery mockQuery2;
@@ -31,6 +41,8 @@ void main() {
 
   setUp(() {
     mockFirestore = MockFirebaseFirestore();
+    mockFunctions = MockFirebaseFunctions();
+    mockCallable = MockHttpsCallable();
     mockCollection = MockCollectionReference();
     mockQuery1 = MockQuery();
     mockQuery2 = MockQuery();
@@ -39,10 +51,25 @@ void main() {
     mockDoc1 = MockQueryDocumentSnapshot();
     mockDoc2 = MockQueryDocumentSnapshot();
 
-    repository = CaptureRepository(firestore: mockFirestore);
+    repository = CaptureRepository(
+      firestore: mockFirestore,
+      functions: mockFunctions,
+    );
   });
 
   group('CaptureRepository', () {
+    test('deleteCapture invokes deleteCapture Cloud Function with captureId', () async {
+      when(() => mockFunctions.httpsCallable('deleteCapture'))
+          .thenReturn(mockCallable);
+      when(() => mockCallable.call({'captureId': 'cap-123'}))
+          .thenAnswer((_) async => MockHttpsCallableResult<dynamic>());
+
+      await repository.deleteCapture('cap-123');
+
+      verify(() => mockFunctions.httpsCallable('deleteCapture')).called(1);
+      verify(() => mockCallable.call({'captureId': 'cap-123'})).called(1);
+    });
+
     test('watchCameraCaptures streams and sorts captures descending', () async {
       when(() => mockFirestore.collection('captures')).thenReturn(mockCollection);
       when(
