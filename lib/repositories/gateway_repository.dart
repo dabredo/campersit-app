@@ -96,4 +96,17 @@ class GatewayRepository {
       'sensors.$sensorId.tag': tag,
     });
   }
+
+  Future<void> updateSensorAction({
+    required String gatewayId,
+    required String sensorId,
+    required String actuatorId,
+    required bool enabled,
+  }) async {
+    await _firestore.collection('devices').doc(gatewayId).update({
+      'sensors.$sensorId.actions': enabled
+          ? FieldValue.arrayUnion([actuatorId])
+          : FieldValue.arrayRemove([actuatorId]),
+    });
+  }
 }

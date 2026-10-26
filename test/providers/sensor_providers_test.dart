@@ -323,4 +323,83 @@ void main() {
       );
     });
   });
+
+  group('UpdateMotionActionController Tests', () {
+    const testGatewayId = 'gw-123';
+    const testSensorId = 'motion-1';
+    const testActuatorId = 'cam-1';
+    const testKey = (
+      gatewayId: testGatewayId,
+      sensorId: testSensorId,
+      actuatorId: testActuatorId,
+    );
+
+    test('successfully updates action to enabled', () async {
+      when(
+        () => mockRepository.updateSensorAction(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+          actuatorId: testActuatorId,
+          enabled: true,
+        ),
+      ).thenAnswer((_) async {});
+
+      final result = await container
+          .read(updateMotionActionControllerProvider(testKey).notifier)
+          .setActionEnabled(true);
+
+      expect(result, isTrue);
+      verify(
+        () => mockRepository.updateSensorAction(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+          actuatorId: testActuatorId,
+          enabled: true,
+        ),
+      ).called(1);
+    });
+
+    test('successfully updates action to disabled', () async {
+      when(
+        () => mockRepository.updateSensorAction(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+          actuatorId: testActuatorId,
+          enabled: false,
+        ),
+      ).thenAnswer((_) async {});
+
+      final result = await container
+          .read(updateMotionActionControllerProvider(testKey).notifier)
+          .setActionEnabled(false);
+
+      expect(result, isTrue);
+      verify(
+        () => mockRepository.updateSensorAction(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+          actuatorId: testActuatorId,
+          enabled: false,
+        ),
+      ).called(1);
+    });
+
+    test('returns false when repository throws error', () async {
+      when(
+        () => mockRepository.updateSensorAction(
+          gatewayId: testGatewayId,
+          sensorId: testSensorId,
+          actuatorId: testActuatorId,
+          enabled: true,
+        ),
+      ).thenThrow(Exception('Firestore update failed'));
+
+      final result = await container
+          .read(updateMotionActionControllerProvider(testKey).notifier)
+          .setActionEnabled(true);
+
+      expect(result, isFalse);
+    });
+  });
 }
+

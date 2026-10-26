@@ -440,7 +440,21 @@ void main() {
       expect(find.byType(CameraRecordingsButton), findsOneWidget);
       expect(find.text('Recordings'), findsOneWidget);
     });
+
+    testWidgets('renders actions button for motion sensor', (tester) async {
+      const sensor = Sensor(
+        id: 'motion-01',
+        type: SensorType.motion,
+        state: SensorState.enabled,
+      );
+
+      await tester.pumpWidget(createWidget(sensor: sensor));
+
+      expect(find.byType(MotionActionsButton), findsOneWidget);
+      expect(find.text('Configure Actions'), findsOneWidget);
+    });
   });
 }
+
 
 

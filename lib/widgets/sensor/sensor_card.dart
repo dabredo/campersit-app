@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/sensor.dart';
 import '../../providers/sensor_providers.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/sensor_icon_resolver.dart';
 import 'sensor_card/air_sensor_values.dart';
 import 'sensor_card/camera_recordings_button.dart';
+import 'sensor_card/motion_actions_button.dart';
 import 'sensor_card/sensor_action_buttons.dart';
 import 'sensor_card/sensor_alerts_list.dart';
 import 'sensor_card/sensor_dialogs.dart';
@@ -13,6 +15,7 @@ import 'sensor_card/sensor_footer.dart';
 
 export 'sensor_card/air_sensor_values.dart';
 export 'sensor_card/camera_recordings_button.dart';
+export 'sensor_card/motion_actions_button.dart';
 export 'sensor_card/sensor_action_buttons.dart';
 export 'sensor_card/sensor_alerts_list.dart';
 export 'sensor_card/sensor_dialogs.dart';
@@ -23,15 +26,6 @@ class SensorCard extends ConsumerWidget {
   final String gatewayId;
 
   const SensorCard({super.key, required this.sensor, required this.gatewayId});
-
-  IconData _resolveSensorIcon(SensorType type) => switch (type) {
-    SensorType.camera => Icons.videocam_rounded,
-    SensorType.motion => Icons.motion_photos_on_rounded,
-    SensorType.air => Icons.air_rounded,
-    SensorType.led => Icons.lightbulb_rounded,
-    SensorType.buzzer => Icons.volume_up_rounded,
-    SensorType.unknown => Icons.sensors_rounded,
-  };
 
   Color _resolveStateColor(SensorState state) => switch (state) {
     SensorState.triggered => AppColors.danger,
@@ -84,7 +78,7 @@ class SensorCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final sensorIcon = _resolveSensorIcon(sensor.type);
+    final sensorIcon = resolveSensorIcon(sensor.type);
     final hasTag = sensor.tag != null && sensor.tag!.trim().isNotEmpty;
     final displayName = hasTag ? sensor.tag!.trim() : sensor.id;
     final stateColor = _resolveStateColor(sensor.state);
@@ -228,6 +222,14 @@ class SensorCard extends ConsumerWidget {
           if (sensor.type == SensorType.camera) ...[
             const SizedBox(height: 10),
             CameraRecordingsButton(
+              gatewayId: gatewayId,
+              sensor: sensor,
+            ),
+          ],
+
+          if (sensor.type == SensorType.motion) ...[
+            const SizedBox(height: 10),
+            MotionActionsButton(
               gatewayId: gatewayId,
               sensor: sensor,
             ),

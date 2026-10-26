@@ -225,5 +225,26 @@ void main() {
       );
       expect(unpairedSensor.availableTransitions, isEmpty);
     });
+
+    test('parses actions list correctly and serializes when not empty', () {
+      final map = {
+        'type': 2,
+        'state': 'e',
+        'actions': ['cam_01', 'led_01'],
+      };
+
+      final sensor = Sensor.fromMap('motion_01', map);
+
+      expect(sensor.actions, equals(['cam_01', 'led_01']));
+      final serialized = sensor.toMap();
+      expect(serialized['actions'], equals(['cam_01', 'led_01']));
+    });
+
+    test('defaults actions to empty list when absent in map', () {
+      final sensor = Sensor.fromMap('motion_02', const {'type': 2});
+
+      expect(sensor.actions, isEmpty);
+      expect(sensor.toMap().containsKey('actions'), isFalse);
+    });
   });
 }

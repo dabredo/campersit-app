@@ -80,6 +80,7 @@ class Sensor {
   final int? seenAt;
   final Map<String, Object?> alerts;
   final Map<String, Object?> values;
+  final List<String> actions;
 
   const Sensor({
     required this.id,
@@ -90,6 +91,7 @@ class Sensor {
     this.seenAt,
     this.alerts = const {},
     this.values = const {},
+    this.actions = const [],
   });
 
   factory Sensor.fromMap(String id, Map<String, Object?> map) {
@@ -102,6 +104,7 @@ class Sensor {
       seenAt: map['seenAt'] as int?,
       alerts: (map['alerts'] as Map?)?.cast<String, Object?>() ?? const {},
       values: (map['values'] as Map?)?.cast<String, Object?>() ?? const {},
+      actions: (map['actions'] as List?)?.cast<String>() ?? const [],
     );
   }
 
@@ -139,6 +142,7 @@ class Sensor {
       if (seenAt != null) 'seenAt': seenAt,
       if (alerts.isNotEmpty) 'alerts': alerts,
       if (values.isNotEmpty) 'values': values,
+      if (actions.isNotEmpty) 'actions': actions,
     };
   }
 }

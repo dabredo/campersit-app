@@ -158,3 +158,53 @@ class RequestSensorStateController extends Notifier<SensorState?> {
     }
   }
 }
+
+typedef MotionActionKey = ({
+  String gatewayId,
+  String sensorId,
+  String actuatorId,
+});
+
+final updateMotionActionControllerProvider = AsyncNotifierProvider.autoDispose
+    .family<UpdateMotionActionController, void, MotionActionKey>(
+      UpdateMotionActionController.new,
+    );
+
+class UpdateMotionActionController extends AsyncNotifier<void> {
+  UpdateMotionActionController(this.key);
+
+  final MotionActionKey key;
+
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> setActionEnabled(bool enabled) async {
+    final link = ref.keepAlive();
+    try {
+      state = const AsyncLoading();
+      state = await AsyncValue.guard(() async {
+        final repository = ref.read(gatewayRepositoryProvider);
+        await repository.updateSensorAction(
+          gatewayId: key.gatewayId,
+          sensorId: key.sensorId,
+          actuatorId: key.actuatorId,
+          enabled: enabled,
+        );
+      });
+
+      final error = state.error;
+      if (error != null) {
+        ref.read(notificationProvider.notifier).showError(error);
+        return false;
+      }
+
+      final message =
+          enabled ? 'Actuator action linked' : 'Actuator action unlinked';
+      ref.read(notificationProvider.notifier).showSuccess(message);
+      return true;
+    } finally {
+      link.close();
+    }
+  }
+}
+
