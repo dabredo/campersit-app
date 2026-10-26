@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_theme.dart';
+import '../../../theme/app_theme.dart';
 
 class SensorAlertsList extends StatelessWidget {
   const SensorAlertsList({super.key, required this.alerts});

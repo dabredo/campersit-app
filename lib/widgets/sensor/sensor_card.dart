@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/sensor.dart';
-import '../providers/gateway_providers.dart';
-import '../theme/app_theme.dart';
+import '../../models/sensor.dart';
+import '../../providers/sensor_providers.dart';
+import '../../theme/app_theme.dart';
 import 'sensor_card/air_sensor_values.dart';
 import 'sensor_card/sensor_action_buttons.dart';
 import 'sensor_card/sensor_alerts_list.dart';
@@ -48,8 +48,11 @@ class SensorCard extends ConsumerWidget {
         initialTag: sensor.tag,
         sensorId: sensor.id,
         onSave: (newTag) => ref
-            .read(updateSensorTagControllerProvider(gatewayId).notifier)
-            .updateTag(sensorId: sensor.id, tag: newTag),
+            .read(updateSensorTagControllerProvider((
+              gatewayId: gatewayId,
+              sensorId: sensor.id,
+            )).notifier)
+            .updateTag(newTag),
       ),
     );
   }
@@ -70,8 +73,11 @@ class SensorCard extends ConsumerWidget {
     if (!isConfirmed || !context.mounted) return;
 
     await ref
-        .read(deleteSensorControllerProvider(gatewayId).notifier)
-        .deleteSensor(sensor.id);
+        .read(deleteSensorControllerProvider((
+          gatewayId: gatewayId,
+          sensorId: sensor.id,
+        )).notifier)
+        .deleteSensor();
   }
 
   @override
@@ -85,8 +91,10 @@ class SensorCard extends ConsumerWidget {
     final isTriggered = sensor.state == SensorState.triggered;
     final isAlerting = isTriggered || hasActiveAlerts;
     final isDeleting = ref.watch(
-      deleteSensorControllerProvider(gatewayId)
-          .select((deletingSensorId) => deletingSensorId == sensor.id),
+      deleteSensorControllerProvider((
+        gatewayId: gatewayId,
+        sensorId: sensor.id,
+      )),
     );
 
     return Container(

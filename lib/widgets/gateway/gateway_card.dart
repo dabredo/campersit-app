@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../models/gateway.dart';
-import '../screens/gateway_detail_screen.dart';
-import '../theme/app_theme.dart';
+import '../../models/gateway.dart';
+import '../../screens/gateway_detail_screen.dart';
+import '../../theme/app_theme.dart';
 import 'gateway_state_chip.dart';
 
 class GatewayCard extends StatelessWidget {

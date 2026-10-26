@@ -5,7 +5,7 @@ import '../providers/auth_providers.dart';
 import '../providers/notification_provider.dart';
 import '../theme/app_theme.dart';
 import '../utils/form_validators.dart';
-import '../widgets/app_loading_button.dart';
+import '../widgets/common/app_loading_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});

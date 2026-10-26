@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../models/sensor.dart';
-import '../../providers/gateway_providers.dart';
-import '../../theme/app_theme.dart';
+import '../../../models/sensor.dart';
+import '../../../providers/sensor_providers.dart';
+import '../../../theme/app_theme.dart';
 
 class SensorActionButtons extends ConsumerWidget {
   const SensorActionButtons({

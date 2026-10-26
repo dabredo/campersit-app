@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/gateway_providers.dart';
-import 'add_device_bottom_sheet.dart';
+import '../../providers/sensor_providers.dart';
+import '../common/add_device_bottom_sheet.dart';
 
 class AddSensorBottomSheet extends ConsumerWidget {
   const AddSensorBottomSheet({super.key, required this.gatewayId});

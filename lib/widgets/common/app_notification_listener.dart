@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/app_notification.dart';
-import '../providers/notification_provider.dart';
+import '../../models/app_notification.dart';
+import '../../providers/notification_provider.dart';
 import 'app_notification_bar.dart';
 
 class AppNotificationListener extends ConsumerStatefulWidget {

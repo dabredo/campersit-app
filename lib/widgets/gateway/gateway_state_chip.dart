@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../models/gateway.dart';
-import '../theme/app_theme.dart';
+import '../../models/gateway.dart';
+import '../../theme/app_theme.dart';
 
 Color gatewayStateColor(String state) => switch (state) {
   GatewayStates.connected => AppColors.secondaryAccent,

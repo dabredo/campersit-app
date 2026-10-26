@@ -5,8 +5,8 @@ import '../../models/gateway.dart';
 import '../../providers/gateway_providers.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
-import '../app_loading_button.dart';
-import '../gateway_state_chip.dart';
+import '../common/app_loading_button.dart';
+import 'gateway_state_chip.dart';
 import 'surface_card.dart';
 
 class GatewayOverviewCard extends StatelessWidget {

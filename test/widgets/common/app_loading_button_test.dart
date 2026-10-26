@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:campersit_app/widgets/app_loading_button.dart';
+import 'package:campersit_app/widgets/common/app_loading_button.dart';
 
 void main() {
   group('AppLoadingButton', () {

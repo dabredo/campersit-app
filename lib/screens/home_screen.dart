@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_providers.dart';
 import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
-import '../widgets/add_gateway_bottom_sheet.dart';
-import '../widgets/gateway_card.dart';
+import '../widgets/gateway/add_gateway_bottom_sheet.dart';
+import '../widgets/gateway/gateway_card.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});

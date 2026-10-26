@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/gateway_providers.dart';
-import 'add_device_bottom_sheet.dart';
+import '../../providers/gateway_providers.dart';
+import '../common/add_device_bottom_sheet.dart';
 
-export '../utils/mac_address_formatter.dart';
+export '../../utils/mac_address_formatter.dart';
 
 class AddGatewayBottomSheet extends ConsumerWidget {
   const AddGatewayBottomSheet({super.key});

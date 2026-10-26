@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/gateway.dart';
 import '../../theme/app_theme.dart';
-import '../sensor_card.dart';
+import '../sensor/sensor_card.dart';
 import 'surface_card.dart';
 
 class SensorsSliver extends StatelessWidget {

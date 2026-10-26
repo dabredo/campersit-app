@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_theme.dart';
-import '../../utils/date_time_formatter.dart';
+import '../../../theme/app_theme.dart';
+import '../../../utils/date_time_formatter.dart';
 
 class SensorFooter extends StatelessWidget {
   const SensorFooter({super.key, this.seenAt, this.battery});

@@ -5,10 +5,10 @@ import '../models/gateway.dart';
 import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
-import '../widgets/add_sensor_bottom_sheet.dart';
-import '../widgets/gateway_detail/delete_gateway_action.dart';
-import '../widgets/gateway_detail/gateway_overview_card.dart';
-import '../widgets/gateway_detail/sensors_sliver.dart';
+import '../widgets/gateway/delete_gateway_action.dart';
+import '../widgets/gateway/gateway_overview_card.dart';
+import '../widgets/gateway/sensors_sliver.dart';
+import '../widgets/sensor/add_sensor_bottom_sheet.dart';
 
 class GatewayDetailScreen extends ConsumerWidget {
   const GatewayDetailScreen({

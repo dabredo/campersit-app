@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:campersit_app/widgets/gateway_state_chip.dart';
+import 'package:campersit_app/widgets/gateway/gateway_state_chip.dart';
 
 void main() {
   group('GatewayStateChip Widget Tests', () {

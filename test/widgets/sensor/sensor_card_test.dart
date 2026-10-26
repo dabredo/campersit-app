@@ -5,8 +5,9 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:campersit_app/models/sensor.dart';
 import 'package:campersit_app/providers/gateway_providers.dart';
+import 'package:campersit_app/providers/sensor_providers.dart';
 import 'package:campersit_app/repositories/gateway_repository.dart';
-import 'package:campersit_app/widgets/sensor_card.dart';
+import 'package:campersit_app/widgets/sensor/sensor_card.dart';
 
 class MockGatewayRepository extends Mock implements GatewayRepository {}
 
@@ -248,8 +249,13 @@ void main() {
 
         // Simulate sensor-1 deletion in progress
         container
-            .read(deleteSensorControllerProvider(defaultGatewayId).notifier)
-            .state = 'sensor-1';
+            .read(
+              deleteSensorControllerProvider((
+                gatewayId: defaultGatewayId,
+                sensorId: 'sensor-1',
+              )).notifier,
+            )
+            .state = true;
         await tester.pump();
 
         // Sensor 1 should show loading indicator and no delete button

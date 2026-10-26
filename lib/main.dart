@@ -6,7 +6,7 @@ import 'providers/auth_providers.dart';
 import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
 import 'theme/app_theme.dart';
-import 'widgets/app_notification_listener.dart';
+import 'widgets/common/app_notification_listener.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

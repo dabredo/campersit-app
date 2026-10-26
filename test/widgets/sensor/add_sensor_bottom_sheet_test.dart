@@ -5,7 +5,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:campersit_app/providers/gateway_providers.dart';
 import 'package:campersit_app/repositories/gateway_repository.dart';
-import 'package:campersit_app/widgets/add_sensor_bottom_sheet.dart';
+import 'package:campersit_app/widgets/sensor/add_sensor_bottom_sheet.dart';
 
 class MockGatewayRepository extends Mock implements GatewayRepository {}
 

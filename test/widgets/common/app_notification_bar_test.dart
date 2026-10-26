@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:campersit_app/models/app_notification.dart';
-import 'package:campersit_app/widgets/app_notification_bar.dart';
+import 'package:campersit_app/widgets/common/app_notification_bar.dart';
 
 void main() {
   Widget buildTestWidget({
