@@ -427,5 +427,20 @@ void main() {
       expect(find.text('Temperature'), findsNothing);
       expect(find.text('Humidity'), findsNothing);
     });
+
+    testWidgets('renders recordings button for camera sensor', (tester) async {
+      const sensor = Sensor(
+        id: 'cam-01',
+        type: SensorType.camera,
+        state: SensorState.enabled,
+      );
+
+      await tester.pumpWidget(createWidget(sensor: sensor));
+
+      expect(find.byType(CameraRecordingsButton), findsOneWidget);
+      expect(find.text('Recordings'), findsOneWidget);
+    });
   });
 }
+
+

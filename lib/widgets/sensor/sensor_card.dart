@@ -5,12 +5,14 @@ import '../../models/sensor.dart';
 import '../../providers/sensor_providers.dart';
 import '../../theme/app_theme.dart';
 import 'sensor_card/air_sensor_values.dart';
+import 'sensor_card/camera_recordings_button.dart';
 import 'sensor_card/sensor_action_buttons.dart';
 import 'sensor_card/sensor_alerts_list.dart';
 import 'sensor_card/sensor_dialogs.dart';
 import 'sensor_card/sensor_footer.dart';
 
 export 'sensor_card/air_sensor_values.dart';
+export 'sensor_card/camera_recordings_button.dart';
 export 'sensor_card/sensor_action_buttons.dart';
 export 'sensor_card/sensor_alerts_list.dart';
 export 'sensor_card/sensor_dialogs.dart';
@@ -220,6 +222,14 @@ class SensorCard extends ConsumerWidget {
             SensorActionButtons(
               sensor: sensor,
               gatewayId: gatewayId,
+            ),
+          ],
+
+          if (sensor.type == SensorType.camera) ...[
+            const SizedBox(height: 10),
+            CameraRecordingsButton(
+              gatewayId: gatewayId,
+              sensor: sensor,
             ),
           ],
 
