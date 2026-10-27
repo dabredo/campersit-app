@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/auth_providers.dart';
+import '../providers/gateway_notification_providers.dart';
 import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
 import '../widgets/gateway/add_gateway_bottom_sheet.dart';
 import '../widgets/gateway/gateway_card.dart';
+import 'notifications_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -16,7 +18,7 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
-      appBar: _buildAppBar(ref),
+      appBar: _buildAppBar(context, ref),
       body: gatewaysAsyncValue.when(
         data: (gateways) {
           if (gateways.isEmpty) {
@@ -64,7 +66,9 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  PreferredSizeWidget _buildAppBar(WidgetRef ref) {
+  PreferredSizeWidget _buildAppBar(BuildContext context, WidgetRef ref) {
+    final notificationCount = ref.watch(userNotificationsCountProvider);
+
     return AppBar(
       toolbarHeight: 60,
       title: SizedBox(
@@ -72,6 +76,25 @@ class HomeScreen extends ConsumerWidget {
         child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
       ),
       actions: [
+        IconButton(
+          icon: Badge.count(
+            count: notificationCount,
+            isLabelVisible: notificationCount > 0,
+            backgroundColor: AppColors.primaryAccent,
+            child: const Icon(Icons.notifications_none_rounded),
+          ),
+          tooltip: 'Notifications',
+          onPressed: () {
+            ref
+                .read(lastSeenNotificationTimestampProvider.notifier)
+                .markAsSeen();
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const NotificationsScreen(),
+              ),
+            );
+          },
+        ),
         IconButton(
           icon: const Icon(Icons.logout_rounded),
           tooltip: 'Sign out',

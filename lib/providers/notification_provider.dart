@@ -32,6 +32,7 @@ class NotificationNotifier extends Notifier<AppNotification?> {
   }
 
   void showInfo(String message, {Duration duration = const Duration(seconds: 4)}) {
+    if (state?.message == message) return;
     state = _createNotification(
       message: message,
       type: NotificationType.info,
