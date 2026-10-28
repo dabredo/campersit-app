@@ -19,9 +19,9 @@ class NotificationSettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(notificationSettingsControllerProvider, (_, next) {
       if (next is AsyncError) {
-        ref.read(notificationProvider.notifier).showError(
-              AppErrorFormatter.format(next.error),
-            );
+        ref
+            .read(notificationProvider.notifier)
+            .showError(AppErrorFormatter.format(next.error));
       }
     });
 
@@ -30,16 +30,13 @@ class NotificationSettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
-      appBar: AppBar(
-        title: const Text('Notification Settings'),
-      ),
+      appBar: AppBar(title: const Text('Notification Settings')),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         children: [
           const _SectionHeader(
             title: 'Delivery Preferences',
-            subtitle:
-                'Enable or disable app push notifications and email alerts for each event.',
+            subtitle: 'Enable or disable app push notifications and email alerts for each event.',
           ),
           const SizedBox(height: 12),
           preferencesAsync.when(
@@ -47,7 +44,9 @@ class NotificationSettingsScreen extends ConsumerWidget {
             loading: () => const Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
-                child: CircularProgressIndicator(color: AppColors.primaryAccent),
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryAccent,
+                ),
               ),
             ),
             error: (error, _) => AppErrorState(
@@ -58,8 +57,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
           const SizedBox(height: 28),
           const _SectionHeader(
             title: 'Registered Device Tokens',
-            subtitle:
-                'Devices currently receiving push notifications. You can delete individual tokens manually at any time.',
+            subtitle: 'Devices currently receiving push notifications. You can delete individual tokens manually at any time.',
           ),
           const SizedBox(height: 12),
           tokensAsync.when(
@@ -67,7 +65,9 @@ class NotificationSettingsScreen extends ConsumerWidget {
             loading: () => const Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
-                child: CircularProgressIndicator(color: AppColors.primaryAccent),
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryAccent,
+                ),
               ),
             ),
             error: (error, _) => AppErrorState(
@@ -86,10 +86,7 @@ class _SectionHeader extends StatelessWidget {
   final String title;
   final String subtitle;
 
-  const _SectionHeader({
-    required this.title,
-    required this.subtitle,
-  });
+  const _SectionHeader({required this.title, required this.subtitle});
 
   @override
   Widget build(BuildContext context) {
@@ -108,9 +105,7 @@ class _SectionHeader extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           subtitle,
-          style: textTheme.bodySmall?.copyWith(
-            color: AppColors.textSecondary,
-          ),
+          style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
         ),
       ],
     );
@@ -126,11 +121,16 @@ class _PreferencesList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
-        for (var i = 0; i < NotificationEventDefinition.allEvents.length; i++) ...[
+        for (
+          var i = 0;
+          i < NotificationEventDefinition.allEvents.length;
+          i++
+        ) ...[
           if (i > 0) const SizedBox(height: 10),
           _PreferenceItem(
             event: NotificationEventDefinition.allEvents[i],
-            preference: preferences[NotificationEventDefinition.allEvents[i].type],
+            preference:
+                preferences[NotificationEventDefinition.allEvents[i].type],
           ),
         ],
       ],
@@ -142,10 +142,7 @@ class _PreferenceItem extends ConsumerWidget {
   final NotificationEventDefinition event;
   final NotificationPreference? preference;
 
-  const _PreferenceItem({
-    required this.event,
-    required this.preference,
-  });
+  const _PreferenceItem({required this.event, required this.preference});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -181,8 +178,7 @@ class _DeviceTokensList extends ConsumerWidget {
       return const AppEmptyState(
         icon: Icons.phonelink_erase_rounded,
         title: 'No Device Tokens Registered',
-        message:
-            'Push notification tokens registered from your browsers and devices will appear here.',
+        message: 'Push notification tokens registered from your browsers and devices will appear here.',
       );
     }
 
@@ -203,4 +199,3 @@ class _DeviceTokensList extends ConsumerWidget {
     );
   }
 }
-
