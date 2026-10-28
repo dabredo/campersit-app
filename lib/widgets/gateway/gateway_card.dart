@@ -33,19 +33,87 @@ class GatewayCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
-              _buildAlertsSection(context, gateway),
+              _GatewayCardHeader(
+                gatewayId: gateway.id,
+                state: gateway.state,
+              ),
+              _GatewayAlertsSection(alerts: gateway.alerts),
               const SizedBox(height: 12),
-              _buildSensorsSummaryTile(context, gateway),
+              _SensorsSummaryTile(sensorCount: gateway.sensors.length),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildSensorsSummaryTile(BuildContext context, Gateway gateway) {
-    final sensorCount = gateway.sensors.length;
+class _GatewayCardHeader extends StatelessWidget {
+  final String gatewayId;
+  final String state;
+
+  const _GatewayCardHeader({
+    required this.gatewayId,
+    required this.state,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Text(
+            gatewayId,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        GatewayStateChip(state: state),
+      ],
+    );
+  }
+}
+
+class _GatewayAlertsSection extends StatelessWidget {
+  final Map<String, Object?> alerts;
+
+  const _GatewayAlertsSection({required this.alerts});
+
+  @override
+  Widget build(BuildContext context) {
+    if (alerts.isEmpty) return const SizedBox.shrink();
+
+    final textTheme = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 8),
+        Text('Alarms:', style: textTheme.titleSmall),
+        for (final entry in alerts.entries)
+          Text(
+            '- ${entry.key}: ${entry.value}',
+            style: textTheme.bodyMedium?.copyWith(
+              color: AppColors.danger,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _SensorsSummaryTile extends StatelessWidget {
+  final int sensorCount;
+
+  const _SensorsSummaryTile({required this.sensorCount});
+
+  @override
+  Widget build(BuildContext context) {
     final countLabel =
         '$sensorCount ${sensorCount == 1 ? 'Sensor connected' : 'Sensors connected'}';
 
@@ -74,7 +142,6 @@ class GatewayCard extends StatelessWidget {
               ),
             ),
           ),
-
           const Icon(
             Icons.arrow_forward_ios_rounded,
             size: 12,
@@ -82,46 +149,6 @@ class GatewayCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: Text(
-            gateway.id,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        GatewayStateChip(state: gateway.state),
-      ],
-    );
-  }
-
-  Widget _buildAlertsSection(BuildContext context, Gateway gateway) {
-    if (gateway.alerts.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 8),
-        Text('Alarms:', style: Theme.of(context).textTheme.titleSmall),
-        ...gateway.alerts.entries.map(
-          (e) => Text(
-            '- ${e.key}: ${e.value}',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.danger,
-                ),
-          ),
-        ),
-      ],
     );
   }
 }
