@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:campersit_app/models/gateway_notification.dart';
 import 'package:campersit_app/providers/gateway_notification_providers.dart';
 import 'package:campersit_app/screens/gateway_detail_screen.dart';
+import 'package:campersit_app/screens/notification_settings_screen.dart';
 import 'package:campersit_app/screens/notifications_screen.dart';
 import 'package:campersit_app/widgets/notifications/notification_item_card.dart';
 
@@ -128,6 +129,25 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.byType(GatewayDetailScreen), findsOneWidget);
+    });
+
+    testWidgets('navigates to NotificationSettingsScreen when settings action is tapped', (tester) async {
+      await tester.pumpWidget(
+        buildTestWidget(
+          overrides: [
+            userNotificationsProvider.overrideWith(
+              (ref) => Stream.value(<GatewayNotification>[]),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.tune_rounded));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.byType(NotificationSettingsScreen), findsOneWidget);
     });
   });
 }

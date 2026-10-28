@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/gateway_notification.dart';
+import '../models/notification_preference.dart';
+import '../models/user_device_token.dart';
 import '../utils/user_agent_reader.dart';
 
 class NotificationRepository {
@@ -113,5 +115,85 @@ class NotificationRepository {
         .doc(tokenDocId);
 
     await tokenRef.delete();
+  }
+
+  Stream<List<UserDeviceToken>> watchDeviceTokens(String userId) {
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('browsers')
+        .snapshots()
+        .map((snapshot) {
+          final tokens = snapshot.docs.map((doc) {
+            return UserDeviceToken.fromMap(doc.id, doc.data());
+          }).toList();
+
+          tokens.sort((a, b) {
+            final aTime = a.lastUpdated ?? 0;
+            final bTime = b.lastUpdated ?? 0;
+            return bTime.compareTo(aTime);
+          });
+          return tokens;
+        });
+  }
+
+  Future<void> removeDeviceTokenById({
+    required String userId,
+    required String docId,
+  }) async {
+    final tokenRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('browsers')
+        .doc(docId);
+
+    await tokenRef.delete();
+  }
+
+  Stream<Map<String, NotificationPreference>> watchNotificationPreferences(
+    String userId,
+  ) {
+    return _firestore
+        .collection('users')
+        .doc(userId)
+        .snapshots()
+        .map((doc) {
+          final data = doc.data();
+          final notificationsMap =
+              data?['notifications'] as Map<String, dynamic>?;
+          if (notificationsMap == null) {
+            return const {};
+          }
+
+          final preferences = <String, NotificationPreference>{};
+          for (final entry in notificationsMap.entries) {
+            final value = entry.value as Map<String, dynamic>;
+            preferences[entry.key] = NotificationPreference.fromMap(
+              entry.key,
+              value,
+            );
+          }
+          return preferences;
+        });
+  }
+
+  Future<void> updateNotificationPreference({
+    required String userId,
+    required String eventType,
+    required bool app,
+    required bool email,
+  }) async {
+    final userRef = _firestore.collection('users').doc(userId);
+    await userRef.set(
+      {
+        'notifications': {
+          eventType: {
+            'app': app,
+            'email': email,
+          },
+        },
+      },
+      SetOptions(merge: true),
+    );
   }
 }

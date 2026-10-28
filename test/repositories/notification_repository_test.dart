@@ -26,6 +26,9 @@ class MockQuerySnapshot extends Mock
 class MockQueryDocumentSnapshot extends Mock
     implements QueryDocumentSnapshot<Map<String, dynamic>> {}
 
+class MockDocumentSnapshot extends Mock
+    implements DocumentSnapshot<Map<String, dynamic>> {}
+
 class MockWriteBatch extends Mock implements WriteBatch {}
 
 void main() {
@@ -198,6 +201,107 @@ void main() {
       );
 
       verify(() => mockTokenDoc.delete()).called(1);
+    });
+
+    test('watchDeviceTokens returns mapped tokens sorted descending by lastUpdated', () async {
+      final mockSnapshot = MockQuerySnapshot();
+      final doc1 = MockQueryDocumentSnapshot();
+      final doc2 = MockQueryDocumentSnapshot();
+
+      when(() => mockTokensCollection.snapshots()).thenAnswer((_) => Stream.value(mockSnapshot));
+
+      when(() => doc1.id).thenReturn('token_1');
+      when(() => doc1.data()).thenReturn({
+        'fcmToken': 'fcm_1',
+        'lastUpdated': Timestamp.fromMillisecondsSinceEpoch(1000),
+      });
+
+      when(() => doc2.id).thenReturn('token_2');
+      when(() => doc2.data()).thenReturn({
+        'fcmToken': 'fcm_2',
+        'lastUpdated': Timestamp.fromMillisecondsSinceEpoch(5000),
+      });
+
+      when(() => mockSnapshot.docs).thenReturn([doc1, doc2]);
+
+      final stream = repository.watchDeviceTokens('user_123');
+      final result = await stream.first;
+
+      expect(result.length, equals(2));
+      expect(result[0].id, equals('token_2'));
+      expect(result[1].id, equals('token_1'));
+    });
+
+    test('removeDeviceTokenById deletes specific token doc', () async {
+      when(() => mockTokensCollection.doc('doc_abc')).thenReturn(mockTokenDoc);
+      when(() => mockTokenDoc.delete()).thenAnswer((_) async {});
+
+      await repository.removeDeviceTokenById(
+        userId: 'user_123',
+        docId: 'doc_abc',
+      );
+
+      verify(() => mockTokenDoc.delete()).called(1);
+    });
+
+    test('watchNotificationPreferences parses notifications map from user doc', () async {
+      final mockDoc = MockDocumentSnapshot();
+      when(() => mockUserDoc.snapshots()).thenAnswer((_) => Stream.value(mockDoc));
+      when(() => mockDoc.data()).thenReturn({
+        'notifications': {
+          'sensor-triggered': {
+            'app': true,
+            'email': false,
+          },
+          'device-missing': {
+            'app': true,
+            'email': true,
+          },
+        },
+      });
+
+      final stream = repository.watchNotificationPreferences('user_123');
+      final result = await stream.first;
+
+      expect(result.length, equals(2));
+      expect(result['sensor-triggered']?.app, isTrue);
+      expect(result['sensor-triggered']?.email, isFalse);
+      expect(result['device-missing']?.app, isTrue);
+      expect(result['device-missing']?.email, isTrue);
+    });
+
+    test('watchNotificationPreferences returns empty map when notifications field is missing', () async {
+      final mockDoc = MockDocumentSnapshot();
+      when(() => mockUserDoc.snapshots()).thenAnswer((_) => Stream.value(mockDoc));
+      when(() => mockDoc.data()).thenReturn(null);
+
+      final stream = repository.watchNotificationPreferences('user_123');
+      final result = await stream.first;
+
+      expect(result, isEmpty);
+    });
+
+    test('updateNotificationPreference sets preference with merge option', () async {
+      when(() => mockUserDoc.set(any(), any())).thenAnswer((_) async {});
+
+      await repository.updateNotificationPreference(
+        userId: 'user_123',
+        eventType: 'sensor-triggered',
+        app: true,
+        email: true,
+      );
+
+      verify(() => mockUserDoc.set(
+            {
+              'notifications': {
+                'sensor-triggered': {
+                  'app': true,
+                  'email': true,
+                },
+              },
+            },
+            any(that: isA<SetOptions>()),
+          )).called(1);
     });
   });
 }

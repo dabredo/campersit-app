@@ -7,6 +7,7 @@ import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/notifications/notification_item_card.dart';
 import 'gateway_detail_screen.dart';
+import 'notification_settings_screen.dart';
 
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
@@ -27,6 +28,19 @@ class NotificationsScreen extends ConsumerWidget {
       backgroundColor: AppColors.mainBackground,
       appBar: AppBar(
         title: const Text('Notifications'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.tune_rounded),
+            tooltip: 'Notification settings',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const NotificationSettingsScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: switch (notificationsAsync) {
         AsyncLoading() => const Center(
