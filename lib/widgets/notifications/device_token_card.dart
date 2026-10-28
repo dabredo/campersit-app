@@ -4,6 +4,7 @@ import '../../models/user_device_token.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
 import '../common/app_confirm_dialog.dart';
+import '../common/surface_card.dart';
 
 class DeviceTokenCard extends StatelessWidget {
   final UserDeviceToken token;
@@ -19,10 +20,15 @@ class DeviceTokenCard extends StatelessWidget {
 
   IconData _resolveDeviceIcon() {
     final label = token.deviceLabel.toLowerCase();
-    if (label.contains('ios') || label.contains('iphone') || label.contains('android')) {
+    if (label.contains('ios') ||
+        label.contains('iphone') ||
+        label.contains('android')) {
       return Icons.phone_android_rounded;
     }
-    if (label.contains('mac') || label.contains('windows') || label.contains('linux') || label.contains('pc')) {
+    if (label.contains('mac') ||
+        label.contains('windows') ||
+        label.contains('linux') ||
+        label.contains('pc')) {
       return Icons.laptop_mac_rounded;
     }
     return Icons.devices_other_rounded;
@@ -52,12 +58,7 @@ class DeviceTokenCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: AppRadius.border2Xl,
-        border: Border.all(color: AppColors.borderLight),
-      ),
+    return SurfaceCard(
       padding: const EdgeInsets.all(14),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -137,12 +138,7 @@ class _DeviceIconBadge extends StatelessWidget {
         color: AppColors.primaryAccent.withValues(alpha: 0.1),
         borderRadius: AppRadius.borderXl,
       ),
-      child: Icon(
-        icon,
-        color: AppColors.primaryAccent,
-        size: 22,
-      ),
+      child: Icon(icon, color: AppColors.primaryAccent, size: 22),
     );
   }
 }
-

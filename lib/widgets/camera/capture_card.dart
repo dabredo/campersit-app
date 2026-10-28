@@ -9,6 +9,8 @@ import '../../utils/date_time_formatter.dart';
 import '../common/app_confirm_dialog.dart';
 import 'capture_video_player.dart';
 
+import '../common/surface_card.dart';
+
 class CaptureCard extends ConsumerWidget {
   final Capture capture;
 
@@ -34,15 +36,7 @@ class CaptureCard extends ConsumerWidget {
     final formattedDate = formatDateTime(capture.createdAt);
     final isDeleting = ref.watch(deleteCaptureControllerProvider(capture.id));
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: AppRadius.border2Xl,
-        border: Border.all(
-          color: AppColors.borderLight,
-          width: 1,
-        ),
-      ),
+    return SurfaceCard(
       padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

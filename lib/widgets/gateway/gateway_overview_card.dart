@@ -7,7 +7,7 @@ import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
 import '../common/app_loading_button.dart';
 import 'gateway_state_chip.dart';
-import 'surface_card.dart';
+import '../common/surface_card.dart';
 
 class GatewayOverviewCard extends StatelessWidget {
   const GatewayOverviewCard({super.key, required this.gateway});
