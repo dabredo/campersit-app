@@ -14,40 +14,10 @@ class NotificationItemCard extends StatelessWidget {
     this.onTap,
   });
 
-  IconData _resolveIcon() => switch (notification.type) {
-    'sensor-triggered' => Icons.motion_photos_on_rounded,
-    'sensor-triggered-off' => Icons.motion_photos_off_rounded,
-    'sensor-started' => Icons.play_circle_outline_rounded,
-    'sensor-started-off' => Icons.stop_circle_outlined,
-    'sensor-battery-critical' => Icons.battery_alert_rounded,
-    'sensor-battery-low' => Icons.battery_3_bar_rounded,
-    'sensor-battery-good' => Icons.battery_full_rounded,
-    'device-missing' || 'sensor-missing' => Icons.cloud_off_rounded,
-    'device-not-missing' || 'sensor-not-missing' => Icons.cloud_done_rounded,
-    'device-power-loss' => Icons.power_off_rounded,
-    'device-power-restored' => Icons.power_rounded,
-    'device-initializing' => Icons.sync_rounded,
-    _ => Icons.notifications_rounded,
-  };
-
-  Color _resolveColor() => switch (notification.type) {
-    'sensor-triggered' ||
-    'sensor-battery-critical' ||
-    'sensor-battery-low' ||
-    'device-missing' ||
-    'sensor-missing' ||
-    'device-power-loss' => AppColors.danger,
-    'device-not-missing' ||
-    'device-power-restored' ||
-    'sensor-not-missing' ||
-    'sensor-battery-good' => AppColors.primaryAccent,
-    _ => AppColors.textSecondary,
-  };
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final iconColor = _resolveColor();
+    final definition = notification.definition;
 
     return InkWell(
       onTap: onTap,
@@ -63,8 +33,8 @@ class NotificationItemCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _NotificationIconBadge(
-              icon: _resolveIcon(),
-              color: iconColor,
+              icon: definition.icon,
+              color: definition.color,
             ),
             const SizedBox(width: 12),
             Expanded(

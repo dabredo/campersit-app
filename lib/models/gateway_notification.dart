@@ -1,3 +1,5 @@
+import 'notification_event_definition.dart';
+
 class GatewayNotification {
   final String id;
   final String type;
@@ -17,23 +19,10 @@ class GatewayNotification {
 
   bool get isSensorRelated => sensorId != null && sensorId!.isNotEmpty;
 
-  String get typeLabel => switch (type) {
-    'device-initializing' => 'Gateway Initializing',
-    'device-missing' => 'Gateway Offline',
-    'device-not-missing' => 'Gateway Online',
-    'device-power-loss' => 'Gateway Power Loss',
-    'device-power-restored' => 'Gateway Power Restored',
-    'sensor-missing' => 'Sensor Offline',
-    'sensor-not-missing' => 'Sensor Online',
-    'sensor-started' => 'Actuator Started',
-    'sensor-started-off' => 'Actuator Stopped',
-    'sensor-triggered' => 'Sensor Triggered',
-    'sensor-triggered-off' => 'Sensor Trigger Cleared',
-    'sensor-battery-critical' => 'Sensor Battery Critical',
-    'sensor-battery-low' => 'Sensor Battery Low',
-    'sensor-battery-good' => 'Sensor Battery Normal',
-    _ => type.replaceAll('-', ' ').trim(),
-  };
+  NotificationEventDefinition get definition =>
+      NotificationEventDefinition.forType(type);
+
+  String get typeLabel => definition.title;
 
   factory GatewayNotification.fromMap(String id, Map<String, Object?> map) {
     return GatewayNotification(

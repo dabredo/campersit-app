@@ -22,6 +22,7 @@ void main() {
       expect(notification.sentAt, equals(1778320058376));
       expect(notification.isSensorRelated, isTrue);
       expect(notification.typeLabel, equals('Sensor Battery Low'));
+      expect(notification.definition.title, equals('Sensor Battery Low'));
     });
 
     test('parses gateway-only notification correctly fromMap', () {
