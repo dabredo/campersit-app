@@ -111,6 +111,7 @@ class _NotificationDetailsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final sensorId = notification.sensorId;
 
     return Wrap(
       spacing: 8,
@@ -121,10 +122,10 @@ class _NotificationDetailsRow extends StatelessWidget {
           value: notification.gatewayId,
           textTheme: textTheme,
         ),
-        if (notification.isSensorRelated)
+        if (sensorId != null && sensorId.isNotEmpty)
           _IdBadge(
             label: 'SENSOR',
-            value: notification.sensorId!,
+            value: sensorId,
             textTheme: textTheme,
           ),
       ],

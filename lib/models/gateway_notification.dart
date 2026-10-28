@@ -17,7 +17,7 @@ class GatewayNotification {
     this.sentAt,
   });
 
-  bool get isSensorRelated => sensorId != null && sensorId!.isNotEmpty;
+  bool get isSensorRelated => sensorId?.isNotEmpty ?? false;
 
   NotificationEventDefinition get definition =>
       NotificationEventDefinition.forType(type);

@@ -42,6 +42,15 @@ void main() {
       expect(notification.sentAt, isNull);
       expect(notification.isSensorRelated, isFalse);
       expect(notification.typeLabel, equals('Gateway Initializing'));
+
+      const emptySensorNotification = GatewayNotification(
+        id: 'notif_02b',
+        type: 'device-initializing',
+        gatewayId: '08:A6:F7:9E:B3:70',
+        sensorId: '',
+        createdAt: 1791976450999,
+      );
+      expect(emptySensorNotification.isSensorRelated, isFalse);
     });
 
     test('converts notification toMap correctly', () {

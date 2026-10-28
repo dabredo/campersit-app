@@ -43,8 +43,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     ref.listen<AsyncValue<void>>(loginControllerProvider, (previous, next) {
-      if (next.hasError && !next.isLoading) {
-        ref.read(notificationProvider.notifier).showError(next.error!);
+      final error = next.error;
+      if (error != null && !next.isLoading) {
+        ref.read(notificationProvider.notifier).showError(error);
       }
     });
 
