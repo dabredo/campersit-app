@@ -7,6 +7,8 @@ import '../providers/notification_provider.dart';
 import '../providers/notification_settings_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
+import '../widgets/common/app_empty_state.dart';
+import '../widgets/common/app_error_state.dart';
 import '../widgets/notifications/device_token_card.dart';
 import '../widgets/notifications/notification_channel_card.dart';
 
@@ -48,7 +50,8 @@ class NotificationSettingsScreen extends ConsumerWidget {
                 child: CircularProgressIndicator(color: AppColors.primaryAccent),
               ),
             ),
-            error: (error, _) => _SettingsErrorCard(
+            error: (error, _) => AppErrorState(
+              title: 'Failed to load preferences',
               message: AppErrorFormatter.format(error),
             ),
           ),
@@ -67,7 +70,8 @@ class NotificationSettingsScreen extends ConsumerWidget {
                 child: CircularProgressIndicator(color: AppColors.primaryAccent),
               ),
             ),
-            error: (error, _) => _SettingsErrorCard(
+            error: (error, _) => AppErrorState(
+              title: 'Failed to load device tokens',
               message: AppErrorFormatter.format(error),
             ),
           ),
@@ -174,7 +178,12 @@ class _DeviceTokensList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (tokens.isEmpty) {
-      return const _EmptyTokensCard();
+      return const AppEmptyState(
+        icon: Icons.phonelink_erase_rounded,
+        title: 'No Device Tokens Registered',
+        message:
+            'Push notification tokens registered from your browsers and devices will appear here.',
+      );
     }
 
     return Column(
@@ -195,86 +204,3 @@ class _DeviceTokensList extends ConsumerWidget {
   }
 }
 
-class _EmptyTokensCard extends StatelessWidget {
-  const _EmptyTokensCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: AppRadius.border2Xl,
-        border: Border.all(color: AppColors.borderLight),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      child: Column(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: AppColors.primaryAccent.withValues(alpha: 0.1),
-              borderRadius: AppRadius.borderXl,
-            ),
-            child: const Icon(
-              Icons.phonelink_erase_rounded,
-              color: AppColors.primaryAccent,
-              size: 24,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'No Device Tokens Registered',
-            style: textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Push notification tokens registered from your browsers and devices will appear here.',
-            style: textTheme.bodySmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SettingsErrorCard extends StatelessWidget {
-  final String message;
-
-  const _SettingsErrorCard({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: AppRadius.border2Xl,
-        border: Border.all(color: AppColors.danger.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.error_outline_rounded, color: AppColors.danger, size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              message,
-              style: textTheme.bodySmall?.copyWith(color: AppColors.danger),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

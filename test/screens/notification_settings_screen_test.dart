@@ -95,5 +95,24 @@ void main() {
       expect(find.text('Delete'), findsOneWidget);
       expect(find.text('Cancel'), findsOneWidget);
     });
+
+    testWidgets('renders error states when preferences or tokens stream emits error', (tester) async {
+      await tester.pumpWidget(
+        buildTestWidget(
+          overrides: [
+            userDeviceTokensProvider.overrideWith(
+              (ref) => Stream.error(Exception('Token error')),
+            ),
+            userNotificationPreferencesProvider.overrideWith(
+              (ref) => Stream.error(Exception('Pref error')),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Failed to load preferences'), findsOneWidget);
+      expect(find.text('Failed to load device tokens'), findsOneWidget);
+    });
   });
 }
