@@ -57,16 +57,11 @@ class SensorCard extends ConsumerWidget {
   }
 
   Future<void> _confirmAndDelete(BuildContext context, WidgetRef ref) async {
-    final sensorTag = sensor.tag?.trim();
-    final sensorName = (sensorTag != null && sensorTag.isNotEmpty)
-        ? sensorTag
-        : sensor.id;
-
     final isConfirmed = await AppConfirmDialog.show(
       context,
       title: 'Delete Sensor',
       content:
-          'Are you sure you want to delete "$sensorName"? This will unpair the sensor from the gateway.',
+          'Are you sure you want to delete "${sensor.displayName}"? This will unpair the sensor from the gateway.',
     );
 
     if (!isConfirmed || !context.mounted) return;
@@ -84,8 +79,7 @@ class SensorCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sensorIcon = resolveSensorIcon(sensor.type);
-    final hasTag = sensor.tag != null && sensor.tag!.trim().isNotEmpty;
-    final displayName = hasTag ? sensor.tag!.trim() : sensor.id;
+    final displayName = sensor.displayName;
     final stateColor = _resolveStateColor(sensor.state);
     final hasActiveAlerts = sensor.alerts.values.any(
       SensorAlertsList.isAlertActive,

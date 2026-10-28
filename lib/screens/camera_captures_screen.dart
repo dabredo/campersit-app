@@ -22,9 +22,7 @@ class CameraCapturesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final title = (sensor.tag != null && sensor.tag!.trim().isNotEmpty)
-        ? sensor.tag!.trim()
-        : sensor.id;
+    final title = sensor.displayName;
 
     final capturesAsync = ref.watch(
       cameraCapturesProvider((gatewayId: gatewayId, sensorId: sensor.id)),

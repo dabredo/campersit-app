@@ -246,5 +246,27 @@ void main() {
       expect(sensor.actions, isEmpty);
       expect(sensor.toMap().containsKey('actions'), isFalse);
     });
+
+    test('displayName returns trimmed tag when present, otherwise falls back to id', () {
+      const sensorWithTag = Sensor(
+        id: 'sensor-1',
+        type: SensorType.air,
+        tag: '  Living Room  ',
+      );
+      expect(sensorWithTag.displayName, equals('Living Room'));
+
+      const sensorWithEmptyTag = Sensor(
+        id: 'sensor-2',
+        type: SensorType.air,
+        tag: '   ',
+      );
+      expect(sensorWithEmptyTag.displayName, equals('sensor-2'));
+
+      const sensorWithoutTag = Sensor(
+        id: 'sensor-3',
+        type: SensorType.air,
+      );
+      expect(sensorWithoutTag.displayName, equals('sensor-3'));
+    });
   });
 }

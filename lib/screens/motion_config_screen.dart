@@ -22,9 +22,7 @@ class MotionConfigScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final title = (sensor.tag != null && sensor.tag!.trim().isNotEmpty)
-        ? sensor.tag!.trim()
-        : sensor.id;
+    final title = sensor.displayName;
 
     final gatewayAsync = ref.watch(singleGatewayProvider(gatewayId));
 
@@ -202,8 +200,7 @@ class _ActuatorActionTile extends ConsumerWidget {
         ref.watch(updateMotionActionControllerProvider(actionKey));
     final isUpdating = controllerState.isLoading;
 
-    final hasTag = actuator.tag != null && actuator.tag!.trim().isNotEmpty;
-    final displayName = hasTag ? actuator.tag!.trim() : actuator.id;
+    final displayName = actuator.displayName;
 
     return Container(
       decoration: BoxDecoration(

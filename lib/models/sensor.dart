@@ -112,6 +112,11 @@ class Sensor {
   int? get temperature => (values['temperature'] as num?)?.round();
   int? get humidity => (values['humidity'] as num?)?.round();
 
+  String get displayName {
+    final cleanTag = tag?.trim();
+    return (cleanTag != null && cleanTag.isNotEmpty) ? cleanTag : id;
+  }
+
   bool get isActuator => type.isActuator;
 
   List<SensorState> get availableTransitions => switch (state) {
