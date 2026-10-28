@@ -5,6 +5,7 @@ import '../models/gateway_notification.dart';
 import '../providers/gateway_notification_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
+import '../widgets/common/app_empty_state.dart';
 import '../widgets/notifications/notification_item_card.dart';
 import 'gateway_detail_screen.dart';
 import 'notification_settings_screen.dart';
@@ -50,7 +51,12 @@ class NotificationsScreen extends ConsumerWidget {
             message: AppErrorFormatter.format(error),
           ),
         AsyncData(:final value) => value.isEmpty
-            ? const _NotificationsEmptyState()
+            ? const AppEmptyState(
+                icon: Icons.notifications_none_rounded,
+                title: 'No Notifications',
+                message:
+                    'When events occur on your gateways or sensors, they will appear here.',
+              )
             : _NotificationsListView(notifications: value),
       },
     );
@@ -83,55 +89,6 @@ class _NotificationsListView extends StatelessWidget {
           onTap: () => _onNotificationTap(context, item),
         );
       },
-    );
-  }
-}
-
-class _NotificationsEmptyState extends StatelessWidget {
-  const _NotificationsEmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: AppColors.primaryAccent.withValues(alpha: 0.1),
-                borderRadius: AppRadius.border2Xl,
-              ),
-              child: const Icon(
-                Icons.notifications_none_rounded,
-                color: AppColors.primaryAccent,
-                size: 28,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No Notifications',
-              style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'When events occur on your gateways or sensors, they will appear here.',
-              style: textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

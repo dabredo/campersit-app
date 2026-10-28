@@ -7,6 +7,7 @@ import '../providers/capture_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/camera/capture_card.dart';
+import '../widgets/common/app_empty_state.dart';
 
 class CameraCapturesScreen extends ConsumerWidget {
   final String gatewayId;
@@ -40,58 +41,14 @@ class CameraCapturesScreen extends ConsumerWidget {
         AsyncError(:final error) => _CameraCapturesError(
             message: AppErrorFormatter.format(error),
           ),
-        AsyncData(:final value) when value.isEmpty =>
-          const _CameraCapturesEmpty(),
+        AsyncData(:final value) when value.isEmpty => const AppEmptyState(
+            icon: Icons.videocam_off_rounded,
+            title: 'No Recordings Found',
+            message:
+                'Recorded videos will be listed here when captures are available.',
+          ),
         AsyncData(:final value) => _CameraCapturesList(captures: value),
       },
-    );
-  }
-}
-
-class _CameraCapturesEmpty extends StatelessWidget {
-  const _CameraCapturesEmpty();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: AppColors.cardSurface,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.borderLight),
-              ),
-              child: const Icon(
-                Icons.videocam_off_rounded,
-                size: 32,
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No Recordings Found',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              'Recorded videos will be listed here when captures are available.',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../models/gateway.dart';
 import '../../theme/app_theme.dart';
+import '../common/app_empty_state.dart';
 import '../sensor/sensor_card.dart';
-import 'surface_card.dart';
 
 class SensorsSliver extends StatelessWidget {
   const SensorsSliver({super.key, required this.gatewayId, required this.sensors});
@@ -17,7 +17,13 @@ class SensorsSliver extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (sensors.isEmpty) {
-      return const SliverToBoxAdapter(child: _EmptySensorsPlaceholder());
+      return const SliverToBoxAdapter(
+        child: AppEmptyState(
+          icon: Icons.sensors_off_rounded,
+          title: 'No Sensors Configured',
+          message: 'There are no telemetry sensors associated with this gateway yet.',
+        ),
+      );
     }
 
     return SliverLayoutBuilder(
@@ -126,41 +132,6 @@ class SensorsSectionHeader extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _EmptySensorsPlaceholder extends StatelessWidget {
-  const _EmptySensorsPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return SurfaceCard(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        children: [
-          Icon(
-            Icons.sensors_off_rounded,
-            size: 44,
-            color: AppColors.textSecondary.withValues(alpha: 0.6),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'No Sensors Configured',
-            style: textTheme.titleMedium,
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'There are no telemetry sensors associated with this gateway yet.',
-            textAlign: TextAlign.center,
-            style: textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

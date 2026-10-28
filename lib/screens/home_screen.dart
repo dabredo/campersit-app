@@ -5,6 +5,7 @@ import '../providers/auth_providers.dart';
 import '../providers/gateway_notification_providers.dart';
 import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
+import '../widgets/common/app_empty_state.dart';
 import '../widgets/gateway/add_gateway_bottom_sheet.dart';
 import '../widgets/gateway/gateway_card.dart';
 import 'notifications_screen.dart';
@@ -22,18 +23,10 @@ class HomeScreen extends ConsumerWidget {
       body: gatewaysAsyncValue.when(
         data: (gateways) {
           if (gateways.isEmpty) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.all(32.0),
-                child: Text(
-                  'You currently have no gateways configured.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+            return const AppEmptyState(
+              icon: Icons.router_rounded,
+              title: 'No Gateways',
+              message: 'You currently have no gateways configured.',
             );
           }
           return ListView.builder(
