@@ -34,7 +34,7 @@ class GatewayCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(),
-              _buildAlertsSection(gateway),
+              _buildAlertsSection(context, gateway),
               const SizedBox(height: 12),
               _buildSensorsSummaryTile(context, gateway),
             ],
@@ -105,14 +105,14 @@ class GatewayCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAlertsSection(Gateway gateway) {
+  Widget _buildAlertsSection(BuildContext context, Gateway gateway) {
     if (gateway.alerts.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
-        const _SectionTitle('Alarms:'),
+        Text('Alarms:', style: Theme.of(context).textTheme.titleSmall),
         ...gateway.alerts.entries.map(
           (e) => Text(
             '- ${e.key}: ${e.value}',
@@ -120,25 +120,6 @@ class GatewayCard extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  }
-
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.title);
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: AppColors.textPrimary,
-      ),
     );
   }
 }
