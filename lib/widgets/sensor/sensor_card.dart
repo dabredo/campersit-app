@@ -44,10 +44,12 @@ class SensorCard extends ConsumerWidget {
         initialTag: sensor.tag,
         sensorId: sensor.id,
         onSave: (newTag) => ref
-            .read(updateSensorTagControllerProvider((
-              gatewayId: gatewayId,
-              sensorId: sensor.id,
-            )).notifier)
+            .read(
+              updateSensorTagControllerProvider((
+                gatewayId: gatewayId,
+                sensorId: sensor.id,
+              )).notifier,
+            )
             .updateTag(newTag),
       ),
     );
@@ -69,10 +71,12 @@ class SensorCard extends ConsumerWidget {
     if (!isConfirmed || !context.mounted) return;
 
     await ref
-        .read(deleteSensorControllerProvider((
-          gatewayId: gatewayId,
-          sensorId: sensor.id,
-        )).notifier)
+        .read(
+          deleteSensorControllerProvider((
+            gatewayId: gatewayId,
+            sensorId: sensor.id,
+          )).notifier,
+        )
         .deleteSensor();
   }
 
@@ -82,8 +86,9 @@ class SensorCard extends ConsumerWidget {
     final hasTag = sensor.tag != null && sensor.tag!.trim().isNotEmpty;
     final displayName = hasTag ? sensor.tag!.trim() : sensor.id;
     final stateColor = _resolveStateColor(sensor.state);
-    final hasActiveAlerts =
-        sensor.alerts.values.any(SensorAlertsList.isAlertActive);
+    final hasActiveAlerts = sensor.alerts.values.any(
+      SensorAlertsList.isAlertActive,
+    );
     final isTriggered = sensor.state == SensorState.triggered;
     final isAlerting = isTriggered || hasActiveAlerts;
     final isDeleting = ref.watch(
@@ -213,26 +218,17 @@ class SensorCard extends ConsumerWidget {
 
           if (sensor.availableTransitions.isNotEmpty) ...[
             const SizedBox(height: 10),
-            SensorActionButtons(
-              sensor: sensor,
-              gatewayId: gatewayId,
-            ),
+            SensorActionButtons(sensor: sensor, gatewayId: gatewayId),
           ],
 
           if (sensor.type == SensorType.camera) ...[
             const SizedBox(height: 10),
-            CameraRecordingsButton(
-              gatewayId: gatewayId,
-              sensor: sensor,
-            ),
+            CameraRecordingsButton(gatewayId: gatewayId, sensor: sensor),
           ],
 
           if (sensor.type == SensorType.motion) ...[
             const SizedBox(height: 10),
-            MotionActionsButton(
-              gatewayId: gatewayId,
-              sensor: sensor,
-            ),
+            MotionActionsButton(gatewayId: gatewayId, sensor: sensor),
           ],
 
           if (sensor.seenAt != null || sensor.battery != null) ...[
