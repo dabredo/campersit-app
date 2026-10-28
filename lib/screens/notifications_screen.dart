@@ -6,6 +6,7 @@ import '../providers/gateway_notification_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/common/app_empty_state.dart';
+import '../widgets/common/app_error_state.dart';
 import '../widgets/notifications/notification_item_card.dart';
 import 'gateway_detail_screen.dart';
 import 'notification_settings_screen.dart';
@@ -47,7 +48,8 @@ class NotificationsScreen extends ConsumerWidget {
         AsyncLoading() => const Center(
             child: CircularProgressIndicator(color: AppColors.primaryAccent),
           ),
-        AsyncError(:final error) => _NotificationsErrorView(
+        AsyncError(:final error) => AppErrorState(
+            title: 'Failed to load notifications',
             message: AppErrorFormatter.format(error),
           ),
         AsyncData(:final value) => value.isEmpty
@@ -89,40 +91,6 @@ class _NotificationsListView extends StatelessWidget {
           onTap: () => _onNotificationTap(context, item),
         );
       },
-    );
-  }
-}
-
-class _NotificationsErrorView extends StatelessWidget {
-  final String message;
-
-  const _NotificationsErrorView({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.error_outline_rounded, color: AppColors.danger, size: 36),
-            const SizedBox(height: 12),
-            Text(
-              'Failed to load notifications',
-              style: textTheme.titleSmall?.copyWith(color: AppColors.danger),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              message,
-              style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

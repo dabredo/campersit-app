@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/camera/capture_card.dart';
 import '../widgets/common/app_empty_state.dart';
+import '../widgets/common/app_error_state.dart';
 
 class CameraCapturesScreen extends ConsumerWidget {
   final String gatewayId;
@@ -38,7 +39,8 @@ class CameraCapturesScreen extends ConsumerWidget {
         AsyncLoading() => const Center(
             child: CircularProgressIndicator(color: AppColors.primaryAccent),
           ),
-        AsyncError(:final error) => _CameraCapturesError(
+        AsyncError(:final error) => AppErrorState(
+            title: 'Error loading recordings',
             message: AppErrorFormatter.format(error),
           ),
         AsyncData(:final value) when value.isEmpty => const AppEmptyState(
@@ -49,47 +51,6 @@ class CameraCapturesScreen extends ConsumerWidget {
           ),
         AsyncData(:final value) => _CameraCapturesList(captures: value),
       },
-    );
-  }
-}
-
-class _CameraCapturesError extends StatelessWidget {
-  final String message;
-
-  const _CameraCapturesError({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.error_outline_rounded,
-              color: AppColors.danger,
-              size: 40,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Error loading recordings',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: AppColors.danger,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

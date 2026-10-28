@@ -5,7 +5,9 @@ import '../providers/auth_providers.dart';
 import '../providers/gateway_notification_providers.dart';
 import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
+import '../utils/error_formatter.dart';
 import '../widgets/common/app_empty_state.dart';
+import '../widgets/common/app_error_state.dart';
 import '../widgets/gateway/add_gateway_bottom_sheet.dart';
 import '../widgets/gateway/gateway_card.dart';
 import 'notifications_screen.dart';
@@ -39,15 +41,9 @@ class HomeScreen extends ConsumerWidget {
         loading: () => const Center(
           child: CircularProgressIndicator(color: AppColors.primaryAccent),
         ),
-        error: (error, stack) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Error loading gateways:\n$error',
-              style: const TextStyle(color: Colors.redAccent),
-              textAlign: TextAlign.center,
-            ),
-          ),
+        error: (error, stack) => AppErrorState(
+          title: 'Error loading gateways',
+          message: AppErrorFormatter.format(error),
         ),
       ),
       floatingActionButton: FloatingActionButton(

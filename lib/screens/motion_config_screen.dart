@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../utils/sensor_icon_resolver.dart';
 import '../widgets/common/app_empty_state.dart';
+import '../widgets/common/app_error_state.dart';
 
 class MotionConfigScreen extends ConsumerWidget {
   final String gatewayId;
@@ -36,11 +37,13 @@ class MotionConfigScreen extends ConsumerWidget {
         AsyncLoading() => const Center(
             child: CircularProgressIndicator(color: AppColors.primaryAccent),
           ),
-        AsyncError(:final error) => _MotionConfigError(
+        AsyncError(:final error) => AppErrorState(
+            title: 'Error loading configuration',
             message: AppErrorFormatter.format(error),
           ),
         AsyncData(value: final gateway?) => _buildBody(gateway),
-        AsyncData() => const _MotionConfigError(
+        AsyncData() => const AppErrorState(
+            title: 'Error loading configuration',
             message: 'Gateway not found',
           ),
       },
@@ -309,47 +312,6 @@ class _ActuatorActionTile extends ConsumerWidget {
               },
             ),
         ],
-      ),
-    );
-  }
-}
-
-class _MotionConfigError extends StatelessWidget {
-  final String message;
-
-  const _MotionConfigError({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.error_outline_rounded,
-              color: AppColors.danger,
-              size: 40,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Error loading configuration',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-            ),
-          ],
-        ),
       ),
     );
   }
