@@ -36,8 +36,8 @@ class LastSeenNotificationTimestampNotifier extends Notifier<int> {
   @override
   int build() => 0;
 
-  void markAsSeen([int? timestamp]) {
-    state = timestamp ?? DateTime.now().millisecondsSinceEpoch;
+  void markAsSeen() {
+    state = DateTime.now().millisecondsSinceEpoch;
   }
 }
 
