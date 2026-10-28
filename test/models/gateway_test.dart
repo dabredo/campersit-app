@@ -123,12 +123,36 @@ void main() {
     });
 
     test('formats coordinates correctly in GatewayLocationPoint', () {
-      final point = GatewayLocationPoint(
+      const point = GatewayLocationPoint(
         datetime: 12345,
         latitude: 40.5,
         longitude: -3.7,
       );
       expect(point.formattedCoordinates, equals('40.5, -3.7'));
+    });
+
+    test('supports const constructors for Gateway, GatewayLocation, and GatewayLocationPoint', () {
+      const point = GatewayLocationPoint(
+        datetime: 12345,
+        latitude: 40.5,
+        longitude: -3.7,
+      );
+      const location = GatewayLocation(
+        approx: point,
+        exact: point,
+        startedAt: 12345,
+      );
+      const gateway = Gateway(
+        id: 'gw-const',
+        state: GatewayStates.connected,
+        userId: 'u-1',
+        location: location,
+      );
+
+      expect(gateway.id, equals('gw-const'));
+      expect(gateway.alerts, isEmpty);
+      expect(gateway.sensors, isEmpty);
+      expect(gateway.location?.exact?.latitude, equals(40.5));
     });
   });
 }

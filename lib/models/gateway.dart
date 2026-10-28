@@ -6,7 +6,7 @@ class GatewayLocationPoint {
   final double latitude;
   final double longitude;
 
-  GatewayLocationPoint({
+  const GatewayLocationPoint({
     required this.datetime,
     required this.latitude,
     required this.longitude,
@@ -32,7 +32,7 @@ class GatewayLocation {
   final GatewayLocationPoint? exact;
   final int? startedAt;
 
-  GatewayLocation({this.approx, this.exact, this.startedAt});
+  const GatewayLocation({this.approx, this.exact, this.startedAt});
 
   factory GatewayLocation.fromMap(Map<String, Object?> map) {
     final approx = (map['approx'] as Map?)?.cast<String, Object?>();
@@ -77,12 +77,12 @@ class Gateway {
   final GatewayLocation? location;
   final List<Sensor> sensors;
 
-  Gateway({
+  const Gateway({
     required this.id,
     required this.state,
     this.seenAt,
     required this.userId,
-    required this.alerts,
+    this.alerts = const {},
     this.location,
     this.sensors = const [],
   });
