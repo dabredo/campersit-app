@@ -116,7 +116,9 @@ class GatewayCard extends StatelessWidget {
         ...gateway.alerts.entries.map(
           (e) => Text(
             '- ${e.key}: ${e.value}',
-            style: const TextStyle(fontSize: 14, color: Colors.redAccent),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.danger,
+                ),
           ),
         ),
       ],
