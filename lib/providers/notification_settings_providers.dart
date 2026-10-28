@@ -46,14 +46,10 @@ class NotificationSettingsController extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
 
-  String? get _currentUserId =>
-      ref.read(authStateProvider).value?.uid ??
-      ref.read(authServiceProvider).currentAuthenticatedUser?.uid;
-
   Future<void> _runWithUserId(Future<void> Function(String userId) action) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final userId = _currentUserId;
+      final userId = ref.read(authStateProvider).value?.uid;
       if (userId == null) return;
       await action(userId);
     });
