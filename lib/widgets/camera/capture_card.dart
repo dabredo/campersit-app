@@ -6,6 +6,7 @@ import '../../models/capture.dart';
 import '../../providers/capture_providers.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
+import '../common/app_confirm_dialog.dart';
 import 'capture_video_player.dart';
 
 class CaptureCard extends ConsumerWidget {
@@ -14,11 +15,12 @@ class CaptureCard extends ConsumerWidget {
   const CaptureCard({super.key, required this.capture});
 
   Future<void> _confirmAndDelete(BuildContext context, WidgetRef ref) async {
-    final isConfirmed = await showDialog<bool>(
-          context: context,
-          builder: (_) => DeleteCaptureDialog(captureId: capture.id),
-        ) ??
-        false;
+    final isConfirmed = await AppConfirmDialog.show(
+      context,
+      title: 'Delete Capture',
+      content:
+          'Are you sure you want to delete this recording (${capture.id})? This action cannot be undone.',
+    );
 
     if (!isConfirmed || !context.mounted) return;
 
@@ -138,57 +140,3 @@ class DeleteCaptureButton extends StatelessWidget {
   }
 }
 
-class DeleteCaptureDialog extends StatelessWidget {
-  const DeleteCaptureDialog({super.key, required this.captureId});
-
-  final String captureId;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return AlertDialog(
-      backgroundColor: AppColors.cardSurface,
-      shape: const RoundedRectangleBorder(borderRadius: AppRadius.border2Xl),
-      title: Text(
-        'Delete Capture',
-        style: textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
-        ),
-      ),
-      content: Text(
-        'Are you sure you want to delete this recording ($captureId)? This action cannot be undone.',
-        style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text(
-            'Cancel',
-            style: textTheme.labelLarge?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.danger,
-            shape: const RoundedRectangleBorder(
-              borderRadius: AppRadius.borderXl,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          ),
-          onPressed: () => Navigator.of(context).pop(true),
-          child: Text(
-            'Delete',
-            style: textTheme.labelLarge?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}

@@ -71,53 +71,6 @@ class DeleteSensorButton extends StatelessWidget {
   }
 }
 
-class DeleteSensorDialog extends StatelessWidget {
-  const DeleteSensorDialog({super.key, required this.sensorName});
-
-  final String sensorName;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return AlertDialog(
-      backgroundColor: AppColors.cardSurface,
-      shape: const RoundedRectangleBorder(borderRadius: AppRadius.border2Xl),
-      title: Text(
-        'Delete Sensor',
-        style: textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
-        ),
-      ),
-      content: Text(
-        'Are you sure you want to delete "$sensorName"? This will unpair the sensor from the gateway.',
-        style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text(
-            'Cancel',
-            style: textTheme.labelLarge?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.danger,
-            shape: const RoundedRectangleBorder(
-              borderRadius: AppRadius.borderXl,
-            ),
-          ),
-          onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('Delete'),
-        ),
-      ],
-    );
-  }
-}
 
 class EditSensorTagDialog extends StatefulWidget {
   const EditSensorTagDialog({

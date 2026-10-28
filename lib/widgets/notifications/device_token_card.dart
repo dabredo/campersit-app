@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/user_device_token.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
+import '../common/app_confirm_dialog.dart';
 
 class DeviceTokenCard extends StatelessWidget {
   final UserDeviceToken token;
@@ -27,17 +28,17 @@ class DeviceTokenCard extends StatelessWidget {
     return Icons.devices_other_rounded;
   }
 
-  void _confirmDeletion(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => _DeleteTokenConfirmationDialog(
-        deviceLabel: token.deviceLabel,
-        onConfirm: () {
-          Navigator.of(dialogContext).pop();
-          onDelete();
-        },
-      ),
+  Future<void> _confirmDeletion(BuildContext context) async {
+    final isConfirmed = await AppConfirmDialog.show(
+      context,
+      title: 'Delete Device Token?',
+      content:
+          'Removing this token will stop push notifications for ${token.deviceLabel} until the app or browser is registered again.',
     );
+
+    if (isConfirmed) {
+      onDelete();
+    }
   }
 
   String _formatTokenPreview(String fcmToken) {
@@ -145,52 +146,3 @@ class _DeviceIconBadge extends StatelessWidget {
   }
 }
 
-class _DeleteTokenConfirmationDialog extends StatelessWidget {
-  final String deviceLabel;
-  final VoidCallback onConfirm;
-
-  const _DeleteTokenConfirmationDialog({
-    required this.deviceLabel,
-    required this.onConfirm,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return AlertDialog(
-      shape: const RoundedRectangleBorder(borderRadius: AppRadius.border2Xl),
-      backgroundColor: AppColors.cardSurface,
-      title: Text(
-        'Delete Device Token?',
-        style: textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: AppColors.textPrimary,
-        ),
-      ),
-      content: Text(
-        'Removing this token will stop push notifications for $deviceLabel until the app or browser is registered again.',
-        style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(
-            'Cancel',
-            style: TextStyle(color: AppColors.textSecondary),
-          ),
-        ),
-        TextButton(
-          onPressed: onConfirm,
-          child: const Text(
-            'Delete',
-            style: TextStyle(
-              color: AppColors.danger,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}

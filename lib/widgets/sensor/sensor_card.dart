@@ -5,6 +5,7 @@ import '../../models/sensor.dart';
 import '../../providers/sensor_providers.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/sensor_icon_resolver.dart';
+import '../common/app_confirm_dialog.dart';
 import 'sensor_card/air_sensor_values.dart';
 import 'sensor_card/camera_recordings_button.dart';
 import 'sensor_card/motion_actions_button.dart';
@@ -61,12 +62,12 @@ class SensorCard extends ConsumerWidget {
         ? sensorTag
         : sensor.id;
 
-    final isConfirmed =
-        await showDialog<bool>(
-          context: context,
-          builder: (_) => DeleteSensorDialog(sensorName: sensorName),
-        ) ??
-        false;
+    final isConfirmed = await AppConfirmDialog.show(
+      context,
+      title: 'Delete Sensor',
+      content:
+          'Are you sure you want to delete "$sensorName"? This will unpair the sensor from the gateway.',
+    );
 
     if (!isConfirmed || !context.mounted) return;
 

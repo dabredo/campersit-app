@@ -4,18 +4,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/gateway_providers.dart';
 import '../../theme/app_theme.dart';
 
+import '../common/app_confirm_dialog.dart';
+
 class DeleteGatewayAction extends ConsumerWidget {
   const DeleteGatewayAction({super.key, required this.gatewayId});
 
   final String gatewayId;
 
   Future<void> _confirmAndDelete(BuildContext context, WidgetRef ref) async {
-    final isConfirmed =
-        await showDialog<bool>(
-          context: context,
-          builder: (_) => const _DeleteGatewayDialog(),
-        ) ??
-        false;
+    final isConfirmed = await AppConfirmDialog.show(
+      context,
+      title: 'Delete Gateway',
+      content: 'Are you sure you want to delete this gateway?',
+    );
     if (!isConfirmed || !context.mounted) return;
 
     final isDeleted = await ref
@@ -56,36 +57,3 @@ class DeleteGatewayAction extends ConsumerWidget {
   }
 }
 
-class _DeleteGatewayDialog extends StatelessWidget {
-  const _DeleteGatewayDialog();
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return AlertDialog(
-      backgroundColor: AppColors.cardSurface,
-      shape: const RoundedRectangleBorder(borderRadius: AppRadius.border2Xl),
-      titleTextStyle: textTheme.titleLarge?.copyWith(
-        color: AppColors.textPrimary,
-      ),
-      contentTextStyle: textTheme.bodyMedium?.copyWith(
-        color: AppColors.textSecondary,
-      ),
-      title: const Text('Delete Gateway'),
-      content: const Text('Are you sure you want to delete this gateway?'),
-      actions: [
-        TextButton(
-          style: TextButton.styleFrom(foregroundColor: AppColors.textSecondary),
-          onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: AppColors.danger),
-          onPressed: () => Navigator.of(context).pop(true),
-          child: const Text('Delete'),
-        ),
-      ],
-    );
-  }
-}
