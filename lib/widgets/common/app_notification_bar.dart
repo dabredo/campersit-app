@@ -90,36 +90,30 @@ class _NotificationStyle {
     required this.icon,
   });
 
-  factory _NotificationStyle.fromType(NotificationType type) {
-    switch (type) {
-      case NotificationType.success:
-        return const _NotificationStyle(
-          backgroundColor: AppColors.primaryAccent,
-          borderColor: AppColors.secondaryAccent,
-          foregroundColor: Colors.white,
-          icon: Icons.check_circle_rounded,
-        );
-      case NotificationType.error:
-        return const _NotificationStyle(
-          backgroundColor: Color(0xFF9B1C1C),
-          borderColor: Color(0xFFB91C1C),
-          foregroundColor: Colors.white,
-          icon: Icons.error_rounded,
-        );
-      case NotificationType.warning:
-        return const _NotificationStyle(
-          backgroundColor: Color(0xFFB45309),
-          borderColor: Color(0xFFD97706),
-          foregroundColor: Colors.white,
-          icon: Icons.warning_rounded,
-        );
-      case NotificationType.info:
-        return const _NotificationStyle(
-          backgroundColor: AppColors.cardSurface,
-          borderColor: AppColors.borderLight,
-          foregroundColor: AppColors.textPrimary,
-          icon: Icons.info_rounded,
-        );
-    }
-  }
+  factory _NotificationStyle.fromType(NotificationType type) => switch (type) {
+    NotificationType.success => const _NotificationStyle(
+      backgroundColor: AppColors.primaryAccent,
+      borderColor: AppColors.secondaryAccent,
+      foregroundColor: Colors.white,
+      icon: Icons.check_circle_rounded,
+    ),
+    NotificationType.error => const _NotificationStyle(
+      backgroundColor: Color(0xFF9B1C1C),
+      borderColor: Color(0xFFB91C1C),
+      foregroundColor: Colors.white,
+      icon: Icons.error_rounded,
+    ),
+    NotificationType.warning => const _NotificationStyle(
+      backgroundColor: Color(0xFFB45309),
+      borderColor: Color(0xFFD97706),
+      foregroundColor: Colors.white,
+      icon: Icons.warning_rounded,
+    ),
+    NotificationType.info => const _NotificationStyle(
+      backgroundColor: AppColors.cardSurface,
+      borderColor: AppColors.borderLight,
+      foregroundColor: AppColors.textPrimary,
+      icon: Icons.info_rounded,
+    ),
+  };
 }
