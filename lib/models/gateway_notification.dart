@@ -23,10 +23,15 @@ class GatewayNotification {
     'device-not-missing' => 'Gateway Online',
     'device-power-loss' => 'Gateway Power Loss',
     'device-power-restored' => 'Gateway Power Restored',
-    'sensor-triggered' => 'Sensor Triggered',
-    'sensor-battery-low' => 'Sensor Battery Low',
     'sensor-missing' => 'Sensor Offline',
     'sensor-not-missing' => 'Sensor Online',
+    'sensor-started' => 'Actuator Started',
+    'sensor-started-off' => 'Actuator Stopped',
+    'sensor-triggered' => 'Sensor Triggered',
+    'sensor-triggered-off' => 'Sensor Trigger Cleared',
+    'sensor-battery-critical' => 'Sensor Battery Critical',
+    'sensor-battery-low' => 'Sensor Battery Low',
+    'sensor-battery-good' => 'Sensor Battery Normal',
     _ => type.replaceAll('-', ' ').trim(),
   };
 

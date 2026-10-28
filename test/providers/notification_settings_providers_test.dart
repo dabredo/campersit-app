@@ -124,7 +124,8 @@ void main() {
       await container.read(authStateProvider.future);
       final prefs = await container.read(userNotificationPreferencesProvider.future);
       expect(prefs.length, equals(1));
-      expect(prefs['sensor-triggered']?.channel, equals(NotificationDeliveryChannel.both));
+      expect(prefs['sensor-triggered']?.app, isTrue);
+      expect(prefs['sensor-triggered']?.email, isTrue);
       verify(() => mockRepository.watchNotificationPreferences('user_123')).called(1);
     });
 
@@ -157,12 +158,11 @@ void main() {
           )).called(1);
     });
 
-    test('updatePreference calls repository updateNotificationPreference', () async {
-      when(() => mockRepository.updateNotificationPreference(
+    test('toggleAppNotification calls repository updateAppNotificationPreference', () async {
+      when(() => mockRepository.updateAppNotificationPreference(
             userId: 'user_123',
-            eventType: 'device-missing',
-            app: true,
-            email: false,
+            eventType: 'sensor-triggered',
+            enabled: true,
           )).thenAnswer((_) async {});
 
       final container = ProviderContainer(
@@ -180,16 +180,43 @@ void main() {
 
       final controller =
           container.read(notificationSettingsControllerProvider.notifier);
-      await controller.updatePreference(
-        'device-missing',
-        NotificationDeliveryChannel.app,
-      );
+      await controller.toggleAppNotification('sensor-triggered', true);
 
-      verify(() => mockRepository.updateNotificationPreference(
+      verify(() => mockRepository.updateAppNotificationPreference(
             userId: 'user_123',
-            eventType: 'device-missing',
-            app: true,
-            email: false,
+            eventType: 'sensor-triggered',
+            enabled: true,
+          )).called(1);
+    });
+
+    test('toggleEmailNotification calls repository updateEmailNotificationPreference', () async {
+      when(() => mockRepository.updateEmailNotificationPreference(
+            userId: 'user_123',
+            eventType: 'sensor-triggered',
+            enabled: false,
+          )).thenAnswer((_) async {});
+
+      final container = ProviderContainer(
+        overrides: [
+          authStateProvider.overrideWith((ref) => Stream.value(mockUser)),
+          notificationRepositoryProvider.overrideWithValue(mockRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final subscription = container.listen(authStateProvider, (_, _) {});
+      addTearDown(subscription.close);
+
+      await container.read(authStateProvider.future);
+
+      final controller =
+          container.read(notificationSettingsControllerProvider.notifier);
+      await controller.toggleEmailNotification('sensor-triggered', false);
+
+      verify(() => mockRepository.updateEmailNotificationPreference(
+            userId: 'user_123',
+            eventType: 'sensor-triggered',
+            enabled: false,
           )).called(1);
     });
   });

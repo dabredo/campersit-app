@@ -177,19 +177,42 @@ class NotificationRepository {
         });
   }
 
-  Future<void> updateNotificationPreference({
+  Future<void> updateAppNotificationPreference({
     required String userId,
     required String eventType,
-    required bool app,
-    required bool email,
+    required bool enabled,
+  }) =>
+      _updateChannelPreference(
+        userId: userId,
+        eventType: eventType,
+        channelKey: 'app',
+        enabled: enabled,
+      );
+
+  Future<void> updateEmailNotificationPreference({
+    required String userId,
+    required String eventType,
+    required bool enabled,
+  }) =>
+      _updateChannelPreference(
+        userId: userId,
+        eventType: eventType,
+        channelKey: 'email',
+        enabled: enabled,
+      );
+
+  Future<void> _updateChannelPreference({
+    required String userId,
+    required String eventType,
+    required String channelKey,
+    required bool enabled,
   }) async {
     final userRef = _firestore.collection('users').doc(userId);
     await userRef.set(
       {
         'notifications': {
           eventType: {
-            'app': app,
-            'email': email,
+            channelKey: enabled,
           },
         },
       },

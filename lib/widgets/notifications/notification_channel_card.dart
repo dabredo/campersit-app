@@ -5,15 +5,19 @@ import '../../theme/app_theme.dart';
 
 class NotificationChannelCard extends StatelessWidget {
   final NotificationEventDefinition event;
-  final NotificationDeliveryChannel channel;
-  final ValueChanged<NotificationDeliveryChannel> onChannelChanged;
+  final bool appEnabled;
+  final bool emailEnabled;
+  final ValueChanged<bool> onAppChanged;
+  final ValueChanged<bool> onEmailChanged;
   final bool isUpdating;
 
   const NotificationChannelCard({
     super.key,
     required this.event,
-    required this.channel,
-    required this.onChannelChanged,
+    required this.appEnabled,
+    required this.emailEnabled,
+    required this.onAppChanged,
+    required this.onEmailChanged,
     this.isUpdating = false,
   });
 
@@ -72,9 +76,20 @@ class NotificationChannelCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          _ChannelSegmentedControl(
-            currentChannel: channel,
-            onChanged: isUpdating ? null : onChannelChanged,
+          const Divider(color: AppColors.borderLight, height: 1),
+          const SizedBox(height: 8),
+          _ChannelToggleRow(
+            icon: Icons.phone_android_rounded,
+            title: 'App Push',
+            value: appEnabled,
+            onChanged: isUpdating ? null : onAppChanged,
+          ),
+          const SizedBox(height: 4),
+          _ChannelToggleRow(
+            icon: Icons.mail_outline_rounded,
+            title: 'Email Alert',
+            value: emailEnabled,
+            onChanged: isUpdating ? null : onEmailChanged,
           ),
         ],
       ),
@@ -105,12 +120,16 @@ class _EventIconBadge extends StatelessWidget {
   }
 }
 
-class _ChannelSegmentedControl extends StatelessWidget {
-  final NotificationDeliveryChannel currentChannel;
-  final ValueChanged<NotificationDeliveryChannel>? onChanged;
+class _ChannelToggleRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final bool value;
+  final ValueChanged<bool>? onChanged;
 
-  const _ChannelSegmentedControl({
-    required this.currentChannel,
+  const _ChannelToggleRow({
+    required this.icon,
+    required this.title,
+    required this.value,
     required this.onChanged,
   });
 
@@ -118,64 +137,40 @@ class _ChannelSegmentedControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return SizedBox(
-      width: double.infinity,
-      child: SegmentedButton<NotificationDeliveryChannel>(
-        showSelectedIcon: false,
-        style: ButtonStyle(
-          visualDensity: VisualDensity.compact,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          shape: WidgetStateProperty.all(
-            const RoundedRectangleBorder(borderRadius: AppRadius.borderXl),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.mainBackground,
+        borderRadius: AppRadius.borderXl,
+        border: Border.all(color: AppColors.borderLight),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 18,
+            color: value ? AppColors.primaryAccent : AppColors.textSecondary,
           ),
-          side: WidgetStateProperty.all(
-            const BorderSide(color: AppColors.borderLight),
-          ),
-          backgroundColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.selected)) {
-              return AppColors.primaryAccent;
-            }
-            return AppColors.mainBackground;
-          }),
-          foregroundColor: WidgetStateProperty.resolveWith((states) {
-            if (states.contains(WidgetState.selected)) {
-              return Colors.white;
-            }
-            return AppColors.textSecondary;
-          }),
-          textStyle: WidgetStateProperty.all(
-            textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              fontSize: 12,
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              title,
+              style: textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: value ? AppColors.textPrimary : AppColors.textSecondary,
+              ),
             ),
           ),
-        ),
-        segments: const [
-          ButtonSegment(
-            value: NotificationDeliveryChannel.none,
-            label: Text('None'),
-          ),
-          ButtonSegment(
-            value: NotificationDeliveryChannel.app,
-            label: Text('App Push'),
-          ),
-          ButtonSegment(
-            value: NotificationDeliveryChannel.email,
-            label: Text('Email'),
-          ),
-          ButtonSegment(
-            value: NotificationDeliveryChannel.both,
-            label: Text('Both'),
+          Switch(
+            value: value,
+            activeThumbColor: AppColors.primaryAccent,
+            activeTrackColor: AppColors.primaryAccent.withValues(alpha: 0.25),
+            inactiveThumbColor: AppColors.textSecondary,
+            inactiveTrackColor: AppColors.borderLight,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            onChanged: onChanged,
           ),
         ],
-        selected: {currentChannel},
-        onSelectionChanged: onChanged == null
-            ? null
-            : (selection) {
-                if (selection.isNotEmpty) {
-                  onChanged!(selection.first);
-                }
-              },
       ),
     );
   }

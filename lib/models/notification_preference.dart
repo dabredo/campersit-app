@@ -1,30 +1,5 @@
 import 'package:flutter/material.dart';
 
-enum NotificationDeliveryChannel {
-  none,
-  app,
-  email,
-  both;
-
-  bool get includesApp =>
-      this == NotificationDeliveryChannel.app ||
-      this == NotificationDeliveryChannel.both;
-
-  bool get includesEmail =>
-      this == NotificationDeliveryChannel.email ||
-      this == NotificationDeliveryChannel.both;
-
-  static NotificationDeliveryChannel fromBooleans({
-    required bool app,
-    required bool email,
-  }) {
-    if (app && email) return NotificationDeliveryChannel.both;
-    if (app) return NotificationDeliveryChannel.app;
-    if (email) return NotificationDeliveryChannel.email;
-    return NotificationDeliveryChannel.none;
-  }
-}
-
 class NotificationPreference {
   final String eventType;
   final bool app;
@@ -35,9 +10,6 @@ class NotificationPreference {
     required this.app,
     required this.email,
   });
-
-  NotificationDeliveryChannel get channel =>
-      NotificationDeliveryChannel.fromBooleans(app: app, email: email);
 
   factory NotificationPreference.fromMap(
     String eventType,
@@ -73,6 +45,12 @@ class NotificationEventDefinition {
 
   static const List<NotificationEventDefinition> allEvents = [
     NotificationEventDefinition(
+      type: 'device-initializing',
+      title: 'Gateway Initializing',
+      description: 'Notice when a gateway starts boot or setup cycle.',
+      icon: Icons.sync_rounded,
+    ),
+    NotificationEventDefinition(
       type: 'device-missing',
       title: 'Gateway Offline',
       description: 'Alert when a gateway loses connection or misses heartbeats.',
@@ -97,24 +75,6 @@ class NotificationEventDefinition {
       icon: Icons.power_rounded,
     ),
     NotificationEventDefinition(
-      type: 'device-initializing',
-      title: 'Gateway Initializing',
-      description: 'Notice when a gateway starts boot or setup cycle.',
-      icon: Icons.sync_rounded,
-    ),
-    NotificationEventDefinition(
-      type: 'sensor-triggered',
-      title: 'Sensor Triggered',
-      description: 'Alert when motion or a sensor event condition is triggered.',
-      icon: Icons.motion_photos_on_rounded,
-    ),
-    NotificationEventDefinition(
-      type: 'sensor-battery-low',
-      title: 'Sensor Low Battery',
-      description: 'Alert when a sensor battery level becomes low or critical.',
-      icon: Icons.battery_alert_rounded,
-    ),
-    NotificationEventDefinition(
       type: 'sensor-missing',
       title: 'Sensor Offline',
       description: 'Alert when a sensor is unreachable or misses keep-alive.',
@@ -125,6 +85,48 @@ class NotificationEventDefinition {
       title: 'Sensor Online',
       description: 'Notice when a sensor reconnects and resumes reporting.',
       icon: Icons.signal_wifi_4_bar_rounded,
+    ),
+    NotificationEventDefinition(
+      type: 'sensor-started',
+      title: 'Actuator Started',
+      description: 'Alert when an actuator starts running (camera, siren, or LED).',
+      icon: Icons.play_circle_outline_rounded,
+    ),
+    NotificationEventDefinition(
+      type: 'sensor-started-off',
+      title: 'Actuator Stopped',
+      description: 'Notice when an actuator finishes running or is stopped.',
+      icon: Icons.stop_circle_outlined,
+    ),
+    NotificationEventDefinition(
+      type: 'sensor-triggered',
+      title: 'Sensor Triggered',
+      description: 'Alert when motion or an environmental condition is triggered.',
+      icon: Icons.motion_photos_on_rounded,
+    ),
+    NotificationEventDefinition(
+      type: 'sensor-triggered-off',
+      title: 'Sensor Trigger Cleared',
+      description: 'Notice when a triggered sensor event is cleared or cooldown ends.',
+      icon: Icons.motion_photos_off_rounded,
+    ),
+    NotificationEventDefinition(
+      type: 'sensor-battery-critical',
+      title: 'Sensor Battery Critical',
+      description: 'Alert when a sensor battery level reaches critical state.',
+      icon: Icons.battery_alert_rounded,
+    ),
+    NotificationEventDefinition(
+      type: 'sensor-battery-low',
+      title: 'Sensor Battery Low',
+      description: 'Alert when a sensor battery level becomes low.',
+      icon: Icons.battery_3_bar_rounded,
+    ),
+    NotificationEventDefinition(
+      type: 'sensor-battery-good',
+      title: 'Sensor Battery Normal',
+      description: 'Notice when a sensor battery returns to normal or is replaced.',
+      icon: Icons.battery_full_rounded,
     ),
   ];
 }

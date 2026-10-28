@@ -281,14 +281,13 @@ void main() {
       expect(result, isEmpty);
     });
 
-    test('updateNotificationPreference sets preference with merge option', () async {
+    test('updateAppNotificationPreference sets app channel with merge option', () async {
       when(() => mockUserDoc.set(any(), any())).thenAnswer((_) async {});
 
-      await repository.updateNotificationPreference(
+      await repository.updateAppNotificationPreference(
         userId: 'user_123',
         eventType: 'sensor-triggered',
-        app: true,
-        email: true,
+        enabled: true,
       );
 
       verify(() => mockUserDoc.set(
@@ -296,7 +295,27 @@ void main() {
               'notifications': {
                 'sensor-triggered': {
                   'app': true,
-                  'email': true,
+                },
+              },
+            },
+            any(that: isA<SetOptions>()),
+          )).called(1);
+    });
+
+    test('updateEmailNotificationPreference sets email channel with merge option', () async {
+      when(() => mockUserDoc.set(any(), any())).thenAnswer((_) async {});
+
+      await repository.updateEmailNotificationPreference(
+        userId: 'user_123',
+        eventType: 'device-missing',
+        enabled: false,
+      );
+
+      verify(() => mockUserDoc.set(
+            {
+              'notifications': {
+                'device-missing': {
+                  'email': false,
                 },
               },
             },

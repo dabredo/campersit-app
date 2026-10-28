@@ -23,7 +23,7 @@ void main() {
 
   group('NotificationSettingsScreen Widget Tests', () {
     testWidgets('renders sections, titles, and event channel cards', (tester) async {
-      tester.view.physicalSize = const Size(800, 3000);
+      tester.view.physicalSize = const Size(800, 6000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 
@@ -53,11 +53,14 @@ void main() {
       expect(find.byType(NotificationChannelCard), findsWidgets);
       expect(find.text('Sensor Triggered'), findsOneWidget);
       expect(find.text('Gateway Offline'), findsOneWidget);
+      expect(find.text('App Push'), findsWidgets);
+      expect(find.text('Email Alert'), findsWidgets);
+      expect(find.byType(Switch), findsWidgets);
       expect(find.text('No Device Tokens Registered'), findsOneWidget);
     });
 
     testWidgets('renders registered device token and opens delete dialog on tap', (tester) async {
-      tester.view.physicalSize = const Size(800, 3000);
+      tester.view.physicalSize = const Size(800, 6000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
 

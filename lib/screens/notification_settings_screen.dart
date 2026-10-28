@@ -37,7 +37,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
           const _SectionHeader(
             title: 'Delivery Preferences',
             subtitle:
-                'Select whether you want to receive app push notifications, email alerts, both, or none for each event.',
+                'Enable or disable app push notifications and email alerts for each event.',
           ),
           const SizedBox(height: 12),
           preferencesAsync.when(
@@ -145,15 +145,22 @@ class _PreferenceItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final channel = preference?.channel ?? NotificationDeliveryChannel.none;
+    final appEnabled = preference?.app ?? false;
+    final emailEnabled = preference?.email ?? false;
 
     return NotificationChannelCard(
       event: event,
-      channel: channel,
-      onChannelChanged: (newChannel) {
+      appEnabled: appEnabled,
+      emailEnabled: emailEnabled,
+      onAppChanged: (enabled) {
         ref
             .read(notificationSettingsControllerProvider.notifier)
-            .updatePreference(event.type, newChannel);
+            .toggleAppNotification(event.type, enabled);
+      },
+      onEmailChanged: (enabled) {
+        ref
+            .read(notificationSettingsControllerProvider.notifier)
+            .toggleEmailNotification(event.type, enabled);
       },
     );
   }

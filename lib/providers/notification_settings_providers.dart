@@ -46,38 +46,45 @@ class NotificationSettingsController extends AsyncNotifier<void> {
   @override
   FutureOr<void> build() {}
 
-  Future<void> removeToken(String docId) async {
+  String? get _currentUserId =>
+      ref.read(authStateProvider).value?.uid ??
+      ref.read(authServiceProvider).currentAuthenticatedUser?.uid;
+
+  Future<void> _runWithUserId(Future<void> Function(String userId) action) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final user = ref.read(authStateProvider).value ??
-          ref.read(authServiceProvider).currentAuthenticatedUser;
-      if (user == null) return;
-
-      await ref.read(notificationRepositoryProvider).removeDeviceTokenById(
-            userId: user.uid,
-            docId: docId,
-          );
+      final userId = _currentUserId;
+      if (userId == null) return;
+      await action(userId);
     });
   }
 
-  Future<void> updatePreference(
-    String eventType,
-    NotificationDeliveryChannel channel,
-  ) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final user = ref.read(authStateProvider).value ??
-          ref.read(authServiceProvider).currentAuthenticatedUser;
-      if (user == null) return;
+  Future<void> removeToken(String docId) => _runWithUserId(
+        (userId) => ref.read(notificationRepositoryProvider).removeDeviceTokenById(
+              userId: userId,
+              docId: docId,
+            ),
+      );
 
-      await ref
-          .read(notificationRepositoryProvider)
-          .updateNotificationPreference(
-            userId: user.uid,
-            eventType: eventType,
-            app: channel.includesApp,
-            email: channel.includesEmail,
-          );
-    });
-  }
+  Future<void> toggleAppNotification(String eventType, bool enabled) =>
+      _runWithUserId(
+        (userId) => ref
+            .read(notificationRepositoryProvider)
+            .updateAppNotificationPreference(
+              userId: userId,
+              eventType: eventType,
+              enabled: enabled,
+            ),
+      );
+
+  Future<void> toggleEmailNotification(String eventType, bool enabled) =>
+      _runWithUserId(
+        (userId) => ref
+            .read(notificationRepositoryProvider)
+            .updateEmailNotificationPreference(
+              userId: userId,
+              eventType: eventType,
+              enabled: enabled,
+            ),
+      );
 }

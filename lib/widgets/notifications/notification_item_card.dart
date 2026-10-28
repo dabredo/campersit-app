@@ -16,7 +16,12 @@ class NotificationItemCard extends StatelessWidget {
 
   IconData _resolveIcon() => switch (notification.type) {
     'sensor-triggered' => Icons.motion_photos_on_rounded,
-    'sensor-battery-low' => Icons.battery_alert_rounded,
+    'sensor-triggered-off' => Icons.motion_photos_off_rounded,
+    'sensor-started' => Icons.play_circle_outline_rounded,
+    'sensor-started-off' => Icons.stop_circle_outlined,
+    'sensor-battery-critical' => Icons.battery_alert_rounded,
+    'sensor-battery-low' => Icons.battery_3_bar_rounded,
+    'sensor-battery-good' => Icons.battery_full_rounded,
     'device-missing' || 'sensor-missing' => Icons.cloud_off_rounded,
     'device-not-missing' || 'sensor-not-missing' => Icons.cloud_done_rounded,
     'device-power-loss' => Icons.power_off_rounded,
@@ -27,12 +32,15 @@ class NotificationItemCard extends StatelessWidget {
 
   Color _resolveColor() => switch (notification.type) {
     'sensor-triggered' ||
+    'sensor-battery-critical' ||
     'sensor-battery-low' ||
     'device-missing' ||
+    'sensor-missing' ||
     'device-power-loss' => AppColors.danger,
     'device-not-missing' ||
     'device-power-restored' ||
-    'sensor-not-missing' => AppColors.primaryAccent,
+    'sensor-not-missing' ||
+    'sensor-battery-good' => AppColors.primaryAccent,
     _ => AppColors.textSecondary,
   };
 
