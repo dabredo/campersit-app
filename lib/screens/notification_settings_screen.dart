@@ -39,9 +39,9 @@ class NotificationSettingsScreen extends ConsumerWidget {
             subtitle: 'Enable or disable app push notifications and email alerts for each event.',
           ),
           const SizedBox(height: 12),
-          preferencesAsync.when(
-            data: (preferences) => _PreferencesList(preferences: preferences),
-            loading: () => const Center(
+          switch (preferencesAsync) {
+            AsyncData(:final value) => _PreferencesList(preferences: value),
+            AsyncLoading() => const Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
                 child: CircularProgressIndicator(
@@ -49,20 +49,21 @@ class NotificationSettingsScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            error: (error, _) => AppErrorState(
+            AsyncError(:final error) => AppErrorState(
               title: 'Failed to load preferences',
               message: AppErrorFormatter.format(error),
             ),
-          ),
+          },
           const SizedBox(height: 28),
           const _SectionHeader(
             title: 'Registered Device Tokens',
-            subtitle: 'Devices currently receiving push notifications. You can delete individual tokens manually at any time.',
+            subtitle:
+                'Devices currently receiving push notifications. You can delete individual tokens manually at any time.',
           ),
           const SizedBox(height: 12),
-          tokensAsync.when(
-            data: (tokens) => _DeviceTokensList(tokens: tokens),
-            loading: () => const Center(
+          switch (tokensAsync) {
+            AsyncData(:final value) => _DeviceTokensList(tokens: value),
+            AsyncLoading() => const Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
                 child: CircularProgressIndicator(
@@ -70,11 +71,11 @@ class NotificationSettingsScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            error: (error, _) => AppErrorState(
+            AsyncError(:final error) => AppErrorState(
               title: 'Failed to load device tokens',
               message: AppErrorFormatter.format(error),
             ),
-          ),
+          },
           const SizedBox(height: 32),
         ],
       ),
