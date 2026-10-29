@@ -31,7 +31,7 @@ void main() {
     testWidgets('renders singular sensor connected and active alarms', (tester) async {
       const gateway = Gateway(
         id: 'gw-camper-2',
-        state: GatewayStates.inactive,
+        state: GatewayStates.initialized,
         userId: 'user-1',
         alerts: {'temp': 'Overheating'},
         sensors: [
@@ -51,7 +51,7 @@ void main() {
       );
 
       expect(find.text('gw-camper-2'), findsOneWidget);
-      expect(find.text('Inactive'), findsOneWidget);
+      expect(find.text('Initialized'), findsOneWidget);
       expect(find.text('1 Sensor connected'), findsOneWidget);
       expect(find.text('Alarms:'), findsOneWidget);
       expect(find.text('- temp: Overheating'), findsOneWidget);

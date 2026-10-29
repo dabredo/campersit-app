@@ -6,6 +6,8 @@ import '../../theme/app_theme.dart';
 Color gatewayStateColor(String state) => switch (state) {
   GatewayStates.connected => AppColors.secondaryAccent,
   GatewayStates.localizing => AppColors.warning,
+  GatewayStates.initialized => AppColors.textSecondary,
+  GatewayStates.unpaired => AppColors.textSecondary,
   _ => AppColors.textSecondary,
 };
 

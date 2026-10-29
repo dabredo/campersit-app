@@ -57,14 +57,16 @@ class GatewayLocation {
 
 abstract final class GatewayStates {
   static const connected = 'c';
-  static const inactive = 'i';
+  static const initialized = 'i';
   static const localizing = 'l';
+  static const unpaired = 'u';
 }
 
 String gatewayStateLabel(String state) => switch (state) {
   GatewayStates.connected => 'Connected',
-  GatewayStates.inactive => 'Inactive',
+  GatewayStates.initialized => 'Initialized',
   GatewayStates.localizing => 'Localizing...',
+  GatewayStates.unpaired => 'Unpaired',
   _ => 'Unknown',
 };
 
@@ -90,6 +92,8 @@ class Gateway {
   String get stateLabel => gatewayStateLabel(state);
   bool get isLocalizing => state == GatewayStates.localizing;
   bool get isConnected => state == GatewayStates.connected;
+  bool get isInitialized => state == GatewayStates.initialized;
+  bool get isUnpaired => state == GatewayStates.unpaired;
 
   factory Gateway.fromMap(String id, Map<String, Object?> map) {
     final rawSensors = (map['sensors'] as Map?)?.cast<String, Object?>();
@@ -109,7 +113,7 @@ class Gateway {
 
     return Gateway(
       id: id,
-      state: map['state'] as String? ?? GatewayStates.inactive,
+      state: map['state'] as String? ?? GatewayStates.unpaired,
       seenAt: map['seenAt'] as int?,
       userId: map['userId'] as String? ?? '',
       alerts: (map['alerts'] as Map?)?.cast<String, Object?>() ?? const {},

@@ -74,6 +74,18 @@ void main() {
       expect(gateway.seenAt, isNull);
     });
 
+    test('defaults to unpaired state if state is missing', () {
+      final map = {
+        'userId': 'user-789',
+        'alerts': {},
+      };
+
+      final gateway = Gateway.fromMap('gw-default', map);
+
+      expect(gateway.state, equals(GatewayStates.unpaired));
+      expect(gateway.isUnpaired, isTrue);
+    });
+
     test('parses seenAt as int and serializes it in toMap', () {
       const timestamp = 1760790600000;
       final map = {
@@ -93,12 +105,14 @@ void main() {
 
     test('maps state codes to readable labels and state getters', () {
       expect(GatewayStates.connected, equals('c'));
-      expect(GatewayStates.inactive, equals('i'));
+      expect(GatewayStates.initialized, equals('i'));
       expect(GatewayStates.localizing, equals('l'));
+      expect(GatewayStates.unpaired, equals('u'));
 
       expect(gatewayStateLabel(GatewayStates.connected), equals('Connected'));
-      expect(gatewayStateLabel(GatewayStates.inactive), equals('Inactive'));
+      expect(gatewayStateLabel(GatewayStates.initialized), equals('Initialized'));
       expect(gatewayStateLabel(GatewayStates.localizing), equals('Localizing...'));
+      expect(gatewayStateLabel(GatewayStates.unpaired), equals('Unpaired'));
       expect(gatewayStateLabel('unknown'), equals('Unknown'));
 
       final connectedGateway = Gateway(
@@ -110,6 +124,20 @@ void main() {
       expect(connectedGateway.stateLabel, equals('Connected'));
       expect(connectedGateway.isConnected, isTrue);
       expect(connectedGateway.isLocalizing, isFalse);
+      expect(connectedGateway.isInitialized, isFalse);
+      expect(connectedGateway.isUnpaired, isFalse);
+
+      final initializedGateway = Gateway(
+        id: 'gw-i',
+        state: 'i',
+        userId: 'u1',
+        alerts: {},
+      );
+      expect(initializedGateway.stateLabel, equals('Initialized'));
+      expect(initializedGateway.isConnected, isFalse);
+      expect(initializedGateway.isLocalizing, isFalse);
+      expect(initializedGateway.isInitialized, isTrue);
+      expect(initializedGateway.isUnpaired, isFalse);
 
       final localizingGateway = Gateway(
         id: 'gw-l',
@@ -120,6 +148,20 @@ void main() {
       expect(localizingGateway.stateLabel, equals('Localizing...'));
       expect(localizingGateway.isConnected, isFalse);
       expect(localizingGateway.isLocalizing, isTrue);
+      expect(localizingGateway.isInitialized, isFalse);
+      expect(localizingGateway.isUnpaired, isFalse);
+
+      final unpairedGateway = Gateway(
+        id: 'gw-u',
+        state: 'u',
+        userId: 'u1',
+        alerts: {},
+      );
+      expect(unpairedGateway.stateLabel, equals('Unpaired'));
+      expect(unpairedGateway.isConnected, isFalse);
+      expect(unpairedGateway.isLocalizing, isFalse);
+      expect(unpairedGateway.isInitialized, isFalse);
+      expect(unpairedGateway.isUnpaired, isTrue);
     });
 
     test('formats coordinates correctly in GatewayLocationPoint', () {

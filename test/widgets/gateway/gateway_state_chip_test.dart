@@ -29,7 +29,7 @@ void main() {
       expect(find.text('Localizing...'), findsOneWidget);
     });
 
-    testWidgets('renders Inactive label for inactive state', (tester) async {
+    testWidgets('renders Initialized label for initialized state', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -38,7 +38,19 @@ void main() {
         ),
       );
 
-      expect(find.text('Inactive'), findsOneWidget);
+      expect(find.text('Initialized'), findsOneWidget);
+    });
+
+    testWidgets('renders Unpaired label for unpaired state', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: GatewayStateChip(state: 'u'),
+          ),
+        ),
+      );
+
+      expect(find.text('Unpaired'), findsOneWidget);
     });
   });
 }
