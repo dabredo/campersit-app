@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/notification_preference.dart';
 import '../models/user_device_token.dart';
+import '../providers/auth_providers.dart';
 import '../providers/notification_provider.dart';
 import '../providers/notification_settings_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
+import '../widgets/common/app_bar.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
 import '../widgets/notifications/device_token_card.dart';
@@ -30,7 +32,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
-      appBar: AppBar(title: const Text('Notification Settings')),
+      appBar: const AppAppBar(title: 'Notification Settings'),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         children: [
@@ -76,7 +78,8 @@ class NotificationSettingsScreen extends ConsumerWidget {
               message: AppErrorFormatter.format(error),
             ),
           },
-          const SizedBox(height: 32),
+          const SizedBox(height: 16),
+          const _AccountSessionSection(),
         ],
       ),
     );
@@ -197,6 +200,88 @@ class _DeviceTokensList extends ConsumerWidget {
           ),
         ],
       ],
+    );
+  }
+}
+
+class _AccountSessionSection extends ConsumerWidget {
+  const _AccountSessionSection();
+
+  Future<void> _handleSignOut(WidgetRef ref) async {
+    await ref.read(authServiceProvider).terminateSession();
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userEmail = ref.watch(currentUserEmailProvider);
+    final textTheme = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      child: Column(
+        children: [
+          Material(
+            color: AppColors.cardSurface,
+            borderRadius: AppRadius.border2Xl,
+            child: InkWell(
+              onTap: () => _handleSignOut(ref),
+              borderRadius: AppRadius.border2Xl,
+              splashColor: AppColors.danger.withValues(alpha: 0.08),
+              highlightColor: AppColors.danger.withValues(alpha: 0.04),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                decoration: BoxDecoration(
+                  borderRadius: AppRadius.border2Xl,
+                  border: Border.all(
+                    color: AppColors.danger.withValues(alpha: 0.25),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.logout_rounded,
+                      size: 20,
+                      color: AppColors.danger,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Log Out',
+                      style: textTheme.titleSmall?.copyWith(
+                        color: AppColors.danger,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          if (userEmail != null && userEmail.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text.rich(
+              TextSpan(
+                text: 'Signed in as ',
+                style: textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                children: [
+                  TextSpan(
+                    text: userEmail,
+                    style: textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

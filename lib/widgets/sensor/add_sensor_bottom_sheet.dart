@@ -27,6 +27,9 @@ class AddSensorBottomSheet extends ConsumerWidget {
       description:
           'Enter the Sensor ID of your device to link it to this gateway.',
       idLabel: 'Sensor ID',
+      helperText: 'Find the MAC code on the sensor label or packaging.',
+      tipHighlight: 'Pairing tip:',
+      tipText: 'Ensure the sensor is powered on and within gateway range.',
       icon: Icons.sensors_rounded,
       submitLabel: 'Add Sensor',
       isLoading: isLoading,

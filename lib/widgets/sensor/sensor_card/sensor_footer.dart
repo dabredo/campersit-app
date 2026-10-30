@@ -96,14 +96,21 @@ class SensorBatteryIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final status = _BatteryStatus.fromLevel(battery);
     final textStyle = Theme.of(context).textTheme.labelSmall
-        ?.copyWith(fontWeight: FontWeight.w600, color: status.color);
+        ?.copyWith(fontWeight: FontWeight.w600, color: status.color, fontSize: 11);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(status.icon, size: 14, color: status.color),
-        const SizedBox(width: 4),
+        Icon(status.icon, size: 13, color: status.color),
+        const SizedBox(width: 2),
         Text('${battery.toInt()}', style: textStyle),
+        Text(
+          '%',
+          style: textStyle?.copyWith(
+            fontWeight: FontWeight.normal,
+            fontSize: 10,
+          ),
+        ),
       ],
     );
   }

@@ -7,8 +7,8 @@ import 'firebase_options.dart';
 import 'providers/auth_providers.dart';
 import 'providers/gateway_notification_providers.dart';
 import 'providers/notification_provider.dart';
-import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/main_navigation_shell.dart';
 import 'services/fcm_service.dart';
 import 'theme/app_theme.dart';
 import 'widgets/common/app_notification_listener.dart';
@@ -101,7 +101,7 @@ class CampersitApplication extends ConsumerWidget {
       home: authState.when(
         data: (user) {
           if (user != null) {
-            return const HomeScreen();
+            return const MainNavigationShell();
           }
           return const LoginScreen();
         },

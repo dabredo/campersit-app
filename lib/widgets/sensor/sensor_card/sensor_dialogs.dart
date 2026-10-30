@@ -45,26 +45,52 @@ class DeleteSensorButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const SizedBox(
-        width: 14,
-        height: 14,
-        child: CircularProgressIndicator(
-          strokeWidth: 1.5,
-          color: AppColors.danger,
+      return Container(
+        width: 38,
+        height: 38,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.danger.withValues(alpha: 0.08),
+          borderRadius: AppRadius.borderXl,
+          border: Border.all(
+            color: AppColors.danger.withValues(alpha: 0.25),
+            width: 1,
+          ),
+        ),
+        child: const SizedBox(
+          width: 14,
+          height: 14,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: AppColors.danger,
+          ),
         ),
       );
     }
 
-    return InkWell(
-      key: ValueKey('delete_sensor_$sensorId'),
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: const Padding(
-        padding: EdgeInsets.all(2),
-        child: Icon(
-          Icons.delete_outline_rounded,
-          size: 14,
-          color: AppColors.danger,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        key: ValueKey('delete_sensor_$sensorId'),
+        onTap: onTap,
+        borderRadius: AppRadius.borderXl,
+        child: Container(
+          width: 38,
+          height: 38,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.danger.withValues(alpha: 0.06),
+            borderRadius: AppRadius.borderXl,
+            border: Border.all(
+              color: AppColors.danger.withValues(alpha: 0.25),
+              width: 1,
+            ),
+          ),
+          child: const Icon(
+            Icons.delete_outline_rounded,
+            size: 18,
+            color: AppColors.danger,
+          ),
         ),
       ),
     );

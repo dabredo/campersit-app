@@ -29,12 +29,12 @@ class SensorActionButtons extends ConsumerWidget {
       spacing: 8,
       runSpacing: 6,
       children: [
-        for (final targetState in transitions)
+        for (final transition in transitions)
           SensorStateButton(
             gatewayId: gatewayId,
             sensorId: sensor.id,
-            targetState: targetState,
-            isLoading: activeTarget == targetState,
+            targetState: transition,
+            isLoading: activeTarget == transition,
             isDisabled: activeTarget != null,
           ),
       ],
@@ -66,7 +66,7 @@ class SensorStateButton extends ConsumerWidget {
   };
 
   static IconData _resolveIcon(SensorState state) => switch (state) {
-    SensorState.enabled => Icons.check_circle_outline_rounded,
+    SensorState.enabled => Icons.power_settings_new_rounded,
     SensorState.started => Icons.play_arrow_rounded,
     SensorState.paired => Icons.link_rounded,
     _ => Icons.arrow_forward_rounded,
@@ -84,22 +84,21 @@ class SensorStateButton extends ConsumerWidget {
     final color = _resolveColor(targetState);
     final label = _resolveLabel(targetState);
     final icon = _resolveIcon(targetState);
-    final textTheme = Theme.of(context).textTheme;
 
     return SizedBox(
-      height: 32,
+      height: 38,
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
           foregroundColor: color,
-          side: BorderSide(
-            color: color.withValues(alpha: 0.35),
+          side: const BorderSide(
+            color: AppColors.borderLight,
             width: 1,
           ),
           shape: const RoundedRectangleBorder(
             borderRadius: AppRadius.borderXl,
           ),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-          backgroundColor: color.withValues(alpha: 0.06),
+          backgroundColor: AppColors.cardSurface,
         ),
         onPressed: isDisabled
             ? null
@@ -121,15 +120,21 @@ class SensorStateButton extends ConsumerWidget {
                 ),
               )
             : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, size: 14, color: color),
+                  Icon(icon, size: 16, color: color),
                   const SizedBox(width: 4),
-                  Text(
-                    label,
-                    style: textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: color,
+                  Flexible(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: color,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],

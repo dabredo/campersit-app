@@ -5,10 +5,9 @@ import '../models/gateway.dart';
 import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
-import '../widgets/gateway/delete_gateway_action.dart';
+import '../widgets/common/app_bar.dart';
 import '../widgets/gateway/gateway_overview_card.dart';
 import '../widgets/gateway/sensors_sliver.dart';
-import '../widgets/sensor/add_sensor_bottom_sheet.dart';
 
 class GatewayDetailScreen extends ConsumerWidget {
   const GatewayDetailScreen({
@@ -58,7 +57,10 @@ class _GatewayMessageScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
-      appBar: AppBar(title: Text(title)),
+      appBar: AppAppBar(
+        title: title,
+        showBackButton: true,
+      ),
       body: Center(child: body),
     );
   }
@@ -92,12 +94,9 @@ class _GatewayDetailContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
-      appBar: AppBar(
-        title: Text(gateway.id),
-        actions: [
-          DeleteGatewayAction(gatewayId: gateway.id),
-          const SizedBox(width: 8),
-        ],
+      appBar: AppAppBar(
+        title: gateway.id,
+        showBackButton: true,
       ),
       body: CustomScrollView(
         slivers: [
@@ -120,14 +119,6 @@ class _GatewayDetailContent extends StatelessWidget {
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.primaryAccent,
-        foregroundColor: AppColors.cardSurface,
-        tooltip: 'Add Sensor',
-        onPressed: () =>
-            AddSensorBottomSheet.show(context, gatewayId: gateway.id),
-        child: const Icon(Icons.add),
       ),
     );
   }

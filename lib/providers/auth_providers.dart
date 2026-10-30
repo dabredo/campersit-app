@@ -14,6 +14,14 @@ final authStateProvider = StreamProvider<User?>((ref) {
   return authService.observeAuthenticationState();
 });
 
+final currentUserEmailProvider = Provider<String?>((ref) {
+  try {
+    return ref.watch(authServiceProvider).currentAuthenticatedUser?.email;
+  } catch (_) {
+    return null;
+  }
+});
+
 final loginControllerProvider =
     AsyncNotifierProvider.autoDispose<LoginController, void>(
       LoginController.new,

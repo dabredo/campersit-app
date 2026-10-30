@@ -46,16 +46,24 @@ class AppTheme {
         ),
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.mainBackground,
+        backgroundColor: AppColors.cardSurface,
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: false,
         titleTextStyle: TextStyle(
           color: AppColors.textPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.5,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.3,
         ),
         iconTheme: IconThemeData(color: AppColors.textPrimary),
+        shape: Border(
+          bottom: BorderSide(
+            color: AppColors.borderLight,
+            width: 1,
+          ),
+        ),
       ),
       cardTheme: const CardThemeData(
         color: AppColors.cardSurface,

@@ -5,11 +5,11 @@ import '../models/gateway_notification.dart';
 import '../providers/gateway_notification_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
+import '../widgets/common/app_bar.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
 import '../widgets/notifications/notification_item_card.dart';
 import 'gateway_detail_screen.dart';
-import 'notification_settings_screen.dart';
 
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
@@ -28,22 +28,7 @@ class NotificationsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
-      appBar: AppBar(
-        title: const Text('Notifications'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.tune_rounded),
-            tooltip: 'Notification settings',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const NotificationSettingsScreen(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+      appBar: const AppAppBar(title: 'Notifications'),
       body: switch (notificationsAsync) {
         AsyncLoading() => const Center(
             child: CircularProgressIndicator(color: AppColors.primaryAccent),

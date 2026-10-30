@@ -86,11 +86,10 @@ void main() {
 
       await tester.pumpWidget(createWidget(sensor: sensor));
 
-      expect(find.text('Alarms:'), findsOneWidget);
-      expect(find.text('- tamper'), findsOneWidget);
-      expect(find.text('- vibration'), findsOneWidget);
-      expect(find.text('- battery: low'), findsOneWidget);
-      expect(find.text('- battery_low'), findsNothing);
+      expect(find.text('Alarm: tamper'), findsOneWidget);
+      expect(find.text('Alarm: vibration'), findsOneWidget);
+      expect(find.text('Alarm: battery: low'), findsOneWidget);
+      expect(find.textContaining('battery_low'), findsNothing);
     });
 
     testWidgets('does not render alarms list when alerts are all false', (
@@ -107,7 +106,7 @@ void main() {
 
       await tester.pumpWidget(createWidget(sensor: sensor));
 
-      expect(find.text('Alarms:'), findsNothing);
+      expect(find.byType(SensorAlertsList), findsNothing);
     });
 
     testWidgets('renders sensor id as fallback when tag is absent', (

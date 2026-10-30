@@ -8,6 +8,8 @@ import 'package:campersit_app/providers/gateway_providers.dart';
 import 'package:campersit_app/repositories/gateway_repository.dart';
 import 'package:campersit_app/screens/gateway_detail_screen.dart';
 import 'package:campersit_app/utils/date_time_formatter.dart';
+import 'package:campersit_app/widgets/gateway/delete_gateway_action.dart';
+import 'package:campersit_app/widgets/gateway/sensors_sliver.dart';
 
 class MockGatewayRepository extends Mock implements GatewayRepository {}
 
@@ -84,6 +86,11 @@ void main() {
       expect(find.text('40.5, -3.7'), findsOneWidget);
       expect(find.text(formatDateTime(locatingSinceMillis)), findsOneWidget);
       expect(find.text('Request Location'), findsOneWidget);
+      expect(find.byType(DeleteGatewayAction), findsOneWidget);
+      expect(
+        find.byKey(const ValueKey('delete_gateway_$gatewayId')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('shows empty sensors placeholder when there are no sensors', (
@@ -190,7 +197,9 @@ void main() {
 
       await pumpScreen(tester);
       await tester.pump();
-      await tester.tap(find.byType(FloatingActionButton));
+      await tester.ensureVisible(find.byType(AddSensorCard));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(AddSensorCard));
       await tester.pumpAndSettle();
 
       expect(find.byType(TextFormField), findsOneWidget);

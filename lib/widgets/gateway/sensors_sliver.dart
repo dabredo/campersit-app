@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../models/gateway.dart';
 import '../../theme/app_theme.dart';
+import '../common/add_device_card.dart';
 import '../common/app_empty_state.dart';
+import '../sensor/add_sensor_bottom_sheet.dart';
 import '../sensor/sensor_card.dart';
 
 class SensorsSliver extends StatelessWidget {
@@ -14,14 +16,27 @@ class SensorsSliver extends StatelessWidget {
   final String gatewayId;
   final List<Sensor> sensors;
 
+  Widget _buildItem(int index) {
+    if (index < sensors.length) {
+      return SensorCard(sensor: sensors[index], gatewayId: gatewayId);
+    }
+    return AddSensorCard(gatewayId: gatewayId);
+  }
+
   @override
   Widget build(BuildContext context) {
     if (sensors.isEmpty) {
-      return const SliverToBoxAdapter(
-        child: AppEmptyState(
-          icon: Icons.sensors_off_rounded,
-          title: 'No Sensors Configured',
-          message: 'There are no telemetry sensors associated with this gateway yet.',
+      return SliverToBoxAdapter(
+        child: Column(
+          children: [
+            const AppEmptyState(
+              icon: Icons.sensors_off_rounded,
+              title: 'No Sensors Configured',
+              message: 'There are no telemetry sensors associated with this gateway yet.',
+            ),
+            const SizedBox(height: 12),
+            AddSensorCard(gatewayId: gatewayId),
+          ],
         ),
       );
     }
@@ -30,9 +45,10 @@ class SensorsSliver extends StatelessWidget {
       builder: (context, constraints) {
         final isWideScreen =
             constraints.crossAxisExtent >= _wideLayoutBreakpoint;
+        final totalItemCount = sensors.length + 1;
 
         if (isWideScreen) {
-          final rowCount = (sensors.length + 1) ~/ 2;
+          final rowCount = (totalItemCount + 1) ~/ 2;
           return SliverList.separated(
             itemCount: rowCount,
             separatorBuilder: (_, _) => const SizedBox(height: _sensorSpacing),
@@ -40,10 +56,10 @@ class SensorsSliver extends StatelessWidget {
               final firstIndex = rowIndex * 2;
               final secondIndex = firstIndex + 1;
               return _SensorGridRow(
-                firstSensor: sensors[firstIndex],
-                secondSensor:
-                    secondIndex < sensors.length ? sensors[secondIndex] : null,
-                gatewayId: gatewayId,
+                firstWidget: _buildItem(firstIndex),
+                secondWidget: secondIndex < totalItemCount
+                    ? _buildItem(secondIndex)
+                    : null,
                 spacing: _sensorSpacing,
               );
             },
@@ -51,10 +67,9 @@ class SensorsSliver extends StatelessWidget {
         }
 
         return SliverList.separated(
-          itemCount: sensors.length,
+          itemCount: totalItemCount,
           separatorBuilder: (_, _) => const SizedBox(height: _sensorSpacing),
-          itemBuilder: (_, index) =>
-              SensorCard(sensor: sensors[index], gatewayId: gatewayId),
+          itemBuilder: (_, index) => _buildItem(index),
         );
       },
     );
@@ -63,34 +78,40 @@ class SensorsSliver extends StatelessWidget {
 
 class _SensorGridRow extends StatelessWidget {
   const _SensorGridRow({
-    required this.firstSensor,
-    required this.secondSensor,
-    required this.gatewayId,
+    required this.firstWidget,
+    required this.secondWidget,
     required this.spacing,
   });
 
-  final Sensor firstSensor;
-  final Sensor? secondSensor;
-  final String gatewayId;
+  final Widget firstWidget;
+  final Widget? secondWidget;
   final double spacing;
 
   @override
   Widget build(BuildContext context) {
-    final second = secondSensor;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: SensorCard(sensor: firstSensor, gatewayId: gatewayId),
-        ),
+        Expanded(child: firstWidget),
         SizedBox(width: spacing),
         Expanded(
-          child: second != null
-              ? SensorCard(sensor: second, gatewayId: gatewayId)
-              : const SizedBox.shrink(),
+          child: secondWidget ?? const SizedBox.shrink(),
         ),
       ],
+    );
+  }
+}
+
+class AddSensorCard extends StatelessWidget {
+  const AddSensorCard({super.key, required this.gatewayId});
+
+  final String gatewayId;
+
+  @override
+  Widget build(BuildContext context) {
+    return AddDeviceCard(
+      title: 'Add Sensor',
+      onTap: () => AddSensorBottomSheet.show(context, gatewayId: gatewayId),
     );
   }
 }
@@ -105,6 +126,7 @@ class SensorsSectionHeader extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const Icon(
           Icons.sensors_rounded,
@@ -114,14 +136,18 @@ class SensorsSectionHeader extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           'Sensors',
-          style: textTheme.titleMedium,
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+          ),
         ),
-        const SizedBox(width: 8),
+        const Spacer(),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
           decoration: BoxDecoration(
-            color: AppColors.primaryAccent.withValues(alpha: 0.1),
+            color: AppColors.cardSurface,
             borderRadius: AppRadius.borderXl,
+            border: Border.all(color: AppColors.borderLight),
           ),
           child: Text(
             '$sensorCount',

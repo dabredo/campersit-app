@@ -59,18 +59,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(
               horizontal: 24.0,
-              vertical: 20.0,
+              vertical: 24.0,
             ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 32),
-                  _buildLoginForm(isAuthenticating),
-                ],
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _buildHeader(),
+                    const SizedBox(height: 28),
+                    _buildLoginForm(isAuthenticating),
+                  ],
+                ),
               ),
             ),
           ),
@@ -82,19 +85,44 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget _buildHeader() {
     return Column(
       children: [
-        Center(
+        Container(
+          width: 88,
+          height: 88,
+          decoration: BoxDecoration(
+            color: AppColors.cardSurface,
+            borderRadius: AppRadius.border2Xl,
+            border: Border.all(color: AppColors.borderLight),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(12),
           child: Image.asset(
             'assets/images/logo.png',
-            height: 110,
             fit: BoxFit.contain,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
+        Text(
+          'Campersit',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 4),
         const Text(
           'Campersit Security Portal',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
+            fontWeight: FontWeight.w500,
             color: AppColors.textSecondary,
           ),
         ),
@@ -116,7 +144,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ],
       ),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -140,7 +168,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       decoration: const InputDecoration(
         labelText: 'Email Address',
         hintText: 'user@campersit.com',
-        prefixIcon: Icon(Icons.alternate_email),
+        prefixIcon: Icon(Icons.mail_outline_rounded),
       ),
       validator: validateEmail,
     );
@@ -153,7 +181,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       style: const TextStyle(color: AppColors.textPrimary),
       decoration: InputDecoration(
         labelText: 'Password',
-        prefixIcon: const Icon(Icons.lock_outline),
+        prefixIcon: const Icon(Icons.lock_outline_rounded),
         suffixIcon: IconButton(
           icon: Icon(
             _isPasswordObscured
@@ -176,6 +204,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       isLoading: isAuthenticating,
       onPressed: _handleUserLogin,
       label: 'Login',
+      icon: const Icon(Icons.lock_rounded, size: 18),
     );
   }
 }

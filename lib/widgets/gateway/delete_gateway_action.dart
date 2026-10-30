@@ -34,25 +34,57 @@ class DeleteGatewayAction extends ConsumerWidget {
         .isLoading;
 
     if (isDeleting) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 12),
-        child: Center(
-          child: SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: AppColors.danger,
-            ),
+      return Container(
+        width: 48,
+        height: 48,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.danger.withValues(alpha: 0.06),
+          borderRadius: AppRadius.borderXl,
+          border: Border.all(
+            color: AppColors.danger.withValues(alpha: 0.25),
+            width: 1,
+          ),
+        ),
+        child: const SizedBox(
+          width: 18,
+          height: 18,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: AppColors.danger,
           ),
         ),
       );
     }
 
-    return IconButton(
-      icon: const Icon(Icons.delete_outline, color: AppColors.danger),
-      tooltip: 'Delete gateway',
-      onPressed: () => _confirmAndDelete(context, ref),
+    return Tooltip(
+      message: 'Delete gateway',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          key: ValueKey('delete_gateway_$gatewayId'),
+          onTap: () => _confirmAndDelete(context, ref),
+          borderRadius: AppRadius.borderXl,
+          child: Container(
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.danger.withValues(alpha: 0.06),
+              borderRadius: AppRadius.borderXl,
+              border: Border.all(
+                color: AppColors.danger.withValues(alpha: 0.25),
+                width: 1,
+              ),
+            ),
+            child: const Icon(
+              Icons.delete_outline_rounded,
+              size: 20,
+              color: AppColors.danger,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

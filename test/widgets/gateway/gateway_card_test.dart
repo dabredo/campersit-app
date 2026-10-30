@@ -28,12 +28,12 @@ void main() {
       expect(find.text('Alarms:'), findsNothing);
     });
 
-    testWidgets('renders singular sensor connected and active alarms', (tester) async {
+    testWidgets('renders singular sensor connected and active alarms matching Stitch', (tester) async {
       const gateway = Gateway(
         id: 'gw-camper-2',
         state: GatewayStates.initialized,
         userId: 'user-1',
-        alerts: {'temp': 'Overheating'},
+        alerts: {'temp': 'Overheating', 'ignored': false},
         sensors: [
           Sensor(
             id: 'sensor-1',
@@ -53,8 +53,32 @@ void main() {
       expect(find.text('gw-camper-2'), findsOneWidget);
       expect(find.text('Initialized'), findsOneWidget);
       expect(find.text('1 Sensor connected'), findsOneWidget);
-      expect(find.text('Alarms:'), findsOneWidget);
-      expect(find.text('- temp: Overheating'), findsOneWidget);
+      expect(find.text('Alarms:'), findsNothing);
+      expect(find.text('temp: Overheating'), findsOneWidget);
+      expect(find.text('ignored'), findsNothing);
+      expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
+    });
+
+    testWidgets('renders boolean alarm with key name matching Stitch design', (tester) async {
+      const gateway = Gateway(
+        id: 'gw-camper-3',
+        state: GatewayStates.connected,
+        userId: 'user-1',
+        alerts: {'missing': true},
+        sensors: [],
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: GatewayCard(gateway: gateway),
+          ),
+        ),
+      );
+
+      expect(find.text('gw-camper-3'), findsOneWidget);
+      expect(find.text('missing'), findsOneWidget);
+      expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
     });
   });
 }

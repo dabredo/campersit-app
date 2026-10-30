@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../providers/auth_providers.dart';
-import '../providers/gateway_notification_providers.dart';
 import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
+import '../widgets/common/add_device_card.dart';
+import '../widgets/common/app_bar.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
 import '../widgets/gateway/add_gateway_bottom_sheet.dart';
 import '../widgets/gateway/gateway_card.dart';
-import 'notifications_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -21,20 +20,31 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
-      appBar: _buildAppBar(context, ref),
+      appBar: const AppAppBar(title: 'Gateways'),
       body: gatewaysAsyncValue.when(
         data: (gateways) {
           if (gateways.isEmpty) {
-            return const AppEmptyState(
-              icon: Icons.router_rounded,
-              title: 'No Gateways',
-              message: 'You currently have no gateways configured.',
+            return ListView(
+              padding: const EdgeInsets.only(top: 8, bottom: 80),
+              children: const [
+                AppEmptyState(
+                  icon: Icons.router_rounded,
+                  title: 'No Gateways',
+                  message: 'You currently have no gateways configured.',
+                ),
+                SizedBox(height: 12),
+                _AddGatewayCard(),
+              ],
             );
           }
           return ListView.builder(
-            itemCount: gateways.length,
+            padding: const EdgeInsets.only(top: 8, bottom: 80),
+            itemCount: gateways.length + 1,
             itemBuilder: (context, index) {
-              return GatewayCard(gateway: gateways[index]);
+              if (index < gateways.length) {
+                return GatewayCard(gateway: gateways[index]);
+              }
+              return const _AddGatewayCard();
             },
           );
         },
@@ -46,54 +56,19 @@ class HomeScreen extends ConsumerWidget {
           message: AppErrorFormatter.format(error),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColors.primaryAccent,
-        foregroundColor: Colors.white,
-        onPressed: () => AddGatewayBottomSheet.show(context),
-        child: const Icon(Icons.add),
-      ),
     );
   }
+}
 
-  PreferredSizeWidget _buildAppBar(BuildContext context, WidgetRef ref) {
-    final notificationCount = ref.watch(userNotificationsCountProvider);
+class _AddGatewayCard extends StatelessWidget {
+  const _AddGatewayCard();
 
-    return AppBar(
-      toolbarHeight: 60,
-      title: SizedBox(
-        height: 60,
-        child: Image.asset('assets/images/logo.png', fit: BoxFit.contain),
-      ),
-      actions: [
-        IconButton(
-          icon: Badge.count(
-            count: notificationCount,
-            isLabelVisible: notificationCount > 0,
-            backgroundColor: AppColors.primaryAccent,
-            child: const Icon(Icons.notifications_none_rounded),
-          ),
-          tooltip: 'Notifications',
-          onPressed: () {
-            ref
-                .read(lastSeenNotificationTimestampProvider.notifier)
-                .markAsSeen();
-            Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const NotificationsScreen(),
-              ),
-            );
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.logout_rounded),
-          tooltip: 'Sign out',
-          onPressed: () => _handleSignOut(ref),
-        ),
-      ],
+  @override
+  Widget build(BuildContext context) {
+    return AddDeviceCard(
+      title: 'Add Gateway',
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      onTap: () => AddGatewayBottomSheet.show(context),
     );
-  }
-
-  Future<void> _handleSignOut(WidgetRef ref) async {
-    await ref.read(authServiceProvider).terminateSession();
   }
 }

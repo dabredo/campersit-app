@@ -77,19 +77,27 @@ class NotificationChannelCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const Divider(color: AppColors.borderLight, height: 1),
-          const SizedBox(height: 8),
-          _ChannelToggleRow(
-            icon: Icons.phone_android_rounded,
-            title: 'App Push',
-            value: appEnabled,
-            onChanged: isUpdating ? null : onAppChanged,
-          ),
-          const SizedBox(height: 4),
-          _ChannelToggleRow(
-            icon: Icons.mail_outline_rounded,
-            title: 'Email Alert',
-            value: emailEnabled,
-            onChanged: isUpdating ? null : onEmailChanged,
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: _ChannelToggleRow(
+                  icon: Icons.phone_android_rounded,
+                  title: 'App',
+                  value: appEnabled,
+                  onChanged: isUpdating ? null : onAppChanged,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _ChannelToggleRow(
+                  icon: Icons.mail_outline_rounded,
+                  title: 'Email',
+                  value: emailEnabled,
+                  onChanged: isUpdating ? null : onEmailChanged,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -143,15 +151,15 @@ class _ChannelToggleRow extends StatelessWidget {
         borderRadius: AppRadius.borderXl,
         border: Border.all(color: AppColors.borderLight),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
         children: [
           Icon(
             icon,
-            size: 18,
+            size: 16,
             color: value ? AppColors.primaryAccent : AppColors.textSecondary,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 6),
           Expanded(
             child: Text(
               title,
@@ -159,6 +167,8 @@ class _ChannelToggleRow extends StatelessWidget {
                 fontWeight: FontWeight.w600,
                 color: value ? AppColors.textPrimary : AppColors.textSecondary,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           Switch(

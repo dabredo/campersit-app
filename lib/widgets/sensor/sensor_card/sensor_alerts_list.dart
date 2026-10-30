@@ -13,11 +13,34 @@ class SensorAlertsList extends StatelessWidget {
     return value != null;
   }
 
+  static IconData resolveAlertIcon(String key) {
+    final lowerKey = key.toLowerCase();
+    if (lowerKey.contains('battery')) {
+      return Icons.battery_alert_rounded;
+    }
+    if (lowerKey.contains('missing') ||
+        lowerKey.contains('offline') ||
+        lowerKey.contains('disconnect') ||
+        lowerKey.contains('sensor')) {
+      return Icons.sensors_off_rounded;
+    }
+    if (lowerKey.contains('camera') || lowerKey.contains('video')) {
+      return Icons.videocam_off_rounded;
+    }
+    if (lowerKey.contains('motion') ||
+        lowerKey.contains('crisis') ||
+        lowerKey.contains('tamper') ||
+        lowerKey.contains('vibration')) {
+      return Icons.crisis_alert_rounded;
+    }
+    return Icons.warning_amber_rounded;
+  }
+
   static String formatAlertText(String key, Object? value) {
     if (value is bool) {
-      return '- $key';
+      return 'Alarm: $key';
     }
-    return '- $key: $value';
+    return 'Alarm: $key: $value';
   }
 
   @override
@@ -27,52 +50,47 @@ class SensorAlertsList extends StatelessWidget {
         .toList();
     if (activeAlerts.isEmpty) return const SizedBox.shrink();
 
-    final textTheme = Theme.of(context).textTheme;
-    final alertTitleStyle = textTheme.labelSmall?.copyWith(
-      fontWeight: FontWeight.w600,
+    final alertItemStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
       color: AppColors.danger,
-    );
-    final alertItemStyle = textTheme.bodySmall?.copyWith(
-      color: AppColors.danger,
+      fontSize: 11,
       fontWeight: FontWeight.w500,
     );
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.danger.withValues(alpha: 0.08),
-        borderRadius: AppRadius.borderXl,
-        border: Border.all(
-          color: AppColors.danger.withValues(alpha: 0.25),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.warning_amber_rounded,
-                size: 14,
-                color: AppColors.danger,
-              ),
-              const SizedBox(width: 4),
-              Text('Alarms:', style: alertTitleStyle),
-            ],
-          ),
-          const SizedBox(height: 4),
-          for (final entry in activeAlerts)
-            Padding(
-              padding: const EdgeInsets.only(left: 4, top: 2),
-              child: Text(
-                formatAlertText(entry.key, entry.value),
-                style: alertItemStyle,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < activeAlerts.length; i++) ...[
+          if (i > 0) const SizedBox(height: 6),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.danger.withValues(alpha: 0.08),
+              borderRadius: AppRadius.borderXl,
+              border: Border.all(
+                color: AppColors.danger.withValues(alpha: 0.2),
+                width: 1,
               ),
             ),
+            child: Row(
+              children: [
+                Icon(
+                  resolveAlertIcon(activeAlerts[i].key),
+                  size: 15,
+                  color: AppColors.danger,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    formatAlertText(activeAlerts[i].key, activeAlerts[i].value),
+                    style: alertItemStyle,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
-      ),
+      ],
     );
   }
 }

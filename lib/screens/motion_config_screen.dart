@@ -7,6 +7,7 @@ import '../providers/sensor_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../utils/sensor_icon_resolver.dart';
+import '../widgets/common/app_bar.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
 
@@ -28,8 +29,9 @@ class MotionConfigScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
-      appBar: AppBar(
-        title: Text('$title Actions'),
+      appBar: AppAppBar(
+        title: '$title Actions',
+        showBackButton: true,
       ),
       body: switch (gatewayAsync) {
         AsyncLoading() => const Center(

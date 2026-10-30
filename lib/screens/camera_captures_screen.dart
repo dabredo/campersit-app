@@ -7,6 +7,7 @@ import '../providers/capture_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/camera/capture_card.dart';
+import '../widgets/common/app_bar.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
 
@@ -30,8 +31,9 @@ class CameraCapturesScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.mainBackground,
-      appBar: AppBar(
-        title: Text('$title Recordings'),
+      appBar: AppAppBar(
+        title: '$title Recordings',
+        showBackButton: true,
       ),
       body: switch (capturesAsync) {
         AsyncLoading() => const Center(
