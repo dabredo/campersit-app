@@ -13,7 +13,6 @@ class MockGatewayRepository extends Mock implements GatewayRepository {}
 
 void main() {
   const gatewayId = 'AA:BB:CC:DD:EE:FF';
-  const seenAtMillis = 1760790600000;
 
   late MockGatewayRepository mockRepository;
 
@@ -37,19 +36,11 @@ void main() {
     );
   }
 
-  Gateway buildGateway({
-    String state = 'c',
-    List<Sensor> sensors = const [],
-    Map<String, Object?> alerts = const {},
-    GatewayLocation? location,
-  }) {
+  Gateway buildGateway({List<Sensor> sensors = const []}) {
     return Gateway(
       id: gatewayId,
-      state: state,
-      seenAt: seenAtMillis,
+      state: 'c',
       userId: 'user-1',
-      alerts: alerts,
-      location: location,
       sensors: sensors,
     );
   }
