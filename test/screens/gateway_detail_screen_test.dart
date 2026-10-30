@@ -7,7 +7,6 @@ import 'package:campersit_app/models/gateway.dart';
 import 'package:campersit_app/providers/gateway_providers.dart';
 import 'package:campersit_app/repositories/gateway_repository.dart';
 import 'package:campersit_app/screens/gateway_detail_screen.dart';
-import 'package:campersit_app/utils/date_time_formatter.dart';
 import 'package:campersit_app/widgets/gateway/sensors_sliver.dart';
 
 class MockGatewayRepository extends Mock implements GatewayRepository {}
@@ -56,12 +55,10 @@ void main() {
   }
 
   group('GatewayDetailScreen', () {
-    testWidgets('renders status, last seen, and alarms', (
+    testWidgets('renders gateway title and sensors header', (
       tester,
     ) async {
-      final gateway = buildGateway(
-        alerts: {'door': 'open'},
-      );
+      final gateway = buildGateway();
       when(
         () => mockRepository.watchGateway(gatewayId),
       ).thenAnswer((_) => Stream.value(gateway));
@@ -70,9 +67,7 @@ void main() {
       await tester.pump();
 
       expect(find.text(gatewayId), findsOneWidget);
-      expect(find.text('Connected'), findsOneWidget);
-      expect(find.text(formatDateTime(seenAtMillis)), findsOneWidget);
-      expect(find.text('- door: open'), findsOneWidget);
+      expect(find.text('Sensors'), findsOneWidget);
     });
 
     testWidgets('shows empty sensors placeholder when there are no sensors', (
@@ -146,9 +141,17 @@ void main() {
         () => mockRepository.watchGateway(gatewayId),
       ).thenAnswer((_) => const Stream.empty());
 
-      await pumpScreen(tester, initialGateway: buildGateway(state: 'l'));
+      await pumpScreen(
+        tester,
+        initialGateway: buildGateway(
+          sensors: const [
+            Sensor(id: 'cam-1', type: SensorType.camera, tag: 'Front Camera'),
+          ],
+        ),
+      );
 
-      expect(find.text('Localizing...'), findsOneWidget);
+      expect(find.text(gatewayId), findsOneWidget);
+      expect(find.text('Front Camera'), findsOneWidget);
     });
 
     testWidgets('opens add sensor bottom sheet when tapping add sensor button', (

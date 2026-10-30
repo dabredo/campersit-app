@@ -6,7 +6,6 @@ import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/common/app_bar.dart';
-import '../widgets/gateway/gateway_overview_card.dart';
 import '../widgets/gateway/sensors_sliver.dart';
 
 class GatewayDetailScreen extends ConsumerWidget {
@@ -101,14 +100,9 @@ class _GatewayDetailContent extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            sliver: SliverList.list(
-              children: [
-                GatewayOverviewCard(gateway: gateway),
-                const SizedBox(height: 20),
-                SensorsSectionHeader(sensorCount: gateway.sensors.length),
-                const SizedBox(height: 12),
-              ],
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            sliver: SliverToBoxAdapter(
+              child: SensorsSectionHeader(sensorCount: gateway.sensors.length),
             ),
           ),
           SliverPadding(
