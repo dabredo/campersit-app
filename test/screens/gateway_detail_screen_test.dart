@@ -8,7 +8,6 @@ import 'package:campersit_app/providers/gateway_providers.dart';
 import 'package:campersit_app/repositories/gateway_repository.dart';
 import 'package:campersit_app/screens/gateway_detail_screen.dart';
 import 'package:campersit_app/utils/date_time_formatter.dart';
-import 'package:campersit_app/widgets/gateway/delete_gateway_action.dart';
 import 'package:campersit_app/widgets/gateway/sensors_sliver.dart';
 
 class MockGatewayRepository extends Mock implements GatewayRepository {}
@@ -16,7 +15,6 @@ class MockGatewayRepository extends Mock implements GatewayRepository {}
 void main() {
   const gatewayId = 'AA:BB:CC:DD:EE:FF';
   const seenAtMillis = 1760790600000;
-  const locatingSinceMillis = 1760794200000;
 
   late MockGatewayRepository mockRepository;
 
@@ -58,19 +56,11 @@ void main() {
   }
 
   group('GatewayDetailScreen', () {
-    testWidgets('renders status, last seen, alarms and location details', (
+    testWidgets('renders status, last seen, and alarms', (
       tester,
     ) async {
       final gateway = buildGateway(
         alerts: {'door': 'open'},
-        location: GatewayLocation(
-          exact: GatewayLocationPoint(
-            datetime: 0,
-            latitude: 40.5,
-            longitude: -3.7,
-          ),
-          startedAt: locatingSinceMillis,
-        ),
       );
       when(
         () => mockRepository.watchGateway(gatewayId),
@@ -83,16 +73,6 @@ void main() {
       expect(find.text('Connected'), findsOneWidget);
       expect(find.text(formatDateTime(seenAtMillis)), findsOneWidget);
       expect(find.text('- door: open'), findsOneWidget);
-      expect(find.text('40.5, -3.7'), findsOneWidget);
-      expect(find.text(formatDateTime(locatingSinceMillis)), findsOneWidget);
-      expect(find.text('Request Location'), findsOneWidget);
-      expect(find.text('Arm'), findsOneWidget);
-      expect(find.text('Disarm'), findsOneWidget);
-      expect(find.byType(DeleteGatewayAction), findsOneWidget);
-      expect(
-        find.byKey(const ValueKey('delete_gateway_$gatewayId')),
-        findsOneWidget,
-      );
     });
 
     testWidgets('shows empty sensors placeholder when there are no sensors', (
@@ -169,59 +149,6 @@ void main() {
       await pumpScreen(tester, initialGateway: buildGateway(state: 'l'));
 
       expect(find.text('Localizing...'), findsOneWidget);
-      expect(find.text('Stop Localizing'), findsOneWidget);
-    });
-
-    testWidgets('requests location when tapping the location button', (
-      tester,
-    ) async {
-      when(
-        () => mockRepository.watchGateway(gatewayId),
-      ).thenAnswer((_) => Stream.value(buildGateway()));
-      when(
-        () => mockRepository.requestLocation(gatewayId),
-      ).thenAnswer((_) async {});
-
-      await pumpScreen(tester);
-      await tester.pump();
-      await tester.tap(find.text('Request Location'));
-      await tester.pump();
-
-      verify(() => mockRepository.requestLocation(gatewayId)).called(1);
-    });
-
-    testWidgets('arms gateway when tapping the arm button', (tester) async {
-      when(
-        () => mockRepository.watchGateway(gatewayId),
-      ).thenAnswer((_) => Stream.value(buildGateway()));
-      when(
-        () => mockRepository.armGateway(gatewayId),
-      ).thenAnswer((_) async {});
-
-      await pumpScreen(tester);
-      await tester.pump();
-      await tester.tap(find.text('Arm'));
-      await tester.pump();
-
-      verify(() => mockRepository.armGateway(gatewayId)).called(1);
-    });
-
-    testWidgets('disarms gateway when tapping the disarm button', (
-      tester,
-    ) async {
-      when(
-        () => mockRepository.watchGateway(gatewayId),
-      ).thenAnswer((_) => Stream.value(buildGateway()));
-      when(
-        () => mockRepository.disarmGateway(gatewayId),
-      ).thenAnswer((_) async {});
-
-      await pumpScreen(tester);
-      await tester.pump();
-      await tester.tap(find.text('Disarm'));
-      await tester.pump();
-
-      verify(() => mockRepository.disarmGateway(gatewayId)).called(1);
     });
 
     testWidgets('opens add sensor bottom sheet when tapping add sensor button', (
