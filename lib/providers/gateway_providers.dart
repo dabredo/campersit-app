@@ -87,6 +87,64 @@ class DeleteGatewayController extends AsyncNotifier<void> {
   }
 }
 
+final armGatewayControllerProvider = AsyncNotifierProvider.autoDispose
+    .family<ArmGatewayController, void, String>(ArmGatewayController.new);
+
+class ArmGatewayController extends AsyncNotifier<void> {
+  ArmGatewayController(this.gatewayId);
+
+  final String gatewayId;
+
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> armGateway() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final repository = ref.read(gatewayRepositoryProvider);
+      await repository.armGateway(gatewayId);
+    });
+
+    final error = state.error;
+    if (error != null) {
+      ref.read(notificationProvider.notifier).showError(error);
+      return false;
+    }
+
+    ref.read(notificationProvider.notifier).showSuccess('Gateway armed');
+    return true;
+  }
+}
+
+final disarmGatewayControllerProvider = AsyncNotifierProvider.autoDispose
+    .family<DisarmGatewayController, void, String>(DisarmGatewayController.new);
+
+class DisarmGatewayController extends AsyncNotifier<void> {
+  DisarmGatewayController(this.gatewayId);
+
+  final String gatewayId;
+
+  @override
+  FutureOr<void> build() {}
+
+  Future<bool> disarmGateway() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      final repository = ref.read(gatewayRepositoryProvider);
+      await repository.disarmGateway(gatewayId);
+    });
+
+    final error = state.error;
+    if (error != null) {
+      ref.read(notificationProvider.notifier).showError(error);
+      return false;
+    }
+
+    ref.read(notificationProvider.notifier).showSuccess('Gateway disarmed');
+    return true;
+  }
+}
+
 final toggleLocalizationControllerProvider = AsyncNotifierProvider.autoDispose
     .family<ToggleLocalizationController, void, String>(
       ToggleLocalizationController.new,

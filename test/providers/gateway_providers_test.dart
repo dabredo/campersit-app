@@ -80,6 +80,110 @@ void main() {
     });
   });
 
+  group('ArmGatewayController', () {
+    const testGatewayId = 'AA:BB:CC:DD:EE:FF';
+
+    test('returns true and shows success notification on successful arm', () async {
+      when(() => mockRepository.armGateway(testGatewayId))
+          .thenAnswer((_) async {});
+
+      final result = await container
+          .read(armGatewayControllerProvider(testGatewayId).notifier)
+          .armGateway();
+
+      expect(result, isTrue);
+      verify(() => mockRepository.armGateway(testGatewayId)).called(1);
+    });
+
+    test('returns false and shows error notification when repository throws', () async {
+      when(() => mockRepository.armGateway(testGatewayId))
+          .thenThrow(Exception('Arming failed'));
+
+      final result = await container
+          .read(armGatewayControllerProvider(testGatewayId).notifier)
+          .armGateway();
+
+      expect(result, isFalse);
+      final controllerState = container.read(
+        armGatewayControllerProvider(testGatewayId),
+      );
+      expect(controllerState.hasError, isTrue);
+    });
+
+    test('state transitions to loading then settles after arm', () async {
+      when(() => mockRepository.armGateway(testGatewayId))
+          .thenAnswer((_) async {});
+
+      final future = container
+          .read(armGatewayControllerProvider(testGatewayId).notifier)
+          .armGateway();
+
+      expect(
+        container.read(armGatewayControllerProvider(testGatewayId)),
+        isA<AsyncLoading>(),
+      );
+
+      await future;
+
+      expect(
+        container.read(armGatewayControllerProvider(testGatewayId)),
+        isA<AsyncData<void>>(),
+      );
+    });
+  });
+
+  group('DisarmGatewayController', () {
+    const testGatewayId = 'AA:BB:CC:DD:EE:FF';
+
+    test('returns true and shows success notification on successful disarm', () async {
+      when(() => mockRepository.disarmGateway(testGatewayId))
+          .thenAnswer((_) async {});
+
+      final result = await container
+          .read(disarmGatewayControllerProvider(testGatewayId).notifier)
+          .disarmGateway();
+
+      expect(result, isTrue);
+      verify(() => mockRepository.disarmGateway(testGatewayId)).called(1);
+    });
+
+    test('returns false and shows error notification when repository throws', () async {
+      when(() => mockRepository.disarmGateway(testGatewayId))
+          .thenThrow(Exception('Disarming failed'));
+
+      final result = await container
+          .read(disarmGatewayControllerProvider(testGatewayId).notifier)
+          .disarmGateway();
+
+      expect(result, isFalse);
+      final controllerState = container.read(
+        disarmGatewayControllerProvider(testGatewayId),
+      );
+      expect(controllerState.hasError, isTrue);
+    });
+
+    test('state transitions to loading then settles after disarm', () async {
+      when(() => mockRepository.disarmGateway(testGatewayId))
+          .thenAnswer((_) async {});
+
+      final future = container
+          .read(disarmGatewayControllerProvider(testGatewayId).notifier)
+          .disarmGateway();
+
+      expect(
+        container.read(disarmGatewayControllerProvider(testGatewayId)),
+        isA<AsyncLoading>(),
+      );
+
+      await future;
+
+      expect(
+        container.read(disarmGatewayControllerProvider(testGatewayId)),
+        isA<AsyncData<void>>(),
+      );
+    });
+  });
+
   group('ToggleLocalizationController', () {
     const testGatewayId = 'AA:BB:CC:DD:EE:FF';
 

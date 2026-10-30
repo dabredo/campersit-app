@@ -86,6 +86,8 @@ void main() {
       expect(find.text('40.5, -3.7'), findsOneWidget);
       expect(find.text(formatDateTime(locatingSinceMillis)), findsOneWidget);
       expect(find.text('Request Location'), findsOneWidget);
+      expect(find.text('Arm'), findsOneWidget);
+      expect(find.text('Disarm'), findsOneWidget);
       expect(find.byType(DeleteGatewayAction), findsOneWidget);
       expect(
         find.byKey(const ValueKey('delete_gateway_$gatewayId')),
@@ -186,6 +188,40 @@ void main() {
       await tester.pump();
 
       verify(() => mockRepository.requestLocation(gatewayId)).called(1);
+    });
+
+    testWidgets('arms gateway when tapping the arm button', (tester) async {
+      when(
+        () => mockRepository.watchGateway(gatewayId),
+      ).thenAnswer((_) => Stream.value(buildGateway()));
+      when(
+        () => mockRepository.armGateway(gatewayId),
+      ).thenAnswer((_) async {});
+
+      await pumpScreen(tester);
+      await tester.pump();
+      await tester.tap(find.text('Arm'));
+      await tester.pump();
+
+      verify(() => mockRepository.armGateway(gatewayId)).called(1);
+    });
+
+    testWidgets('disarms gateway when tapping the disarm button', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.watchGateway(gatewayId),
+      ).thenAnswer((_) => Stream.value(buildGateway()));
+      when(
+        () => mockRepository.disarmGateway(gatewayId),
+      ).thenAnswer((_) async {});
+
+      await pumpScreen(tester);
+      await tester.pump();
+      await tester.tap(find.text('Disarm'));
+      await tester.pump();
+
+      verify(() => mockRepository.disarmGateway(gatewayId)).called(1);
     });
 
     testWidgets('opens add sensor bottom sheet when tapping add sensor button', (

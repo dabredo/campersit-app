@@ -11,6 +11,11 @@ class AppColors {
   static const Color textSecondary = Color(0xFF5A7163);
   static const Color danger = Color(0xFFFF5252);
   static const Color warning = Color(0xFFFF9800);
+  static const Color armBackground = Color(0xFFEEF7F0);
+  static const Color armBorder = Color(0xFFBBF7D0);
+  static const Color armText = Color(0xFF166534);
+  static const Color disarmText = Color(0xFF3E4942);
+  static const Color buttonBorder = Color(0xFFD5DCD6);
 }
 
 class AppRadius {

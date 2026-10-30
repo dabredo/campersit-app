@@ -47,6 +47,16 @@ class GatewayRepository {
     await callable.call({'deviceId': gatewayId});
   }
 
+  Future<void> armGateway(String gatewayId) async {
+    final callable = _functions.httpsCallable('armDevice');
+    await callable.call({'deviceId': gatewayId});
+  }
+
+  Future<void> disarmGateway(String gatewayId) async {
+    final callable = _functions.httpsCallable('disarmDevice');
+    await callable.call({'deviceId': gatewayId});
+  }
+
   Future<void> requestLocation(String gatewayId) async {
     final callable = _functions.httpsCallable('localize');
     await callable.call({'deviceId': gatewayId});

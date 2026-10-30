@@ -22,7 +22,7 @@ class DeleteGatewayAction extends ConsumerWidget {
     final isDeleted = await ref
         .read(deleteGatewayControllerProvider(gatewayId).notifier)
         .deleteGateway();
-    if (isDeleted && context.mounted) {
+    if (isDeleted && context.mounted && Navigator.of(context).canPop()) {
       Navigator.of(context).pop();
     }
   }
@@ -35,20 +35,20 @@ class DeleteGatewayAction extends ConsumerWidget {
 
     if (isDeleting) {
       return Container(
-        width: 48,
-        height: 48,
+        width: 38,
+        height: 38,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: AppColors.danger.withValues(alpha: 0.06),
+          color: AppColors.cardSurface,
           borderRadius: AppRadius.borderXl,
           border: Border.all(
-            color: AppColors.danger.withValues(alpha: 0.25),
+            color: AppColors.buttonBorder,
             width: 1,
           ),
         ),
         child: const SizedBox(
-          width: 18,
-          height: 18,
+          width: 16,
+          height: 16,
           child: CircularProgressIndicator(
             strokeWidth: 2,
             color: AppColors.danger,
@@ -66,20 +66,20 @@ class DeleteGatewayAction extends ConsumerWidget {
           onTap: () => _confirmAndDelete(context, ref),
           borderRadius: AppRadius.borderXl,
           child: Container(
-            width: 48,
-            height: 48,
+            width: 38,
+            height: 38,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: AppColors.danger.withValues(alpha: 0.06),
+              color: AppColors.cardSurface,
               borderRadius: AppRadius.borderXl,
               border: Border.all(
-                color: AppColors.danger.withValues(alpha: 0.25),
+                color: AppColors.buttonBorder,
                 width: 1,
               ),
             ),
             child: const Icon(
               Icons.delete_outline_rounded,
-              size: 20,
+              size: 18,
               color: AppColors.danger,
             ),
           ),

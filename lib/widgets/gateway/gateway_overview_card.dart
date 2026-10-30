@@ -120,12 +120,17 @@ class GatewayOverviewCard extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              Expanded(
-                child: _LocalizationButton(gateway: gateway),
-              ),
+              Expanded(child: _ArmGatewayButton(gatewayId: gateway.id)),
+              const SizedBox(width: 8),
+              Expanded(child: _DisarmGatewayButton(gatewayId: gateway.id)),
               const SizedBox(width: 8),
               DeleteGatewayAction(gatewayId: gateway.id),
             ],
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: _LocalizationButton(gateway: gateway),
           ),
         ],
       ),
@@ -190,10 +195,7 @@ class _LocationDetails extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Location Details',
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
+        Text('Location Details', style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(height: 6),
         if (location.exact case final exactPoint?)
           _InfoRow(label: 'Exact', value: exactPoint.formattedCoordinates)
@@ -236,9 +238,7 @@ class _LocalizationButton extends ConsumerWidget {
             : AppColors.primaryAccent,
         foregroundColor: Colors.white,
         elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: AppRadius.borderXl,
-        ),
+        shape: const RoundedRectangleBorder(borderRadius: AppRadius.borderXl),
       ),
     );
   }
@@ -283,6 +283,130 @@ class _InfoRowValue extends StatelessWidget {
       value,
       style: Theme.of(context).textTheme.bodyMedium
           ?.copyWith(fontWeight: FontWeight.w500, color: AppColors.textPrimary),
+    );
+  }
+}
+
+class _ArmGatewayButton extends ConsumerWidget {
+  const _ArmGatewayButton({required this.gatewayId});
+
+  final String gatewayId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref
+        .watch(armGatewayControllerProvider(gatewayId))
+        .isLoading;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        key: ValueKey('arm_gateway_$gatewayId'),
+        onTap: isLoading
+            ? null
+            : () => ref
+                  .read(armGatewayControllerProvider(gatewayId).notifier)
+                  .armGateway(),
+        borderRadius: AppRadius.borderXl,
+        child: Container(
+          height: 38,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.armBackground,
+            borderRadius: AppRadius.borderXl,
+            border: Border.all(color: AppColors.armBorder, width: 1),
+          ),
+          child: isLoading
+              ? const SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.armText,
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.shield_outlined,
+                      size: 17,
+                      color: AppColors.armText,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Arm',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: AppColors.armText,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DisarmGatewayButton extends ConsumerWidget {
+  const _DisarmGatewayButton({required this.gatewayId});
+
+  final String gatewayId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref
+        .watch(disarmGatewayControllerProvider(gatewayId))
+        .isLoading;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        key: ValueKey('disarm_gateway_$gatewayId'),
+        onTap: isLoading
+            ? null
+            : () => ref
+                  .read(disarmGatewayControllerProvider(gatewayId).notifier)
+                  .disarmGateway(),
+        borderRadius: AppRadius.borderXl,
+        child: Container(
+          height: 38,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.cardSurface,
+            borderRadius: AppRadius.borderXl,
+            border: Border.all(color: AppColors.buttonBorder, width: 1),
+          ),
+          child: isLoading
+              ? const SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.disarmText,
+                  ),
+                )
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.lock_open_rounded,
+                      size: 17,
+                      color: AppColors.disarmText,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'Disarm',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: AppColors.disarmText,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
+      ),
     );
   }
 }
