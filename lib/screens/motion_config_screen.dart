@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../utils/sensor_icon_resolver.dart';
 import '../widgets/common/app_bar.dart';
+import '../widgets/common/app_device_type_badge.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
 
@@ -136,18 +137,9 @@ class _MotionConfigHeader extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: AppColors.primaryAccent.withValues(alpha: 0.1),
-              borderRadius: AppRadius.borderXl,
-            ),
-            child: Icon(
-              resolveSensorIcon(motionSensor.type),
-              color: AppColors.primaryAccent,
-              size: 22,
-            ),
+          AppDeviceTypeBadge(
+            icon: resolveSensorIcon(motionSensor.type),
+            typeLabel: motionSensor.type.label,
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -218,23 +210,9 @@ class _ActuatorActionTile extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: (isActionActive
-                      ? AppColors.primaryAccent
-                      : AppColors.textSecondary)
-                  .withValues(alpha: 0.1),
-              borderRadius: AppRadius.borderXl,
-            ),
-            child: Icon(
-              resolveSensorIcon(actuator.type),
-              color: isActionActive
-                  ? AppColors.primaryAccent
-                  : AppColors.textSecondary,
-              size: 20,
-            ),
+          AppDeviceTypeBadge(
+            icon: resolveSensorIcon(actuator.type),
+            typeLabel: actuator.type.label,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -251,34 +229,14 @@ class _ActuatorActionTile extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 3),
-                Row(
-                  children: [
-                    Text(
-                      actuator.type.label.toUpperCase(),
-                      style: textTheme.labelSmall?.copyWith(
-                        color: AppColors.primaryAccent,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 11,
-                      ),
-                    ),
-                    Text(
-                      ' • ',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    Flexible(
-                      child: Text(
-                        'ID: ${actuator.id}',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 11,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                Text(
+                  'ID: ${actuator.id}',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontSize: 11,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

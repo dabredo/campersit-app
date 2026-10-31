@@ -7,6 +7,7 @@ import 'package:campersit_app/models/gateway.dart';
 import 'package:campersit_app/providers/gateway_providers.dart';
 import 'package:campersit_app/repositories/gateway_repository.dart';
 import 'package:campersit_app/screens/motion_config_screen.dart';
+import 'package:campersit_app/widgets/common/app_device_type_badge.dart';
 
 class MockGatewayRepository extends Mock implements GatewayRepository {}
 
@@ -137,6 +138,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      expect(find.byType(AppDeviceTypeBadge), findsNWidgets(3));
+      expect(find.text('MOTION'), findsOneWidget);
       expect(find.text('PAIRED ACTUATORS (2)'), findsOneWidget);
 
       // Verify camera identification
