@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../utils/sensor_icon_resolver.dart';
 import '../widgets/common/app_bar.dart';
+import '../widgets/common/app_device_id_text.dart';
 import '../widgets/common/app_device_type_badge.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
@@ -194,8 +195,6 @@ class _ActuatorActionTile extends ConsumerWidget {
         ref.watch(updateMotionActionControllerProvider(actionKey));
     final isUpdating = controllerState.isLoading;
 
-    final displayName = actuator.displayName;
-
     return Container(
       decoration: BoxDecoration(
         color: AppColors.cardSurface,
@@ -219,25 +218,18 @@ class _ActuatorActionTile extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  displayName,
-                  style: textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
+                AppDeviceIdText(deviceId: actuator.id),
+                if (actuator.tag case final tag? when tag.trim().isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    tag.trim(),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  'ID: ${actuator.id}',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                    fontSize: 11,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                ],
               ],
             ),
           ),

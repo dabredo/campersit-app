@@ -7,6 +7,7 @@ import 'package:campersit_app/models/gateway.dart';
 import 'package:campersit_app/providers/gateway_providers.dart';
 import 'package:campersit_app/repositories/gateway_repository.dart';
 import 'package:campersit_app/screens/motion_config_screen.dart';
+import 'package:campersit_app/widgets/common/app_device_id_text.dart';
 import 'package:campersit_app/widgets/common/app_device_type_badge.dart';
 
 class MockGatewayRepository extends Mock implements GatewayRepository {}
@@ -139,18 +140,18 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(AppDeviceTypeBadge), findsNWidgets(3));
+      expect(find.byType(AppDeviceIdText), findsNWidgets(2));
       expect(find.text('MOTION'), findsOneWidget);
       expect(find.text('PAIRED ACTUATORS (2)'), findsOneWidget);
 
       // Verify camera identification
+      expect(find.text('cam-01'), findsOneWidget);
       expect(find.text('Driveway Camera'), findsOneWidget);
       expect(find.text('CAMERA'), findsOneWidget);
-      expect(find.text('ID: cam-01'), findsOneWidget);
 
       // Verify buzzer identification (without tag, uses id)
       expect(find.text('buz-01'), findsOneWidget);
       expect(find.text('BUZZER'), findsOneWidget);
-      expect(find.text('ID: buz-01'), findsOneWidget);
 
       // Verify state badges are not displayed
       expect(find.text('Enabled'), findsNothing);
