@@ -7,6 +7,7 @@ import '../../providers/capture_providers.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
 import '../common/app_confirm_dialog.dart';
+import '../common/app_delete_button.dart';
 import 'capture_video_player.dart';
 
 import '../common/surface_card.dart';
@@ -78,57 +79,17 @@ class CaptureCard extends ConsumerWidget {
                   ],
                 ),
               ),
-              DeleteCaptureButton(
-                captureId: capture.id,
+              AppDeleteButton(
+                buttonKey: ValueKey('delete_capture_${capture.id}'),
                 isLoading: isDeleting,
-                onTap: isDeleting ? () {} : () => _confirmAndDelete(context, ref),
+                tooltip: 'Delete capture',
+                onTap: () => _confirmAndDelete(context, ref),
               ),
             ],
           ),
           const SizedBox(height: 10),
           CaptureVideoPlayer(videoUrl: capture.url),
         ],
-      ),
-    );
-  }
-}
-
-class DeleteCaptureButton extends StatelessWidget {
-  const DeleteCaptureButton({
-    super.key,
-    required this.captureId,
-    required this.onTap,
-    this.isLoading = false,
-  });
-
-  final String captureId;
-  final VoidCallback onTap;
-  final bool isLoading;
-
-  @override
-  Widget build(BuildContext context) {
-    if (isLoading) {
-      return const SizedBox(
-        width: 16,
-        height: 16,
-        child: CircularProgressIndicator(
-          strokeWidth: 1.5,
-          color: AppColors.danger,
-        ),
-      );
-    }
-
-    return InkWell(
-      key: ValueKey('delete_capture_$captureId'),
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: const Padding(
-        padding: EdgeInsets.all(4),
-        child: Icon(
-          Icons.delete_outline_rounded,
-          size: 18,
-          color: AppColors.danger,
-        ),
       ),
     );
   }

@@ -4,6 +4,7 @@ import '../../models/user_device_token.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
 import '../common/app_confirm_dialog.dart';
+import '../common/app_delete_button.dart';
 import '../common/surface_card.dart';
 
 class DeviceTokenCard extends StatelessWidget {
@@ -100,24 +101,11 @@ class DeviceTokenCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          if (isDeleting)
-            const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColors.danger,
-              ),
-            )
-          else
-            IconButton(
-              icon: const Icon(
-                Icons.delete_outline_rounded,
-                color: AppColors.danger,
-              ),
-              tooltip: 'Delete device token',
-              onPressed: () => _confirmDeletion(context),
-            ),
+          AppDeleteButton(
+            isLoading: isDeleting,
+            tooltip: 'Delete device token',
+            onTap: () => _confirmDeletion(context),
+          ),
         ],
       ),
     );

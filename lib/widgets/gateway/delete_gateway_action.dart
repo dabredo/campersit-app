@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/gateway_providers.dart';
-import '../../theme/app_theme.dart';
-
 import '../common/app_confirm_dialog.dart';
+import '../common/app_delete_button.dart';
 
 class DeleteGatewayAction extends ConsumerWidget {
   const DeleteGatewayAction({super.key, required this.gatewayId});
@@ -33,58 +32,11 @@ class DeleteGatewayAction extends ConsumerWidget {
         .watch(deleteGatewayControllerProvider(gatewayId))
         .isLoading;
 
-    if (isDeleting) {
-      return Container(
-        width: 38,
-        height: 38,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: AppColors.cardSurface,
-          borderRadius: AppRadius.borderXl,
-          border: Border.all(
-            color: AppColors.buttonBorder,
-            width: 1,
-          ),
-        ),
-        child: const SizedBox(
-          width: 16,
-          height: 16,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: AppColors.danger,
-          ),
-        ),
-      );
-    }
-
-    return Tooltip(
-      message: 'Delete gateway',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          key: ValueKey('delete_gateway_$gatewayId'),
-          onTap: () => _confirmAndDelete(context, ref),
-          borderRadius: AppRadius.borderXl,
-          child: Container(
-            width: 38,
-            height: 38,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: AppColors.cardSurface,
-              borderRadius: AppRadius.borderXl,
-              border: Border.all(
-                color: AppColors.buttonBorder,
-                width: 1,
-              ),
-            ),
-            child: const Icon(
-              Icons.delete_outline_rounded,
-              size: 18,
-              color: AppColors.danger,
-            ),
-          ),
-        ),
-      ),
+    return AppDeleteButton(
+      buttonKey: ValueKey('delete_gateway_$gatewayId'),
+      isLoading: isDeleting,
+      tooltip: 'Delete gateway',
+      onTap: () => _confirmAndDelete(context, ref),
     );
   }
 }

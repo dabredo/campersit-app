@@ -12,6 +12,7 @@ import 'sensor_card/camera_recordings_button.dart';
 import 'sensor_card/motion_actions_button.dart';
 import 'sensor_card/sensor_action_buttons.dart';
 import '../common/alerts_list.dart';
+import '../common/app_delete_button.dart';
 import 'sensor_card/sensor_dialogs.dart';
 import 'sensor_card/sensor_footer.dart';
 
@@ -345,12 +346,10 @@ class SensorCard extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                DeleteSensorButton(
-                  sensorId: sensor.id,
+                AppDeleteButton(
+                  buttonKey: ValueKey('delete_sensor_${sensor.id}'),
                   isLoading: isDeleting,
-                  onTap: isDeleting
-                      ? () {}
-                      : () => _confirmAndDelete(context, ref),
+                  onTap: () => _confirmAndDelete(context, ref),
                 ),
               ],
             ),
