@@ -13,6 +13,7 @@ import 'sensor_card/motion_actions_button.dart';
 import 'sensor_card/sensor_action_buttons.dart';
 import '../common/alerts_list.dart';
 import '../common/app_delete_button.dart';
+import '../common/app_device_id_text.dart';
 import '../common/app_device_type_badge.dart';
 import '../common/app_state_chip.dart';
 import 'sensor_card/sensor_dialogs.dart';
@@ -85,9 +86,7 @@ class SensorCard extends ConsumerWidget {
     final sensorIcon = resolveSensorIcon(sensor.type);
     final displayName = sensor.displayName;
     final stateColor = _resolveStateColor(sensor.state);
-    final hasActiveAlerts = sensor.alerts.values.any(
-      AlertsList.isAlertActive,
-    );
+    final hasActiveAlerts = sensor.alerts.values.any(AlertsList.isAlertActive);
     final isTriggered = sensor.state == SensorState.triggered;
     final isAlerting = isTriggered || hasActiveAlerts;
     final isDeleting = ref.watch(
@@ -131,21 +130,7 @@ class SensorCard extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (sensor.tag case final tag? when tag.isNotEmpty)
-                                Text(
-                                  sensor.id,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.copyWith(
-                                        fontFamily: 'monospace',
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.textSecondary,
-                                      ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                              AppDeviceIdText(deviceId: sensor.id),
                               if (sensor.seenAt case final seenAt?) ...[
                                 const SizedBox(height: 2),
                                 Row(
@@ -168,7 +153,8 @@ class SensorCard extends ConsumerWidget {
                                     ],
                                   ],
                                 ),
-                              ] else if (sensor.battery case final battery?) ...[
+                              ] else if (sensor.battery
+                                  case final battery?) ...[
                                 const SizedBox(height: 2),
                                 SensorBatteryIndicator(battery: battery),
                               ],
@@ -190,9 +176,7 @@ class SensorCard extends ConsumerWidget {
                         Flexible(
                           child: Text(
                             displayName,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
+                            style: Theme.of(context).textTheme.titleSmall
                                 ?.copyWith(
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.textPrimary,
@@ -233,9 +217,7 @@ class SensorCard extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.only(top: 10),
             decoration: const BoxDecoration(
-              border: Border(
-                top: BorderSide(color: AppColors.borderLight),
-              ),
+              border: Border(top: BorderSide(color: AppColors.borderLight)),
             ),
             child: Row(
               children: [

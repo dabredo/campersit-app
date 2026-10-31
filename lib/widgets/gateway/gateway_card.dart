@@ -7,6 +7,7 @@ import '../../screens/gateway_detail_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
 import '../common/alerts_list.dart';
+import '../common/app_device_id_text.dart';
 import '../common/app_device_type_badge.dart';
 import 'delete_gateway_action.dart';
 import 'gateway_state_chip.dart';
@@ -91,14 +92,7 @@ class _GatewayCardHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                gatewayId,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-              ),
+              AppDeviceIdText(deviceId: gatewayId),
               if (seenAt case final timestamp?) ...[
                 const SizedBox(height: 2),
                 Text(
