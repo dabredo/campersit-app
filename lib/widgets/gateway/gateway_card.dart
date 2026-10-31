@@ -9,6 +9,7 @@ import '../../utils/date_time_formatter.dart';
 import '../common/alerts_list.dart';
 import '../common/app_device_id_text.dart';
 import '../common/app_device_type_badge.dart';
+import '../common/app_seen_at_text.dart';
 import 'delete_gateway_action.dart';
 import 'gateway_state_chip.dart';
 
@@ -93,17 +94,8 @@ class _GatewayCardHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppDeviceIdText(deviceId: gatewayId),
-              if (seenAt case final timestamp?) ...[
-                const SizedBox(height: 2),
-                Text(
-                  formatDateTime(timestamp),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontFamily: 'monospace',
-                    fontSize: 11,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
+              const SizedBox(height: 2),
+              AppSeenAtText(seenAt: seenAt),
             ],
           ),
         ),

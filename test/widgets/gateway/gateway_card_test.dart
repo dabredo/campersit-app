@@ -49,6 +49,7 @@ void main() {
 
         expect(find.text('gw-camper-1'), findsOneWidget);
         expect(find.text('Connected'), findsOneWidget);
+        expect(find.text('Not seen yet'), findsOneWidget);
         expect(find.text('Arm'), findsOneWidget);
         expect(find.text('Disarm'), findsOneWidget);
         expect(find.byType(DeleteGatewayAction), findsOneWidget);

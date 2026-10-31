@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/sensor.dart';
 import '../../providers/sensor_providers.dart';
 import '../../theme/app_theme.dart';
-import '../../utils/date_time_formatter.dart';
+import '../common/app_seen_at_text.dart';
 import '../../utils/sensor_icon_resolver.dart';
 import '../common/app_confirm_dialog.dart';
 import 'sensor_card/air_sensor_values.dart';
@@ -131,33 +131,17 @@ class SensorCard extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AppDeviceIdText(deviceId: sensor.id),
-                              if (sensor.seenAt case final seenAt?) ...[
-                                const SizedBox(height: 2),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      formatDateTime(seenAt),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall
-                                          ?.copyWith(
-                                            fontFamily: 'monospace',
-                                            fontSize: 10,
-                                            color: AppColors.textSecondary,
-                                          ),
-                                    ),
-                                    if (sensor.battery case final battery?) ...[
-                                      const SizedBox(width: 6),
-                                      SensorBatteryIndicator(battery: battery),
-                                    ],
+                              const SizedBox(height: 2),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  AppSeenAtText(seenAt: sensor.seenAt),
+                                  if (sensor.battery case final battery?) ...[
+                                    const SizedBox(width: 6),
+                                    SensorBatteryIndicator(battery: battery),
                                   ],
-                                ),
-                              ] else if (sensor.battery
-                                  case final battery?) ...[
-                                const SizedBox(height: 2),
-                                SensorBatteryIndicator(battery: battery),
-                              ],
+                                ],
+                              ),
                             ],
                           ),
                         ),

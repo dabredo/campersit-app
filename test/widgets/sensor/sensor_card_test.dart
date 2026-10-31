@@ -65,8 +65,9 @@ void main() {
 
       await tester.pumpWidget(createWidget(sensor: sensor));
 
-      expect(find.text('motion-1'), findsOneWidget);
+      expect(find.text('motion-1'), findsWidgets);
       expect(find.text('Triggered'), findsOneWidget);
+      expect(find.text('Not seen yet'), findsOneWidget);
     });
 
     testWidgets('renders active alarms list for boolean and string alert values', (
@@ -116,7 +117,8 @@ void main() {
 
       await tester.pumpWidget(createWidget(sensor: sensor));
 
-      expect(find.text('motion-2'), findsOneWidget);
+      expect(find.text('motion-2'), findsWidgets);
+      expect(find.text('Not seen yet'), findsOneWidget);
     });
 
     testWidgets('renders edit and delete buttons', (tester) async {
