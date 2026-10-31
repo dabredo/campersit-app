@@ -13,6 +13,7 @@ import 'sensor_card/motion_actions_button.dart';
 import 'sensor_card/sensor_action_buttons.dart';
 import '../common/alerts_list.dart';
 import '../common/app_delete_button.dart';
+import '../common/app_state_chip.dart';
 import 'sensor_card/sensor_dialogs.dart';
 import 'sensor_card/sensor_footer.dart';
 
@@ -214,54 +215,9 @@ class SensorCard extends ConsumerWidget {
                         ),
                         if (sensor.state != SensorState.unknown) ...[
                           const SizedBox(width: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: (isAlerting
-                                      ? AppColors.danger
-                                      : stateColor)
-                                  .withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(999),
-                              border: Border.all(
-                                color: (isAlerting
-                                        ? AppColors.danger
-                                        : stateColor)
-                                    .withValues(alpha: 0.3),
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Container(
-                                  width: 6,
-                                  height: 6,
-                                  decoration: BoxDecoration(
-                                    color: isAlerting
-                                        ? AppColors.danger
-                                        : stateColor,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  sensor.state.label,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelSmall
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        color: isAlerting
-                                            ? AppColors.danger
-                                            : stateColor,
-                                        fontSize: 10,
-                                      ),
-                                ),
-                              ],
-                            ),
+                          AppStateChip(
+                            label: sensor.state.label,
+                            color: isAlerting ? AppColors.danger : stateColor,
                           ),
                         ],
                       ],
