@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../models/sensor.dart';
 import '../../../providers/sensor_providers.dart';
 import '../../../theme/app_theme.dart';
+import '../../common/app_action_button.dart';
 
 class SensorActionButtons extends ConsumerWidget {
   const SensorActionButtons({
@@ -85,61 +86,23 @@ class SensorStateButton extends ConsumerWidget {
     final label = _resolveLabel(targetState);
     final icon = _resolveIcon(targetState);
 
-    return SizedBox(
-      height: 38,
-      child: OutlinedButton(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: color,
-          side: const BorderSide(
-            color: AppColors.borderLight,
-            width: 1,
-          ),
-          shape: const RoundedRectangleBorder(
-            borderRadius: AppRadius.borderXl,
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-          backgroundColor: AppColors.cardSurface,
-        ),
-        onPressed: isDisabled
-            ? null
-            : () => ref
-                .read(
-                  requestSensorStateControllerProvider((
-                    gatewayId: gatewayId,
-                    sensorId: sensorId,
-                  )).notifier,
-                )
-                .requestState(targetState),
-        child: isLoading
-            ? SizedBox(
-                width: 14,
-                height: 14,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(color),
-                ),
+    return AppActionButton(
+      label: label,
+      icon: icon,
+      foregroundColor: color,
+      backgroundColor: AppColors.cardSurface,
+      borderColor: AppColors.borderLight,
+      isLoading: isLoading,
+      onPressed: isDisabled
+          ? null
+          : () => ref
+              .read(
+                requestSensorStateControllerProvider((
+                  gatewayId: gatewayId,
+                  sensorId: sensorId,
+                )).notifier,
               )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(icon, size: 16, color: color),
-                  const SizedBox(width: 4),
-                  Flexible(
-                    child: Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: color,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-      ),
+              .requestState(targetState),
     );
   }
 }

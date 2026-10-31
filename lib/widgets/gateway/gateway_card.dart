@@ -7,6 +7,7 @@ import '../../screens/gateway_detail_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
 import '../common/alerts_list.dart';
+import '../common/app_action_button.dart';
 import '../common/app_device_id_text.dart';
 import '../common/app_device_type_badge.dart';
 import '../common/app_seen_at_text.dart';
@@ -182,53 +183,19 @@ class _ArmGatewayButton extends ConsumerWidget {
         .watch(armGatewayControllerProvider(gatewayId))
         .isLoading;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        key: ValueKey('arm_gateway_$gatewayId'),
-        onTap: isLoading
-            ? null
-            : () => ref
-                .read(armGatewayControllerProvider(gatewayId).notifier)
-                .armGateway(),
-        borderRadius: AppRadius.borderXl,
-        child: Container(
-          height: 38,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.armBackground,
-            borderRadius: AppRadius.borderXl,
-            border: Border.all(color: AppColors.armBorder, width: 1),
-          ),
-          child: isLoading
-              ? const SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.armText,
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.shield_outlined,
-                      size: 17,
-                      color: AppColors.armText,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Arm',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: AppColors.armText,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-        ),
-      ),
+    return AppActionButton(
+      key: ValueKey('arm_gateway_$gatewayId'),
+      label: 'Arm',
+      icon: Icons.shield_outlined,
+      backgroundColor: AppColors.armBackground,
+      borderColor: AppColors.armBorder,
+      foregroundColor: AppColors.armText,
+      isLoading: isLoading,
+      onPressed: isLoading
+          ? null
+          : () => ref
+              .read(armGatewayControllerProvider(gatewayId).notifier)
+              .armGateway(),
     );
   }
 }
@@ -244,53 +211,19 @@ class _DisarmGatewayButton extends ConsumerWidget {
         .watch(disarmGatewayControllerProvider(gatewayId))
         .isLoading;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        key: ValueKey('disarm_gateway_$gatewayId'),
-        onTap: isLoading
-            ? null
-            : () => ref
-                .read(disarmGatewayControllerProvider(gatewayId).notifier)
-                .disarmGateway(),
-        borderRadius: AppRadius.borderXl,
-        child: Container(
-          height: 38,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.cardSurface,
-            borderRadius: AppRadius.borderXl,
-            border: Border.all(color: AppColors.buttonBorder, width: 1),
-          ),
-          child: isLoading
-              ? const SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.disarmText,
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.lock_open_rounded,
-                      size: 17,
-                      color: AppColors.disarmText,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'Disarm',
-                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: AppColors.disarmText,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-        ),
-      ),
+    return AppActionButton(
+      key: ValueKey('disarm_gateway_$gatewayId'),
+      label: 'Disarm',
+      icon: Icons.lock_open_rounded,
+      backgroundColor: AppColors.cardSurface,
+      borderColor: AppColors.buttonBorder,
+      foregroundColor: AppColors.disarmText,
+      isLoading: isLoading,
+      onPressed: isLoading
+          ? null
+          : () => ref
+              .read(disarmGatewayControllerProvider(gatewayId).notifier)
+              .disarmGateway(),
     );
   }
 }
