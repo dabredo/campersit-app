@@ -11,7 +11,7 @@ import 'sensor_card/air_sensor_values.dart';
 import 'sensor_card/camera_recordings_button.dart';
 import 'sensor_card/motion_actions_button.dart';
 import 'sensor_card/sensor_action_buttons.dart';
-import 'sensor_card/sensor_alerts_list.dart';
+import '../common/alerts_list.dart';
 import 'sensor_card/sensor_dialogs.dart';
 import 'sensor_card/sensor_footer.dart';
 
@@ -19,7 +19,7 @@ export 'sensor_card/air_sensor_values.dart';
 export 'sensor_card/camera_recordings_button.dart';
 export 'sensor_card/motion_actions_button.dart';
 export 'sensor_card/sensor_action_buttons.dart';
-export 'sensor_card/sensor_alerts_list.dart';
+export '../common/alerts_list.dart';
 export 'sensor_card/sensor_dialogs.dart';
 export 'sensor_card/sensor_footer.dart';
 
@@ -83,7 +83,7 @@ class SensorCard extends ConsumerWidget {
     final displayName = sensor.displayName;
     final stateColor = _resolveStateColor(sensor.state);
     final hasActiveAlerts = sensor.alerts.values.any(
-      SensorAlertsList.isAlertActive,
+      AlertsList.isAlertActive,
     );
     final isTriggered = sensor.state == SensorState.triggered;
     final isAlerting = isTriggered || hasActiveAlerts;
@@ -307,7 +307,7 @@ class SensorCard extends ConsumerWidget {
 
           if (hasActiveAlerts) ...[
             const SizedBox(height: 10),
-            SensorAlertsList(alerts: sensor.alerts),
+            AlertsList(alerts: sensor.alerts, prefix: 'Alarm: '),
           ],
 
           const SizedBox(height: 12),

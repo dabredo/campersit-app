@@ -6,6 +6,7 @@ import '../../providers/gateway_providers.dart';
 import '../../screens/gateway_detail_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
+import '../common/alerts_list.dart';
 import 'delete_gateway_action.dart';
 import 'gateway_state_chip.dart';
 
@@ -42,7 +43,11 @@ class GatewayCard extends StatelessWidget {
                 state: gateway.state,
                 seenAt: gateway.seenAt,
               ),
-              _GatewayAlertsSection(alerts: gateway.alerts),
+              AlertsList(
+                alerts: gateway.alerts,
+                icon: Icons.warning_amber_rounded,
+                topSpacing: 10,
+              ),
               const SizedBox(height: 12),
               _GatewayActionsRow(gatewayId: gateway.id),
               const SizedBox(height: 12),
@@ -114,78 +119,6 @@ class _GatewayCardHeader extends StatelessWidget {
         ),
         const SizedBox(width: 8),
         GatewayStateChip(state: state),
-      ],
-    );
-  }
-}
-
-class _GatewayAlertsSection extends StatelessWidget {
-  final Map<String, Object?> alerts;
-
-  const _GatewayAlertsSection({required this.alerts});
-
-  static bool _isAlertActive(Object? value) {
-    if (value is bool) return value;
-    if (value is String) return value.isNotEmpty;
-    return value != null;
-  }
-
-  static String _formatAlertText(String key, Object? value) {
-    if (value is bool) return key;
-    return '$key: $value';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final activeAlerts = alerts.entries
-        .where((entry) => _isAlertActive(entry.value))
-        .toList();
-    if (activeAlerts.isEmpty) return const SizedBox.shrink();
-
-    final alertTextStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          color: AppColors.danger,
-          letterSpacing: -0.2,
-        );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (var i = 0; i < activeAlerts.length; i++) ...[
-          SizedBox(height: i == 0 ? 10 : 6),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.danger.withValues(alpha: 0.1),
-              borderRadius: AppRadius.borderXl,
-              border: Border.all(
-                color: AppColors.danger.withValues(alpha: 0.25),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.warning_amber_rounded,
-                  size: 18,
-                  color: AppColors.danger,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    _formatAlertText(
-                      activeAlerts[i].key,
-                      activeAlerts[i].value,
-                    ),
-                    style: alertTextStyle,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ],
     );
   }

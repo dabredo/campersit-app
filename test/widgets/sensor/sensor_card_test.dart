@@ -106,7 +106,7 @@ void main() {
 
       await tester.pumpWidget(createWidget(sensor: sensor));
 
-      expect(find.byType(SensorAlertsList), findsNothing);
+      expect(find.byType(AlertsList), findsNothing);
     });
 
     testWidgets('renders sensor id as fallback when tag is absent', (
