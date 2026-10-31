@@ -13,6 +13,7 @@ import 'sensor_card/motion_actions_button.dart';
 import 'sensor_card/sensor_action_buttons.dart';
 import '../common/alerts_list.dart';
 import '../common/app_delete_button.dart';
+import '../common/app_device_type_badge.dart';
 import '../common/app_state_chip.dart';
 import 'sensor_card/sensor_dialogs.dart';
 import 'sensor_card/sensor_footer.dart';
@@ -113,49 +114,10 @@ class SensorCard extends ConsumerWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: (isAlerting
-                              ? AppColors.danger
-                              : AppColors.primaryAccent)
-                          .withValues(alpha: 0.1),
-                      borderRadius: AppRadius.borderXl,
-                    ),
-                    child: Icon(
-                      sensorIcon,
-                      color: isAlerting
-                          ? AppColors.danger
-                          : AppColors.primaryAccent,
-                      size: 22,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 1.5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.mainBackground,
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: AppColors.borderLight),
-                    ),
-                    child: Text(
-                      sensor.type.label.toUpperCase(),
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ),
-                ],
+              AppDeviceTypeBadge(
+                icon: sensorIcon,
+                typeLabel: sensor.type.label,
+                hasAlerts: isAlerting,
               ),
               const SizedBox(width: 12),
               Expanded(

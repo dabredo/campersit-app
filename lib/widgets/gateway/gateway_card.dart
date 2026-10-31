@@ -7,6 +7,7 @@ import '../../screens/gateway_detail_screen.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
 import '../common/alerts_list.dart';
+import '../common/app_device_type_badge.dart';
 import 'delete_gateway_action.dart';
 import 'gateway_state_chip.dart';
 
@@ -42,6 +43,7 @@ class GatewayCard extends StatelessWidget {
                 gatewayId: gateway.id,
                 state: gateway.state,
                 seenAt: gateway.seenAt,
+                hasAlerts: gateway.alerts.values.any(AlertsList.isAlertActive),
               ),
               AlertsList(
                 alerts: gateway.alerts,
@@ -65,11 +67,13 @@ class _GatewayCardHeader extends StatelessWidget {
   final String gatewayId;
   final String state;
   final int? seenAt;
+  final bool hasAlerts;
 
   const _GatewayCardHeader({
     required this.gatewayId,
     required this.state,
     this.seenAt,
+    this.hasAlerts = false,
   });
 
   @override
@@ -77,18 +81,10 @@ class _GatewayCardHeader extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: AppColors.primaryAccent.withValues(alpha: 0.1),
-            borderRadius: AppRadius.borderXl,
-          ),
-          child: const Icon(
-            Icons.router_rounded,
-            color: AppColors.primaryAccent,
-            size: 24,
-          ),
+        AppDeviceTypeBadge(
+          icon: Icons.router_rounded,
+          typeLabel: 'GATEWAY',
+          hasAlerts: hasAlerts,
         ),
         const SizedBox(width: 12),
         Expanded(
