@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../models/sensor.dart';
-import '../../../screens/motion_config_screen.dart';
+import '../../../screens/actuators_screen.dart';
 import '../../../theme/app_theme.dart';
 import '../../common/app_action_button.dart';
 
@@ -18,7 +18,7 @@ class MotionActionsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppActionButton(
-      label: 'Configure Actions',
+      label: 'Actuators',
       icon: Icons.tune_rounded,
       foregroundColor: AppColors.textSecondary,
       backgroundColor: AppColors.cardSurface,
@@ -26,7 +26,7 @@ class MotionActionsButton extends StatelessWidget {
       onPressed: () {
         Navigator.of(context).push(
           MaterialPageRoute<void>(
-            builder: (_) => MotionConfigScreen(
+            builder: (_) => ActuatorsScreen(
               gatewayId: gatewayId,
               sensor: sensor,
             ),

@@ -8,17 +8,17 @@ import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../utils/sensor_icon_resolver.dart';
 import '../widgets/common/app_device_id_text.dart';
-import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/app_device_type_badge.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
+import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/sensor_tag_text.dart';
 
-class MotionConfigScreen extends ConsumerWidget {
+class ActuatorsScreen extends ConsumerWidget {
   final String gatewayId;
   final Sensor sensor;
 
-  const MotionConfigScreen({
+  const ActuatorsScreen({
     super.key,
     required this.gatewayId,
     required this.sensor,
@@ -26,12 +26,17 @@ class MotionConfigScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final title = sensor.displayName;
-
     final gatewayAsync = ref.watch(singleGatewayProvider(gatewayId));
+    final actuatorsCount = switch (gatewayAsync) {
+      AsyncData(value: final gateway?) =>
+        gateway.sensors.where((s) => s.isActuator).length,
+      _ => null,
+    };
+    final title =
+        actuatorsCount != null ? 'Actuators ($actuatorsCount)' : 'Actuators';
 
     return CustomScaffold(
-      title: '$title Actions',
+      title: title,
       showBackButton: true,
       body: switch (gatewayAsync) {
         AsyncLoading() => const Center(
@@ -51,7 +56,6 @@ class MotionConfigScreen extends ConsumerWidget {
   }
 
   Widget _buildBody(Gateway gateway) {
-    // Resolve the real-time sensor from gateway sensors stream to keep actions in sync
     final currentMotionSensor = gateway.sensors.firstWhere(
       (s) => s.id == sensor.id,
       orElse: () => sensor,
@@ -67,7 +71,7 @@ class MotionConfigScreen extends ConsumerWidget {
       );
     }
 
-    return _MotionConfigContent(
+    return _ActuatorsContent(
       gatewayId: gatewayId,
       motionSensor: currentMotionSensor,
       actuators: actuators,
@@ -75,12 +79,12 @@ class MotionConfigScreen extends ConsumerWidget {
   }
 }
 
-class _MotionConfigContent extends StatelessWidget {
+class _ActuatorsContent extends StatelessWidget {
   final String gatewayId;
   final Sensor motionSensor;
   final List<Sensor> actuators;
 
-  const _MotionConfigContent({
+  const _ActuatorsContent({
     required this.gatewayId,
     required this.motionSensor,
     required this.actuators,
@@ -93,17 +97,29 @@ class _MotionConfigContent extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _MotionConfigHeader(motionSensor: motionSensor),
-        const SizedBox(height: 20),
-        Text(
-          'PAIRED ACTUATORS (${actuators.length})',
-          style: textTheme.labelSmall?.copyWith(
-            color: AppColors.textSecondary,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Actuators for ${motionSensor.displayName}',
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'These actuators will execute automatically when this sensor is triggered.',
+                style: textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
         for (var i = 0; i < actuators.length; i++) ...[
           if (i > 0) const SizedBox(height: 10),
           _ActuatorActionTile(
@@ -113,57 +129,6 @@ class _MotionConfigContent extends StatelessWidget {
           ),
         ],
       ],
-    );
-  }
-}
-
-class _MotionConfigHeader extends StatelessWidget {
-  final Sensor motionSensor;
-
-  const _MotionConfigHeader({required this.motionSensor});
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: AppRadius.border2Xl,
-        border: Border.all(color: AppColors.borderLight),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AppDeviceTypeBadge(
-            icon: resolveSensorIcon(motionSensor.type),
-            typeLabel: motionSensor.type.label,
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Automated Trigger Actions',
-                  style: textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Choose which actuators trigger automatically when movement is detected by this sensor.',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

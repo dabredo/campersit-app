@@ -453,7 +453,7 @@ void main() {
       await tester.pumpWidget(createWidget(sensor: sensor));
 
       expect(find.byType(MotionActionsButton), findsOneWidget);
-      expect(find.text('Configure Actions'), findsOneWidget);
+      expect(find.text('Actuators'), findsOneWidget);
     });
   });
 }

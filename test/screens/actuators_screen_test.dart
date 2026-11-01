@@ -6,14 +6,14 @@ import 'package:mocktail/mocktail.dart';
 import 'package:campersit_app/models/gateway.dart';
 import 'package:campersit_app/providers/gateway_providers.dart';
 import 'package:campersit_app/repositories/gateway_repository.dart';
-import 'package:campersit_app/screens/motion_config_screen.dart';
+import 'package:campersit_app/screens/actuators_screen.dart';
 import 'package:campersit_app/widgets/common/app_device_id_text.dart';
 import 'package:campersit_app/widgets/common/app_device_type_badge.dart';
 
 class MockGatewayRepository extends Mock implements GatewayRepository {}
 
 void main() {
-  group('MotionConfigScreen Tests', () {
+  group('ActuatorsScreen Tests', () {
     const testGatewayId = 'gw-01';
     const testMotionSensor = Sensor(
       id: 'motion-01',
@@ -36,7 +36,7 @@ void main() {
           ...overrides.cast(),
         ],
         child: const MaterialApp(
-          home: MotionConfigScreen(
+          home: ActuatorsScreen(
             gatewayId: testGatewayId,
             sensor: testMotionSensor,
           ),
@@ -55,7 +55,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Front Door Motion Actions'), findsOneWidget);
+      expect(find.text('Actuators'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
@@ -98,6 +98,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      expect(find.text('Actuators (0)'), findsOneWidget);
       expect(find.text('No Actuators Found'), findsOneWidget);
       expect(
         find.text(
@@ -107,7 +108,7 @@ void main() {
       );
     });
 
-    testWidgets('renders actuators with identifiable info (tag, ID, type, state)', (tester) async {
+    testWidgets('renders actuators with identifiable info, header description and count', (tester) async {
       const cameraActuator = Sensor(
         id: 'cam-01',
         type: SensorType.camera,
@@ -139,10 +140,25 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(AppDeviceTypeBadge), findsNWidgets(3));
+      // Title should show actuators count
+      expect(find.text('Actuators (2)'), findsOneWidget);
+
+      // Header description for the sensor
+      expect(find.text('Actuators for Front Door Motion'), findsOneWidget);
+      expect(
+        find.text(
+          'These actuators will execute automatically when this sensor is triggered.',
+        ),
+        findsOneWidget,
+      );
+
+      // Verify removed sections
+      expect(find.text('Automated Trigger Actions'), findsNothing);
+      expect(find.textContaining('PAIRED ACTUATORS'), findsNothing);
+
+      // Verify actuator widgets
+      expect(find.byType(AppDeviceTypeBadge), findsNWidgets(2));
       expect(find.byType(AppDeviceIdText), findsNWidgets(2));
-      expect(find.text('MOTION'), findsOneWidget);
-      expect(find.text('PAIRED ACTUATORS (2)'), findsOneWidget);
 
       // Verify camera identification
       expect(find.text('cam-01'), findsOneWidget);
