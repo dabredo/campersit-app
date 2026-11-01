@@ -6,6 +6,7 @@ import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/common/app_bar.dart';
+import '../widgets/common/bottom_nav_bar.dart';
 import '../widgets/gateway/sensors_sliver.dart';
 
 class GatewayDetailScreen extends ConsumerWidget {
@@ -61,6 +62,7 @@ class _GatewayMessageScaffold extends StatelessWidget {
         showBackButton: true,
       ),
       body: Center(child: body),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }
@@ -114,6 +116,7 @@ class _GatewayDetailContent extends StatelessWidget {
           ),
         ],
       ),
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

@@ -13,7 +13,7 @@ import 'package:campersit_app/screens/home_screen.dart';
 import 'package:campersit_app/screens/main_navigation_shell.dart';
 import 'package:campersit_app/screens/notification_settings_screen.dart';
 import 'package:campersit_app/screens/notifications_screen.dart';
-import 'package:campersit_app/widgets/navigation/campersit_bottom_nav_bar.dart';
+import 'package:campersit_app/widgets/common/bottom_nav_bar.dart';
 
 void main() {
   group('MainNavigationShell Widget Tests', () {
@@ -44,17 +44,17 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(CampersitBottomNavBar), findsOneWidget);
+      expect(find.byType(BottomNavBar), findsOneWidget);
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(find.text('No Gateways'), findsOneWidget);
 
-      await tester.tap(find.text('Notificaciones'));
+      await tester.tap(find.text('Notifications'));
       await tester.pumpAndSettle();
 
       expect(find.byType(NotificationsScreen), findsOneWidget);
       expect(find.text('No Notifications'), findsOneWidget);
 
-      await tester.tap(find.text('Ajustes'));
+      await tester.tap(find.text('Account'));
       await tester.pumpAndSettle();
 
       expect(find.byType(NotificationSettingsScreen), findsOneWidget);

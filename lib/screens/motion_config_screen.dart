@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../utils/sensor_icon_resolver.dart';
 import '../widgets/common/app_bar.dart';
+import '../widgets/common/bottom_nav_bar.dart';
 import '../widgets/common/app_device_id_text.dart';
 import '../widgets/common/app_device_type_badge.dart';
 import '../widgets/common/app_empty_state.dart';
@@ -49,6 +50,7 @@ class MotionConfigScreen extends ConsumerWidget {
             message: 'Gateway not found',
           ),
       },
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 

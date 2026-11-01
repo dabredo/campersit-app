@@ -8,6 +8,7 @@ import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/camera/capture_card.dart';
 import '../widgets/common/app_bar.dart';
+import '../widgets/common/bottom_nav_bar.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
 
@@ -51,6 +52,7 @@ class CameraCapturesScreen extends ConsumerWidget {
           ),
         AsyncData(:final value) => _CameraCapturesList(captures: value),
       },
+      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }
