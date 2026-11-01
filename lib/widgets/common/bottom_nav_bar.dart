@@ -20,16 +20,15 @@ class BottomNavBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeIndex = currentIndex ?? ref.watch(mainNavigationIndexProvider);
-    final activeUnreadCount = unreadNotificationsCount ??
+    final activeUnreadCount =
+        unreadNotificationsCount ??
         ref.watch(userNotificationsCountProvider) ??
         0;
 
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.cardSurface,
-        border: Border(
-          top: BorderSide(color: AppColors.borderLight, width: 1),
-        ),
+        border: Border(top: BorderSide(color: AppColors.borderLight, width: 1)),
         boxShadow: [
           BoxShadow(
             color: Color(0x0A000000),
@@ -146,7 +145,10 @@ class _NavBarItem extends StatelessWidget {
           children: [
             if (isSelected)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 3),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 3,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.mainBackground,
                   borderRadius: AppRadius.border2Xl,
