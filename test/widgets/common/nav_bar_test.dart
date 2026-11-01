@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:campersit_app/widgets/common/app_bar.dart';
+import 'package:campersit_app/widgets/common/nav_bar.dart';
 
 void main() {
-  group('AppAppBar Widget Tests', () {
-    testWidgets('renders title and logo without back button by default', (tester) async {
+  group('NavBar Widget Tests', () {
+    testWidgets('renders centered title and logo without back button by default', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
-            appBar: AppAppBar(title: 'Gateways'),
+            appBar: NavBar(title: 'Gateways'),
           ),
         ),
       );
@@ -17,6 +17,13 @@ void main() {
       expect(find.text('Gateways'), findsOneWidget);
       expect(find.byType(Image), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back_rounded), findsNothing);
+
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.centerTitle, isTrue);
+
+      final image = tester.widget<Image>(find.byType(Image));
+      expect(image.height, equals(44));
+      expect(image.width, equals(44));
     });
 
     testWidgets('renders back button when showBackButton is true and triggers callback', (tester) async {
@@ -25,7 +32,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            appBar: AppAppBar(
+            appBar: NavBar(
               title: 'Gateway Details',
               showBackButton: true,
               onBackPressed: () => backPressed = true,

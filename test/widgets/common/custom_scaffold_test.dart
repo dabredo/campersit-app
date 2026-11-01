@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:campersit_app/providers/gateway_notification_providers.dart';
-import 'package:campersit_app/widgets/common/app_bar.dart';
 import 'package:campersit_app/widgets/common/bottom_nav_bar.dart';
 import 'package:campersit_app/widgets/common/custom_scaffold.dart';
+import 'package:campersit_app/widgets/common/nav_bar.dart';
 
 void main() {
   group('CustomScaffold Widget Tests', () {
@@ -26,7 +26,7 @@ void main() {
 
       expect(find.text('Test Page'), findsOneWidget);
       expect(find.text('Page Content'), findsOneWidget);
-      expect(find.byType(AppAppBar), findsOneWidget);
+      expect(find.byType(NavBar), findsOneWidget);
       expect(find.byType(BottomNavBar), findsOneWidget);
     });
 
@@ -70,7 +70,7 @@ void main() {
 
       expect(find.text('Custom Bar'), findsOneWidget);
       expect(find.byType(FloatingActionButton), findsOneWidget);
-      expect(find.byType(AppAppBar), findsNothing);
+      expect(find.byType(NavBar), findsNothing);
     });
   });
 }

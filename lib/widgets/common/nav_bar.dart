@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const AppAppBar({
+class NavBar extends StatelessWidget implements PreferredSizeWidget {
+  const NavBar({
     super.key,
     required this.title,
     this.showBackButton = false,
@@ -18,6 +18,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      centerTitle: true,
       title: Text(
         title,
         overflow: TextOverflow.ellipsis,
@@ -32,11 +33,11 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
           : null,
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 16, left: 4),
+          padding: const EdgeInsets.only(right: 16),
           child: Image.asset(
             'assets/images/logo.png',
-            height: 28,
-            width: 28,
+            height: 44,
+            width: 44,
             fit: BoxFit.contain,
           ),
         ),

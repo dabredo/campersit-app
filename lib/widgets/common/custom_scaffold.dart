@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
-import 'app_bar.dart';
 import 'bottom_nav_bar.dart';
+import 'nav_bar.dart';
 
 class CustomScaffold extends StatelessWidget {
   final String? title;
@@ -28,7 +28,7 @@ class CustomScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final PreferredSizeWidget? effectiveAppBar = appBar ??
         (title != null
-            ? AppAppBar(
+            ? NavBar(
                 title: title!,
                 showBackButton: showBackButton,
                 onBackPressed: onBackPressed,
