@@ -9,9 +9,9 @@ import 'package:campersit_app/models/user_device_token.dart';
 import 'package:campersit_app/providers/gateway_notification_providers.dart';
 import 'package:campersit_app/providers/gateway_providers.dart';
 import 'package:campersit_app/providers/notification_settings_providers.dart';
+import 'package:campersit_app/screens/account_screen.dart';
 import 'package:campersit_app/screens/home_screen.dart';
 import 'package:campersit_app/screens/main_navigation_shell.dart';
-import 'package:campersit_app/screens/notification_settings_screen.dart';
 import 'package:campersit_app/screens/notifications_screen.dart';
 import 'package:campersit_app/widgets/common/bottom_nav_bar.dart';
 
@@ -57,7 +57,7 @@ void main() {
       await tester.tap(find.text('Account'));
       await tester.pumpAndSettle();
 
-      expect(find.byType(NotificationSettingsScreen), findsOneWidget);
+      expect(find.byType(AccountScreen), findsOneWidget);
       expect(find.text('Delivery Preferences'), findsOneWidget);
     });
   });

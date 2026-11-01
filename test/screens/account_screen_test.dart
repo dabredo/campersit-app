@@ -6,7 +6,7 @@ import 'package:campersit_app/models/notification_preference.dart';
 import 'package:campersit_app/models/user_device_token.dart';
 import 'package:campersit_app/providers/auth_providers.dart';
 import 'package:campersit_app/providers/notification_settings_providers.dart';
-import 'package:campersit_app/screens/notification_settings_screen.dart';
+import 'package:campersit_app/screens/account_screen.dart';
 import 'package:campersit_app/services/auth_service.dart';
 import 'package:campersit_app/widgets/notifications/device_token_card.dart';
 import 'package:campersit_app/widgets/notifications/notification_channel_card.dart';
@@ -19,13 +19,13 @@ void main() {
     return ProviderScope(
       overrides: overrides.cast(),
       child: const MaterialApp(
-        home: NotificationSettingsScreen(),
+        home: AccountScreen(),
       ),
     );
   }
 
-  group('NotificationSettingsScreen Widget Tests', () {
-    testWidgets('renders sections, titles, and event channel cards', (tester) async {
+  group('AccountScreen Widget Tests', () {
+    testWidgets('renders account title and initially collapsed section titles', (tester) async {
       tester.view.physicalSize = const Size(800, 6000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -50,19 +50,27 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Notification Settings'), findsOneWidget);
+      expect(find.text('Account'), findsOneWidget);
       expect(find.text('Delivery Preferences'), findsOneWidget);
       expect(find.text('Registered Device Tokens'), findsOneWidget);
+
+      expect(find.byType(NotificationChannelCard), findsNothing);
+      expect(find.text('No Device Tokens Registered'), findsNothing);
+
+      await tester.tap(find.text('Delivery Preferences'));
+      await tester.pumpAndSettle();
+
       expect(find.byType(NotificationChannelCard), findsWidgets);
       expect(find.text('Sensor Triggered'), findsOneWidget);
       expect(find.text('Gateway Offline'), findsOneWidget);
-      expect(find.text('App'), findsWidgets);
-      expect(find.text('Email'), findsWidgets);
-      expect(find.byType(Switch), findsWidgets);
-      expect(find.text('No Device Tokens Registered'), findsOneWidget);
+
+      await tester.tap(find.text('Delivery Preferences'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(NotificationChannelCard), findsNothing);
     });
 
-    testWidgets('renders registered device token and opens delete dialog on tap', (tester) async {
+    testWidgets('expands registered device tokens and handles token actions', (tester) async {
       tester.view.physicalSize = const Size(800, 6000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -88,6 +96,11 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      expect(find.byType(DeviceTokenCard), findsNothing);
+
+      await tester.tap(find.text('Registered Device Tokens'));
+      await tester.pumpAndSettle();
+
       expect(find.byType(DeviceTokenCard), findsOneWidget);
       expect(find.text('macOS Device'), findsOneWidget);
 
@@ -99,7 +112,11 @@ void main() {
       expect(find.text('Cancel'), findsOneWidget);
     });
 
-    testWidgets('renders error states when preferences or tokens stream emits error', (tester) async {
+    testWidgets('renders error states inside expanded sections', (tester) async {
+      tester.view.physicalSize = const Size(800, 6000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
       await tester.pumpWidget(
         buildTestWidget(
           overrides: [
@@ -112,6 +129,10 @@ void main() {
           ],
         ),
       );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Delivery Preferences'));
+      await tester.tap(find.text('Registered Device Tokens'));
       await tester.pumpAndSettle();
 
       expect(find.text('Failed to load preferences'), findsOneWidget);
@@ -155,4 +176,3 @@ void main() {
 }
 
 class _MockAuthService extends Mock implements AuthService {}
-

@@ -9,13 +9,13 @@ import '../providers/notification_settings_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/common/app_empty_state.dart';
-import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/app_error_state.dart';
+import '../widgets/common/custom_scaffold.dart';
 import '../widgets/notifications/device_token_card.dart';
 import '../widgets/notifications/notification_channel_card.dart';
 
-class NotificationSettingsScreen extends ConsumerWidget {
-  const NotificationSettingsScreen({super.key});
+class AccountScreen extends ConsumerWidget {
+  const AccountScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,53 +31,52 @@ class NotificationSettingsScreen extends ConsumerWidget {
     final preferencesAsync = ref.watch(userNotificationPreferencesProvider);
 
     return CustomScaffold(
-      title: 'Notification Settings',
+      title: 'Account',
       showBottomNavBar: false,
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         children: [
-          const _SectionHeader(
+          _CollapsibleSection(
             title: 'Delivery Preferences',
-            subtitle: 'Enable or disable app push notifications and email alerts for each event.',
-          ),
-          const SizedBox(height: 12),
-          switch (preferencesAsync) {
-            AsyncData(:final value) => _PreferencesList(preferences: value),
-            AsyncLoading() => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryAccent,
+            subtitle:
+                'Enable or disable app push notifications and email alerts for each event.',
+            child: switch (preferencesAsync) {
+              AsyncData(:final value) => _PreferencesList(preferences: value),
+              AsyncLoading() => const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: CircularProgressIndicator(
+                    color: AppColors.primaryAccent,
+                  ),
                 ),
               ),
-            ),
-            AsyncError(:final error) => AppErrorState(
-              title: 'Failed to load preferences',
-              message: AppErrorFormatter.format(error),
-            ),
-          },
-          const SizedBox(height: 28),
-          const _SectionHeader(
+              AsyncError(:final error) => AppErrorState(
+                title: 'Failed to load preferences',
+                message: AppErrorFormatter.format(error),
+              ),
+            },
+          ),
+          const SizedBox(height: 14),
+          _CollapsibleSection(
             title: 'Registered Device Tokens',
             subtitle:
                 'Devices currently receiving push notifications. You can delete individual tokens manually at any time.',
-          ),
-          const SizedBox(height: 12),
-          switch (tokensAsync) {
-            AsyncData(:final value) => _DeviceTokensList(tokens: value),
-            AsyncLoading() => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryAccent,
+            child: switch (tokensAsync) {
+              AsyncData(:final value) => _DeviceTokensList(tokens: value),
+              AsyncLoading() => const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: CircularProgressIndicator(
+                    color: AppColors.primaryAccent,
+                  ),
                 ),
               ),
-            ),
-            AsyncError(:final error) => AppErrorState(
-              title: 'Failed to load device tokens',
-              message: AppErrorFormatter.format(error),
-            ),
-          },
+              AsyncError(:final error) => AppErrorState(
+                title: 'Failed to load device tokens',
+                message: AppErrorFormatter.format(error),
+              ),
+            },
+          ),
           const SizedBox(height: 16),
           const _AccountSessionSection(),
         ],
@@ -86,11 +85,27 @@ class NotificationSettingsScreen extends ConsumerWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
+class _CollapsibleSection extends StatefulWidget {
   final String title;
   final String subtitle;
+  final Widget child;
 
-  const _SectionHeader({required this.title, required this.subtitle});
+  const _CollapsibleSection({
+    required this.title,
+    required this.subtitle,
+    required this.child,
+  });
+
+  @override
+  State<_CollapsibleSection> createState() => _CollapsibleSectionState();
+}
+
+class _CollapsibleSectionState extends State<_CollapsibleSection> {
+  bool _isExpanded = false;
+
+  void _toggle() {
+    setState(() => _isExpanded = !_isExpanded);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,18 +114,55 @@ class _SectionHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
+        Material(
+          color: AppColors.cardSurface,
+          borderRadius: AppRadius.border2Xl,
+          child: InkWell(
+            onTap: _toggle,
+            borderRadius: AppRadius.border2Xl,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                borderRadius: AppRadius.border2Xl,
+                border: Border.all(color: AppColors.borderLight),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    _isExpanded
+                        ? Icons.keyboard_arrow_up_rounded
+                        : Icons.keyboard_arrow_down_rounded,
+                    color: AppColors.textSecondary,
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          subtitle,
-          style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
-        ),
+        if (_isExpanded) ...[
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
+              widget.subtitle,
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          widget.child,
+        ],
       ],
     );
   }
@@ -182,7 +234,8 @@ class _DeviceTokensList extends ConsumerWidget {
       return const AppEmptyState(
         icon: Icons.phonelink_erase_rounded,
         title: 'No Device Tokens Registered',
-        message: 'Push notification tokens registered from your browsers and devices will appear here.',
+        message:
+            'Push notification tokens registered from your browsers and devices will appear here.',
       );
     }
 
@@ -230,7 +283,8 @@ class _AccountSessionSection extends ConsumerWidget {
               highlightColor: AppColors.danger.withValues(alpha: 0.04),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                 decoration: BoxDecoration(
                   borderRadius: AppRadius.border2Xl,
                   border: Border.all(

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../widgets/common/bottom_nav_bar.dart';
 import 'home_screen.dart';
-import 'notification_settings_screen.dart';
+import 'account_screen.dart';
 import 'notifications_screen.dart';
 
 class MainNavigationNotifier extends Notifier<int> {
@@ -24,7 +24,7 @@ class MainNavigationShell extends ConsumerWidget {
   static const List<Widget> _screens = [
     HomeScreen(),
     NotificationsScreen(),
-    NotificationSettingsScreen(),
+    AccountScreen(),
   ];
 
   @override
