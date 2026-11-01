@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models/gateway_notification.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
+import '../common/app_device_id_text.dart';
 
 class NotificationItemCard extends StatelessWidget {
   final GatewayNotification notification;
@@ -110,56 +111,11 @@ class _NotificationDetailsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final sensorId = notification.sensorId;
+    final deviceId = (sensorId != null && sensorId.isNotEmpty)
+        ? sensorId
+        : notification.gatewayId;
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 4,
-      children: [
-        _IdBadge(
-          label: 'GW',
-          value: notification.gatewayId,
-          textTheme: textTheme,
-        ),
-        if (sensorId != null && sensorId.isNotEmpty)
-          _IdBadge(
-            label: 'SENSOR',
-            value: sensorId,
-            textTheme: textTheme,
-          ),
-      ],
-    );
-  }
-}
-
-class _IdBadge extends StatelessWidget {
-  final String label;
-  final String value;
-  final TextTheme textTheme;
-
-  const _IdBadge({
-    required this.label,
-    required this.value,
-    required this.textTheme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: const BoxDecoration(
-        color: AppColors.mainBackground,
-        borderRadius: AppRadius.borderXl,
-      ),
-      child: Text(
-        '$label: $value',
-        style: textTheme.labelSmall?.copyWith(
-          color: AppColors.textSecondary,
-          fontSize: 10,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
+    return AppDeviceIdText(deviceId: deviceId);
   }
 }

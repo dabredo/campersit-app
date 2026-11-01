@@ -100,8 +100,10 @@ void main() {
       expect(find.byType(NotificationItemCard), findsNWidgets(2));
       expect(find.text('Sensor Triggered'), findsOneWidget);
       expect(find.text('Gateway Initializing'), findsOneWidget);
-      expect(find.text('GW: 08:A6:F7:9E:B3:70'), findsNWidgets(2));
-      expect(find.text('SENSOR: EC:E3:34:15:F3:8C'), findsOneWidget);
+      expect(find.text('08:A6:F7:9E:B3:70'), findsOneWidget);
+      expect(find.text('EC:E3:34:15:F3:8C'), findsOneWidget);
+      expect(find.textContaining('GW:'), findsNothing);
+      expect(find.textContaining('SENSOR:'), findsNothing);
     });
 
     testWidgets('navigates to GatewayDetailScreen when card is tapped', (tester) async {
