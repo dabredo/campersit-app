@@ -28,11 +28,9 @@ void main() {
       expect(SensorType.fromValue(3), equals(SensorType.air));
       expect(SensorType.fromValue(4), equals(SensorType.led));
       expect(SensorType.fromValue(5), equals(SensorType.buzzer));
-      expect(SensorType.fromValue('camera'), equals(SensorType.camera));
-      expect(SensorType.fromValue('motion'), equals(SensorType.motion));
-      expect(SensorType.fromValue('air'), equals(SensorType.air));
-      expect(SensorType.fromValue('led'), equals(SensorType.led));
-      expect(SensorType.fromValue('buzzer'), equals(SensorType.buzzer));
+      expect(SensorType.fromValue('camera'), equals(SensorType.unknown));
+      expect(SensorType.fromValue('1'), equals(SensorType.unknown));
+      expect(SensorType.fromValue(null), equals(SensorType.unknown));
       expect(SensorType.fromValue(999), equals(SensorType.unknown));
     });
 

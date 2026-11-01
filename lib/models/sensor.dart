@@ -12,24 +12,13 @@ enum SensorType {
   const SensorType(this.code, this.label);
 
   static SensorType fromValue(Object? rawValue) {
-    if (rawValue == null) return SensorType.unknown;
-    if (rawValue is int) {
-      return switch (rawValue) {
-        1 => SensorType.camera,
-        2 => SensorType.motion,
-        3 => SensorType.air,
-        4 => SensorType.led,
-        5 => SensorType.buzzer,
-        _ => SensorType.unknown,
-      };
-    }
-    final normalized = rawValue.toString().trim().toLowerCase();
-    return switch (normalized) {
-      '1' || 'camera' => SensorType.camera,
-      '2' || 'motion' => SensorType.motion,
-      '3' || 'air' => SensorType.air,
-      '4' || 'led' => SensorType.led,
-      '5' || 'buzzer' => SensorType.buzzer,
+    if (rawValue is! num) return SensorType.unknown;
+    return switch (rawValue) {
+      1 => SensorType.camera,
+      2 => SensorType.motion,
+      3 => SensorType.air,
+      4 => SensorType.led,
+      5 => SensorType.buzzer,
       _ => SensorType.unknown,
     };
   }
