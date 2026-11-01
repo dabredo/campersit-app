@@ -149,8 +149,9 @@ void main() {
       expect(find.text('Driveway Camera'), findsOneWidget);
       expect(find.text('CAMERA'), findsOneWidget);
 
-      // Verify buzzer identification (without tag, uses id)
+      // Verify buzzer identification (without tag, displays Empty tag)
       expect(find.text('buz-01'), findsOneWidget);
+      expect(find.text('Empty tag'), findsOneWidget);
       expect(find.text('BUZZER'), findsOneWidget);
 
       // Verify state badges are not displayed

@@ -12,6 +12,7 @@ import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/app_device_type_badge.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
+import '../widgets/common/sensor_tag_text.dart';
 
 class MotionConfigScreen extends ConsumerWidget {
   final String gatewayId;
@@ -180,7 +181,6 @@ class _ActuatorActionTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final textTheme = Theme.of(context).textTheme;
     final isActionActive = motionSensor.actions.contains(actuator.id);
 
     final actionKey = (
@@ -216,17 +216,8 @@ class _ActuatorActionTile extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AppDeviceIdText(deviceId: actuator.id),
-                if (actuator.tag case final tag? when tag.trim().isNotEmpty) ...[
-                  const SizedBox(height: 3),
-                  Text(
-                    tag.trim(),
-                    style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                const SizedBox(height: 3),
+                SensorTagText(tag: actuator.tag),
               ],
             ),
           ),

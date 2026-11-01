@@ -15,6 +15,7 @@ import '../common/alerts_list.dart';
 import '../common/app_delete_button.dart';
 import '../common/app_device_id_text.dart';
 import '../common/app_device_type_badge.dart';
+import '../common/sensor_tag_text.dart';
 import '../common/app_state_chip.dart';
 import 'sensor_card/sensor_dialogs.dart';
 import 'sensor_card/sensor_footer.dart';
@@ -84,7 +85,6 @@ class SensorCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sensorIcon = resolveSensorIcon(sensor.type);
-    final displayName = sensor.displayName;
     final stateColor = _resolveStateColor(sensor.state);
     final hasActiveAlerts = sensor.alerts.values.any(AlertsList.isAlertActive);
     final isTriggered = sensor.state == SensorState.triggered;
@@ -158,17 +158,7 @@ class SensorCard extends ConsumerWidget {
                     Row(
                       children: [
                         Flexible(
-                          child: Text(
-                            displayName,
-                            style: Theme.of(context).textTheme.titleSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.textPrimary,
-                                  fontSize: 14,
-                                ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                          child: SensorTagText(tag: sensor.tag),
                         ),
                         const SizedBox(width: 4),
                         EditSensorTagButton(

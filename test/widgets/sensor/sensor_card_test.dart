@@ -110,14 +110,15 @@ void main() {
       expect(find.byType(AlertsList), findsNothing);
     });
 
-    testWidgets('renders sensor id as fallback when tag is absent', (
+    testWidgets('renders Empty tag placeholder when tag is absent', (
       tester,
     ) async {
       const sensor = Sensor(id: 'motion-2', type: SensorType.motion);
 
       await tester.pumpWidget(createWidget(sensor: sensor));
 
-      expect(find.text('motion-2'), findsWidgets);
+      expect(find.text('motion-2'), findsOneWidget);
+      expect(find.text('Empty tag'), findsOneWidget);
       expect(find.text('Not seen yet'), findsOneWidget);
     });
 
