@@ -5,8 +5,8 @@ import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/common/add_device_card.dart';
-import '../widgets/common/app_bar.dart';
 import '../widgets/common/app_empty_state.dart';
+import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/app_error_state.dart';
 import '../widgets/gateway/add_gateway_bottom_sheet.dart';
 import '../widgets/gateway/gateway_card.dart';
@@ -18,9 +18,9 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final gatewaysAsyncValue = ref.watch(userGatewaysProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.mainBackground,
-      appBar: const AppAppBar(title: 'Gateways'),
+    return CustomScaffold(
+      title: 'Gateways',
+      showBottomNavBar: false,
       body: gatewaysAsyncValue.when(
         data: (gateways) {
           if (gateways.isEmpty) {

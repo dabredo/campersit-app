@@ -7,10 +7,9 @@ import '../providers/capture_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/camera/capture_card.dart';
-import '../widgets/common/app_bar.dart';
-import '../widgets/common/bottom_nav_bar.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
+import '../widgets/common/custom_scaffold.dart';
 
 class CameraCapturesScreen extends ConsumerWidget {
   final String gatewayId;
@@ -30,12 +29,9 @@ class CameraCapturesScreen extends ConsumerWidget {
       cameraCapturesProvider((gatewayId: gatewayId, sensorId: sensor.id)),
     );
 
-    return Scaffold(
-      backgroundColor: AppColors.mainBackground,
-      appBar: AppAppBar(
-        title: '$title Recordings',
-        showBackButton: true,
-      ),
+    return CustomScaffold(
+      title: '$title Recordings',
+      showBackButton: true,
       body: switch (capturesAsync) {
         AsyncLoading() => const Center(
             child: CircularProgressIndicator(color: AppColors.primaryAccent),
@@ -52,7 +48,6 @@ class CameraCapturesScreen extends ConsumerWidget {
           ),
         AsyncData(:final value) => _CameraCapturesList(captures: value),
       },
-      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

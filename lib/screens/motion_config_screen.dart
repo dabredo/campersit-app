@@ -7,9 +7,8 @@ import '../providers/sensor_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../utils/sensor_icon_resolver.dart';
-import '../widgets/common/app_bar.dart';
-import '../widgets/common/bottom_nav_bar.dart';
 import '../widgets/common/app_device_id_text.dart';
+import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/app_device_type_badge.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
@@ -30,12 +29,9 @@ class MotionConfigScreen extends ConsumerWidget {
 
     final gatewayAsync = ref.watch(singleGatewayProvider(gatewayId));
 
-    return Scaffold(
-      backgroundColor: AppColors.mainBackground,
-      appBar: AppAppBar(
-        title: '$title Actions',
-        showBackButton: true,
-      ),
+    return CustomScaffold(
+      title: '$title Actions',
+      showBackButton: true,
       body: switch (gatewayAsync) {
         AsyncLoading() => const Center(
             child: CircularProgressIndicator(color: AppColors.primaryAccent),
@@ -50,7 +46,6 @@ class MotionConfigScreen extends ConsumerWidget {
             message: 'Gateway not found',
           ),
       },
-      bottomNavigationBar: const BottomNavBar(),
     );
   }
 

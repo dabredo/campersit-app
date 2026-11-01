@@ -8,8 +8,8 @@ import '../providers/notification_provider.dart';
 import '../providers/notification_settings_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
-import '../widgets/common/app_bar.dart';
 import '../widgets/common/app_empty_state.dart';
+import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/app_error_state.dart';
 import '../widgets/notifications/device_token_card.dart';
 import '../widgets/notifications/notification_channel_card.dart';
@@ -30,9 +30,9 @@ class NotificationSettingsScreen extends ConsumerWidget {
     final tokensAsync = ref.watch(userDeviceTokensProvider);
     final preferencesAsync = ref.watch(userNotificationPreferencesProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.mainBackground,
-      appBar: const AppAppBar(title: 'Notification Settings'),
+    return CustomScaffold(
+      title: 'Notification Settings',
+      showBottomNavBar: false,
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         children: [

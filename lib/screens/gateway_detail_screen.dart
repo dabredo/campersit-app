@@ -5,8 +5,7 @@ import '../models/gateway.dart';
 import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
-import '../widgets/common/app_bar.dart';
-import '../widgets/common/bottom_nav_bar.dart';
+import '../widgets/common/custom_scaffold.dart';
 import '../widgets/gateway/sensors_sliver.dart';
 
 class GatewayDetailScreen extends ConsumerWidget {
@@ -55,14 +54,10 @@ class _GatewayMessageScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.mainBackground,
-      appBar: AppAppBar(
-        title: title,
-        showBackButton: true,
-      ),
+    return CustomScaffold(
+      title: title,
+      showBackButton: true,
       body: Center(child: body),
-      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }
@@ -93,12 +88,9 @@ class _GatewayDetailContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.mainBackground,
-      appBar: AppAppBar(
-        title: gateway.id,
-        showBackButton: true,
-      ),
+    return CustomScaffold(
+      title: gateway.id,
+      showBackButton: true,
       body: CustomScrollView(
         slivers: [
           SliverPadding(
@@ -116,7 +108,6 @@ class _GatewayDetailContent extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: const BottomNavBar(),
     );
   }
 }

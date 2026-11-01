@@ -5,8 +5,8 @@ import '../models/gateway_notification.dart';
 import '../providers/gateway_notification_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
-import '../widgets/common/app_bar.dart';
 import '../widgets/common/app_empty_state.dart';
+import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/app_error_state.dart';
 import '../widgets/notifications/notification_item_card.dart';
 import 'gateway_detail_screen.dart';
@@ -26,9 +26,9 @@ class NotificationsScreen extends ConsumerWidget {
 
     final notificationsAsync = ref.watch(userNotificationsProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.mainBackground,
-      appBar: const AppAppBar(title: 'Notifications'),
+    return CustomScaffold(
+      title: 'Notifications',
+      showBottomNavBar: false,
       body: switch (notificationsAsync) {
         AsyncLoading() => const Center(
             child: CircularProgressIndicator(color: AppColors.primaryAccent),
