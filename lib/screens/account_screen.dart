@@ -32,7 +32,7 @@ class AccountScreen extends ConsumerWidget {
     final preferencesAsync = ref.watch(userNotificationPreferencesProvider);
 
     return CustomScaffold(
-      title: 'Account',
+      title: 'ACCOUNT',
       showBottomNavBar: false,
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

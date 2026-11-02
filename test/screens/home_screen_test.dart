@@ -31,7 +31,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Gateways'), findsOneWidget);
+      expect(find.text('GATEWAYS (0)'), findsOneWidget);
       expect(find.byType(Image), findsOneWidget);
       expect(find.byTooltip('Notifications'), findsNothing);
       expect(find.byIcon(Icons.notifications_none_rounded), findsNothing);
@@ -40,6 +40,24 @@ void main() {
       expect(find.byType(FloatingActionButton), findsNothing);
       expect(find.text('Registered Gateways'), findsOneWidget);
       expect(find.text('No Gateways'), findsOneWidget);
+    });
+
+    testWidgets('renders AppBar with count when gateways are loaded', (tester) async {
+      await tester.pumpWidget(
+        buildTestWidget(
+          overrides: [
+            userGatewaysProvider.overrideWith(
+              (ref) => Stream.value([
+                const Gateway(id: 'gw-1', state: 'c', userId: 'user-1'),
+                const Gateway(id: 'gw-2', state: 'c', userId: 'user-1'),
+              ]),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('GATEWAYS (2)'), findsOneWidget);
     });
   });
 }

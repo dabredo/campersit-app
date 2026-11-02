@@ -57,9 +57,8 @@ void main() {
       await pumpScreen(tester);
       await tester.pump();
 
-      expect(find.text(gatewayId), findsOneWidget);
+      expect(find.text('SENSORS (0)'), findsOneWidget);
       expect(find.text('Sensors for $gatewayId'), findsOneWidget);
-      expect(find.text('Sensors'), findsOneWidget);
     });
 
     testWidgets('shows empty sensors placeholder when there are no sensors', (
@@ -73,11 +72,10 @@ void main() {
       await tester.pump();
 
       expect(find.text('Sensors for $gatewayId'), findsOneWidget);
-      expect(find.text('0'), findsOneWidget);
       expect(find.text('No Sensors Configured'), findsOneWidget);
     });
 
-    testWidgets('renders one card per sensor with count label', (
+    testWidgets('renders one card per sensor', (
       tester,
     ) async {
       final gateway = buildGateway(
@@ -92,7 +90,6 @@ void main() {
       await pumpScreen(tester);
       await tester.pump();
 
-      expect(find.text('1'), findsOneWidget);
       expect(find.text('Front Camera'), findsOneWidget);
     });
 
@@ -106,6 +103,7 @@ void main() {
       await pumpScreen(tester);
       await tester.pump();
 
+      expect(find.text('SENSORS'), findsOneWidget);
       expect(find.text('Gateway not found.'), findsOneWidget);
     });
 
@@ -121,6 +119,7 @@ void main() {
       await pumpScreen(tester);
       await tester.pumpAndSettle();
 
+      expect(find.text('SENSORS'), findsOneWidget);
       expect(
         find.text(
           'Error loading gateway details:\nAn unexpected error occurred. Please try again.',
@@ -143,7 +142,7 @@ void main() {
         ),
       );
 
-      expect(find.text(gatewayId), findsOneWidget);
+      expect(find.text('SENSORS (1)'), findsOneWidget);
       expect(find.text('Front Camera'), findsOneWidget);
     });
 

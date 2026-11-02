@@ -47,7 +47,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Living Room Camera Recordings'), findsOneWidget);
+      expect(find.text('RECORDINGS'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
@@ -63,6 +63,7 @@ void main() {
       );
       await tester.pump();
 
+      expect(find.text('RECORDINGS (0)'), findsOneWidget);
       expect(find.byType(SectionHeader), findsOneWidget);
       expect(find.text('Recordings for Living Room Camera'), findsOneWidget);
       expect(find.text('No Recordings Found'), findsOneWidget);
@@ -130,6 +131,7 @@ void main() {
       );
       await tester.pump();
 
+      expect(find.text('RECORDINGS (2)'), findsOneWidget);
       expect(find.byType(CaptureCard), findsNWidgets(2));
       expect(find.text('ID: cap-101'), findsOneWidget);
       expect(find.text('ID: cap-102'), findsOneWidget);

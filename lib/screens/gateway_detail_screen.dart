@@ -28,19 +28,19 @@ class GatewayDetailScreen extends ConsumerWidget {
     }
 
     return switch (gatewayAsync) {
-      AsyncLoading() => _GatewayMessageScaffold(
-        title: gatewayId,
-        body: const CircularProgressIndicator(color: AppColors.primaryAccent),
+      AsyncLoading() => const _GatewayMessageScaffold(
+        title: 'SENSORS',
+        body: CircularProgressIndicator(color: AppColors.primaryAccent),
       ),
       AsyncError(:final error) => _GatewayMessageScaffold(
-        title: gatewayId,
+        title: 'SENSORS',
         body: _CenteredMessage(
           'Error loading gateway details:\n${AppErrorFormatter.format(error)}',
           color: AppColors.danger,
         ),
       ),
       AsyncData() => const _GatewayMessageScaffold(
-        title: 'Gateway Details',
+        title: 'SENSORS',
         body: _CenteredMessage('Gateway not found.'),
       ),
     };
@@ -90,24 +90,18 @@ class _GatewayDetailContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      title: gateway.id,
+      title: 'SENSORS (${gateway.sensors.length})',
       showBackButton: true,
       body: CustomScrollView(
         slivers: [
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
             sliver: SliverToBoxAdapter(
               child: SectionHeader(
                 title: 'Sensors for ${gateway.id}',
                 subtitle:
                     'Manage and monitor all devices connected to this gateway.',
               ),
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-            sliver: SliverToBoxAdapter(
-              child: SensorsSectionHeader(sensorCount: gateway.sensors.length),
             ),
           ),
           SliverPadding(

@@ -18,9 +18,12 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gatewaysAsyncValue = ref.watch(userGatewaysProvider);
+    final gateways = gatewaysAsyncValue.value;
+    final title =
+        gateways != null ? 'GATEWAYS (${gateways.length})' : 'GATEWAYS';
 
     return CustomScaffold(
-      title: 'Gateways',
+      title: title,
       showBottomNavBar: false,
       body: gatewaysAsyncValue.when(
         data: (gateways) {

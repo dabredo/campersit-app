@@ -24,14 +24,15 @@ class CameraCapturesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final title = sensor.displayName;
-
     final capturesAsync = ref.watch(
       cameraCapturesProvider((gatewayId: gatewayId, sensorId: sensor.id)),
     );
+    final captures = capturesAsync.value;
+    final title =
+        captures != null ? 'RECORDINGS (${captures.length})' : 'RECORDINGS';
 
     return CustomScaffold(
-      title: '$title Recordings',
+      title: title,
       showBackButton: true,
       body: switch (capturesAsync) {
         AsyncLoading() => const Center(

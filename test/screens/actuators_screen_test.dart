@@ -56,7 +56,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Actuators'), findsOneWidget);
+      expect(find.text('ACTUATORS'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
@@ -99,7 +99,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Actuators (0)'), findsOneWidget);
+      expect(find.text('ACTUATORS (0)'), findsOneWidget);
       expect(find.byType(SectionHeader), findsOneWidget);
       expect(find.text('Actuators for Front Door Motion'), findsOneWidget);
       expect(find.text('No Actuators Found'), findsOneWidget);
@@ -144,7 +144,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Title should show actuators count
-      expect(find.text('Actuators (2)'), findsOneWidget);
+      expect(find.text('ACTUATORS (2)'), findsOneWidget);
 
       // Header description for the sensor
       expect(find.text('Actuators for Front Door Motion'), findsOneWidget);

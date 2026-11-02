@@ -28,7 +28,7 @@ class NotificationsScreen extends ConsumerWidget {
     final notificationsAsync = ref.watch(userNotificationsProvider);
 
     return CustomScaffold(
-      title: 'Notifications',
+      title: 'NOTIFICATIONS',
       showBottomNavBar: false,
       body: switch (notificationsAsync) {
         AsyncLoading() => const Center(

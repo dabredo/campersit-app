@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 
 import '../../models/gateway.dart';
-import '../../theme/app_theme.dart';
 import '../common/add_device_card.dart';
 import '../common/app_empty_state.dart';
 import '../sensor/add_sensor_bottom_sheet.dart';
 import '../sensor/sensor_card.dart';
 
 class SensorsSliver extends StatelessWidget {
-  const SensorsSliver({super.key, required this.gatewayId, required this.sensors});
+  const SensorsSliver({
+    super.key,
+    required this.gatewayId,
+    required this.sensors,
+  });
 
   static const double _wideLayoutBreakpoint = 500;
   static const double _sensorSpacing = 12;
@@ -94,9 +97,7 @@ class _SensorGridRow extends StatelessWidget {
       children: [
         Expanded(child: firstWidget),
         SizedBox(width: spacing),
-        Expanded(
-          child: secondWidget ?? const SizedBox.shrink(),
-        ),
+        Expanded(child: secondWidget ?? const SizedBox.shrink()),
       ],
     );
   }
@@ -112,52 +113,6 @@ class AddSensorCard extends StatelessWidget {
     return AddDeviceCard(
       title: 'Add Sensor',
       onTap: () => AddSensorBottomSheet.show(context, gatewayId: gatewayId),
-    );
-  }
-}
-
-class SensorsSectionHeader extends StatelessWidget {
-  const SensorsSectionHeader({super.key, required this.sensorCount});
-
-  final int sensorCount;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const Icon(
-          Icons.sensors_rounded,
-          color: AppColors.primaryAccent,
-          size: 20,
-        ),
-        const SizedBox(width: 8),
-        Text(
-          'Sensors',
-          style: textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        const Spacer(),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-          decoration: BoxDecoration(
-            color: AppColors.cardSurface,
-            borderRadius: AppRadius.borderXl,
-            border: Border.all(color: AppColors.borderLight),
-          ),
-          child: Text(
-            '$sensorCount',
-            style: textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: AppColors.primaryAccent,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

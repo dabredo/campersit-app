@@ -20,7 +20,7 @@ class NavBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       centerTitle: true,
       title: Text(
-        title,
+        title.toUpperCase(),
         overflow: TextOverflow.ellipsis,
       ),
       automaticallyImplyLeading: false,

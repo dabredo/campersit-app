@@ -93,20 +93,4 @@ void main() {
       expect(find.text('Sensor ID'), findsOneWidget);
     });
   });
-
-  group('SensorsSectionHeader', () {
-    testWidgets('renders header with sensor count badge', (tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: SensorsSectionHeader(sensorCount: 5),
-          ),
-        ),
-      );
-
-      expect(find.text('Sensors'), findsOneWidget);
-      expect(find.text('5'), findsOneWidget);
-      expect(find.byIcon(Icons.sensors_rounded), findsOneWidget);
-    });
-  });
 }

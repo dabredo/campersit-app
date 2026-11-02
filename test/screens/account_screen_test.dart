@@ -50,7 +50,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Account'), findsOneWidget);
+      expect(find.text('ACCOUNT'), findsOneWidget);
       expect(find.text('Delivery Preferences'), findsOneWidget);
       expect(find.text('Enable or disable app push notifications and email alerts for each event.'), findsOneWidget);
       expect(find.text('Registered Device Tokens'), findsOneWidget);

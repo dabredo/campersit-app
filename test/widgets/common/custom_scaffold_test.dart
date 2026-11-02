@@ -24,7 +24,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Test Page'), findsOneWidget);
+      expect(find.text('TEST PAGE'), findsOneWidget);
       expect(find.text('Page Content'), findsOneWidget);
       expect(find.byType(NavBar), findsOneWidget);
       expect(find.byType(BottomNavBar), findsOneWidget);
@@ -41,7 +41,7 @@ void main() {
         ),
       );
 
-      expect(find.text('No Bottom Bar'), findsOneWidget);
+      expect(find.text('NO BOTTOM BAR'), findsOneWidget);
       expect(find.byType(BottomNavBar), findsNothing);
     });
 

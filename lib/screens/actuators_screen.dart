@@ -34,7 +34,7 @@ class ActuatorsScreen extends ConsumerWidget {
       _ => null,
     };
     final title =
-        actuatorsCount != null ? 'Actuators ($actuatorsCount)' : 'Actuators';
+        actuatorsCount != null ? 'ACTUATORS ($actuatorsCount)' : 'ACTUATORS';
 
     return CustomScaffold(
       title: title,

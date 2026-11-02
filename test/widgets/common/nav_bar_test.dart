@@ -14,7 +14,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Gateways'), findsOneWidget);
+      expect(find.text('GATEWAYS'), findsOneWidget);
       expect(find.byType(Image), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back_rounded), findsNothing);
 
@@ -41,7 +41,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Gateway Details'), findsOneWidget);
+      expect(find.text('GATEWAY DETAILS'), findsOneWidget);
       expect(find.byType(Image), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back_rounded), findsOneWidget);
 
