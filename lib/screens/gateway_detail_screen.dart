@@ -6,6 +6,7 @@ import '../providers/gateway_providers.dart';
 import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/common/custom_scaffold.dart';
+import '../widgets/common/section_header.dart';
 import '../widgets/gateway/sensors_sliver.dart';
 
 class GatewayDetailScreen extends ConsumerWidget {
@@ -93,6 +94,16 @@ class _GatewayDetailContent extends StatelessWidget {
       showBackButton: true,
       body: CustomScrollView(
         slivers: [
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+            sliver: SliverToBoxAdapter(
+              child: SectionHeader(
+                title: 'Sensors for ${gateway.id}',
+                subtitle:
+                    'Manage and monitor all devices connected to this gateway.',
+              ),
+            ),
+          ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
             sliver: SliverToBoxAdapter(

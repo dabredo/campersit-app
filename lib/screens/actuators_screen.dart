@@ -12,6 +12,7 @@ import '../widgets/common/app_device_type_badge.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
 import '../widgets/common/custom_scaffold.dart';
+import '../widgets/common/section_header.dart';
 import '../widgets/common/sensor_tag_text.dart';
 
 class ActuatorsScreen extends ConsumerWidget {
@@ -62,15 +63,6 @@ class ActuatorsScreen extends ConsumerWidget {
     );
     final actuators = gateway.sensors.where((s) => s.isActuator).toList();
 
-    if (actuators.isEmpty) {
-      return const AppEmptyState(
-        icon: Icons.sensors_off_rounded,
-        title: 'No Actuators Found',
-        message:
-            'Pair an actuator (camera, LED, or buzzer) to this gateway to configure trigger actions.',
-      );
-    }
-
     return _ActuatorsContent(
       gatewayId: gatewayId,
       motionSensor: currentMotionSensor,
@@ -92,42 +84,31 @@ class _ActuatorsContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Actuators for ${motionSensor.displayName}',
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'These actuators will execute automatically when this sensor is triggered.',
-                style: textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
+        SectionHeader(
+          title: 'Actuators for ${motionSensor.displayName}',
+          subtitle:
+              'These actuators will execute automatically when this sensor is triggered.',
         ),
         const SizedBox(height: 16),
-        for (var i = 0; i < actuators.length; i++) ...[
-          if (i > 0) const SizedBox(height: 10),
-          _ActuatorActionTile(
-            gatewayId: gatewayId,
-            motionSensor: motionSensor,
-            actuator: actuators[i],
-          ),
-        ],
+        if (actuators.isEmpty)
+          const AppEmptyState(
+            icon: Icons.sensors_off_rounded,
+            title: 'No Actuators Found',
+            message:
+                'Pair an actuator (camera, LED, or buzzer) to this gateway to configure trigger actions.',
+          )
+        else
+          for (var i = 0; i < actuators.length; i++) ...[
+            if (i > 0) const SizedBox(height: 10),
+            _ActuatorActionTile(
+              gatewayId: gatewayId,
+              motionSensor: motionSensor,
+              actuator: actuators[i],
+            ),
+          ],
       ],
     );
   }

@@ -8,6 +8,7 @@ import '../widgets/common/add_device_card.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/app_error_state.dart';
+import '../widgets/common/section_header.dart';
 import '../widgets/gateway/add_gateway_bottom_sheet.dart';
 import '../widgets/gateway/gateway_card.dart';
 
@@ -23,29 +24,28 @@ class HomeScreen extends ConsumerWidget {
       showBottomNavBar: false,
       body: gatewaysAsyncValue.when(
         data: (gateways) {
-          if (gateways.isEmpty) {
-            return ListView(
-              padding: const EdgeInsets.only(top: 8, bottom: 80),
-              children: const [
-                AppEmptyState(
+          return ListView(
+            padding: const EdgeInsets.only(top: 16, bottom: 80),
+            children: [
+              const SectionHeader(
+                title: 'Registered Gateways',
+                subtitle: 'Manage and monitor your connected IoT gateways.',
+                padding: EdgeInsets.symmetric(horizontal: 20),
+              ),
+              const SizedBox(height: 8),
+              if (gateways.isEmpty) ...[
+                const AppEmptyState(
                   icon: Icons.router_rounded,
                   title: 'No Gateways',
                   message: 'You currently have no gateways configured.',
                 ),
-                SizedBox(height: 12),
-                _AddGatewayCard(),
+                const SizedBox(height: 12),
+                const _AddGatewayCard(),
+              ] else ...[
+                for (final gateway in gateways) GatewayCard(gateway: gateway),
+                const _AddGatewayCard(),
               ],
-            );
-          }
-          return ListView.builder(
-            padding: const EdgeInsets.only(top: 8, bottom: 80),
-            itemCount: gateways.length + 1,
-            itemBuilder: (context, index) {
-              if (index < gateways.length) {
-                return GatewayCard(gateway: gateways[index]);
-              }
-              return const _AddGatewayCard();
-            },
+            ],
           );
         },
         loading: () => const Center(

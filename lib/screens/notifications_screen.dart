@@ -8,6 +8,7 @@ import '../utils/error_formatter.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/app_error_state.dart';
+import '../widgets/common/section_header.dart';
 import '../widgets/notifications/notification_item_card.dart';
 import 'gateway_detail_screen.dart';
 
@@ -37,14 +38,8 @@ class NotificationsScreen extends ConsumerWidget {
             title: 'Failed to load notifications',
             message: AppErrorFormatter.format(error),
           ),
-        AsyncData(:final value) => value.isEmpty
-            ? const AppEmptyState(
-                icon: Icons.notifications_none_rounded,
-                title: 'No Notifications',
-                message:
-                    'When events occur on your gateways or sensors, they will appear here.',
-              )
-            : _NotificationsListView(notifications: value),
+        AsyncData(:final value) =>
+          _NotificationsListView(notifications: value),
       },
     );
   }
@@ -65,17 +60,31 @@ class _NotificationsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      itemCount: notifications.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 10),
-      itemBuilder: (context, index) {
-        final item = notifications[index];
-        return NotificationItemCard(
-          notification: item,
-          onTap: () => _onNotificationTap(context, item),
-        );
-      },
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      children: [
+        const SectionHeader(
+          title: 'Activity Notifications',
+          subtitle:
+              'Recent alerts and event updates from your gateways and sensors.',
+        ),
+        const SizedBox(height: 16),
+        if (notifications.isEmpty)
+          const AppEmptyState(
+            icon: Icons.notifications_none_rounded,
+            title: 'No Notifications',
+            message:
+                'When events occur on your gateways or sensors, they will appear here.',
+          )
+        else
+          for (var i = 0; i < notifications.length; i++) ...[
+            if (i > 0) const SizedBox(height: 10),
+            NotificationItemCard(
+              notification: notifications[i],
+              onTap: () => _onNotificationTap(context, notifications[i]),
+            ),
+          ],
+      ],
     );
   }
 }

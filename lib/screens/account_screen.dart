@@ -11,6 +11,7 @@ import '../utils/error_formatter.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
 import '../widgets/common/custom_scaffold.dart';
+import '../widgets/common/section_header.dart';
 import '../widgets/notifications/device_token_card.dart';
 import '../widgets/notifications/notification_channel_card.dart';
 
@@ -109,8 +110,6 @@ class _CollapsibleSectionState extends State<_CollapsibleSection> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -127,17 +126,15 @@ class _CollapsibleSectionState extends State<_CollapsibleSection> {
                 border: Border.all(color: AppColors.borderLight),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Text(
-                      widget.title,
-                      style: textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
+                    child: SectionHeader(
+                      title: widget.title,
+                      subtitle: widget.subtitle,
+                      padding: EdgeInsets.zero,
                     ),
                   ),
+                  const SizedBox(width: 8),
                   Icon(
                     _isExpanded
                         ? Icons.keyboard_arrow_up_rounded
@@ -150,16 +147,6 @@ class _CollapsibleSectionState extends State<_CollapsibleSection> {
           ),
         ),
         if (_isExpanded) ...[
-          const SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Text(
-              widget.subtitle,
-              style: textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ),
           const SizedBox(height: 12),
           widget.child,
         ],

@@ -58,6 +58,7 @@ void main() {
       await tester.pump();
 
       expect(find.text(gatewayId), findsOneWidget);
+      expect(find.text('Sensors for $gatewayId'), findsOneWidget);
       expect(find.text('Sensors'), findsOneWidget);
     });
 
@@ -71,6 +72,7 @@ void main() {
       await pumpScreen(tester);
       await tester.pump();
 
+      expect(find.text('Sensors for $gatewayId'), findsOneWidget);
       expect(find.text('0'), findsOneWidget);
       expect(find.text('No Sensors Configured'), findsOneWidget);
     });

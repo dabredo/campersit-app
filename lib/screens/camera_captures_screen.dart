@@ -10,6 +10,7 @@ import '../widgets/camera/capture_card.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
 import '../widgets/common/custom_scaffold.dart';
+import '../widgets/common/section_header.dart';
 
 class CameraCapturesScreen extends ConsumerWidget {
   final String gatewayId;
@@ -40,13 +41,8 @@ class CameraCapturesScreen extends ConsumerWidget {
             title: 'Error loading recordings',
             message: AppErrorFormatter.format(error),
           ),
-        AsyncData(:final value) when value.isEmpty => const AppEmptyState(
-            icon: Icons.videocam_off_rounded,
-            title: 'No Recordings Found',
-            message:
-                'Recorded videos will be listed here when captures are available.',
-          ),
-        AsyncData(:final value) => _CameraCapturesList(captures: value),
+        AsyncData(:final value) =>
+          _CameraCapturesList(captures: value, sensor: sensor),
       },
     );
   }
@@ -54,18 +50,37 @@ class CameraCapturesScreen extends ConsumerWidget {
 
 class _CameraCapturesList extends StatelessWidget {
   final List<Capture> captures;
+  final Sensor sensor;
 
-  const _CameraCapturesList({required this.captures});
+  const _CameraCapturesList({
+    required this.captures,
+    required this.sensor,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
+    return ListView(
       padding: const EdgeInsets.all(16),
-      itemCount: captures.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        return CaptureCard(capture: captures[index]);
-      },
+      children: [
+        SectionHeader(
+          title: 'Recordings for ${sensor.displayName}',
+          subtitle:
+              'Motion-triggered video recordings captured by this camera.',
+        ),
+        const SizedBox(height: 16),
+        if (captures.isEmpty)
+          const AppEmptyState(
+            icon: Icons.videocam_off_rounded,
+            title: 'No Recordings Found',
+            message:
+                'Recorded videos will be listed here when captures are available.',
+          )
+        else
+          for (var i = 0; i < captures.length; i++) ...[
+            if (i > 0) const SizedBox(height: 12),
+            CaptureCard(capture: captures[i]),
+          ],
+      ],
     );
   }
 }

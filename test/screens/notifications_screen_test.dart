@@ -6,6 +6,7 @@ import 'package:campersit_app/models/gateway_notification.dart';
 import 'package:campersit_app/providers/gateway_notification_providers.dart';
 import 'package:campersit_app/screens/gateway_detail_screen.dart';
 import 'package:campersit_app/screens/notifications_screen.dart';
+import 'package:campersit_app/widgets/common/section_header.dart';
 import 'package:campersit_app/widgets/notifications/notification_item_card.dart';
 
 void main() {
@@ -62,6 +63,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      expect(find.byType(SectionHeader), findsOneWidget);
+      expect(find.text('Activity Notifications'), findsOneWidget);
       expect(find.text('No Notifications'), findsOneWidget);
       expect(
         find.text(

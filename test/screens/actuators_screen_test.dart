@@ -9,6 +9,7 @@ import 'package:campersit_app/repositories/gateway_repository.dart';
 import 'package:campersit_app/screens/actuators_screen.dart';
 import 'package:campersit_app/widgets/common/app_device_id_text.dart';
 import 'package:campersit_app/widgets/common/app_device_type_badge.dart';
+import 'package:campersit_app/widgets/common/section_header.dart';
 
 class MockGatewayRepository extends Mock implements GatewayRepository {}
 
@@ -99,6 +100,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Actuators (0)'), findsOneWidget);
+      expect(find.byType(SectionHeader), findsOneWidget);
+      expect(find.text('Actuators for Front Door Motion'), findsOneWidget);
       expect(find.text('No Actuators Found'), findsOneWidget);
       expect(
         find.text(

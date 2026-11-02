@@ -52,7 +52,9 @@ void main() {
 
       expect(find.text('Account'), findsOneWidget);
       expect(find.text('Delivery Preferences'), findsOneWidget);
+      expect(find.text('Enable or disable app push notifications and email alerts for each event.'), findsOneWidget);
       expect(find.text('Registered Device Tokens'), findsOneWidget);
+      expect(find.text('Devices currently receiving push notifications. You can delete individual tokens manually at any time.'), findsOneWidget);
 
       expect(find.byType(NotificationChannelCard), findsNothing);
       expect(find.text('No Device Tokens Registered'), findsNothing);

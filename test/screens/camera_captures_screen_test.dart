@@ -9,6 +9,7 @@ import 'package:campersit_app/providers/capture_providers.dart';
 import 'package:campersit_app/repositories/capture_repository.dart';
 import 'package:campersit_app/screens/camera_captures_screen.dart';
 import 'package:campersit_app/widgets/camera/capture_card.dart';
+import 'package:campersit_app/widgets/common/section_header.dart';
 
 class MockCaptureRepository extends Mock implements CaptureRepository {}
 
@@ -62,6 +63,8 @@ void main() {
       );
       await tester.pump();
 
+      expect(find.byType(SectionHeader), findsOneWidget);
+      expect(find.text('Recordings for Living Room Camera'), findsOneWidget);
       expect(find.text('No Recordings Found'), findsOneWidget);
       expect(
         find.text(

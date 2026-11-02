@@ -38,6 +38,7 @@ void main() {
       expect(find.byIcon(Icons.logout_rounded), findsNothing);
       expect(find.byTooltip('Sign out'), findsNothing);
       expect(find.byType(FloatingActionButton), findsNothing);
+      expect(find.text('Registered Gateways'), findsOneWidget);
       expect(find.text('No Gateways'), findsOneWidget);
     });
   });
