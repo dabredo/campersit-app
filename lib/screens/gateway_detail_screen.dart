@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/gateway.dart';
 import '../providers/gateway_providers.dart';
-import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
+import '../widgets/common/app_error_state.dart';
+import '../widgets/common/app_loading_state.dart';
 import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/section_header.dart';
 import '../widgets/gateway/sensors_sliver.dart';
@@ -27,57 +28,20 @@ class GatewayDetailScreen extends ConsumerWidget {
       return _GatewayDetailContent(gateway: gateway);
     }
 
-    return switch (gatewayAsync) {
-      AsyncLoading() => const _GatewayMessageScaffold(
-        title: 'SENSORS',
-        body: CircularProgressIndicator(color: AppColors.primaryAccent),
-      ),
-      AsyncError(:final error) => _GatewayMessageScaffold(
-        title: 'SENSORS',
-        body: _CenteredMessage(
-          'Error loading gateway details:\n${AppErrorFormatter.format(error)}',
-          color: AppColors.danger,
-        ),
-      ),
-      AsyncData() => const _GatewayMessageScaffold(
-        title: 'SENSORS',
-        body: _CenteredMessage('Gateway not found.'),
-      ),
-    };
-  }
-}
-
-class _GatewayMessageScaffold extends StatelessWidget {
-  const _GatewayMessageScaffold({required this.title, required this.body});
-
-  final String title;
-  final Widget body;
-
-  @override
-  Widget build(BuildContext context) {
     return CustomScaffold(
-      title: title,
+      title: 'SENSORS',
       showBackButton: true,
-      body: Center(child: body),
-    );
-  }
-}
-
-class _CenteredMessage extends StatelessWidget {
-  const _CenteredMessage(this.message, {this.color = AppColors.textSecondary});
-
-  final String message;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Text(
-        message,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: color),
-      ),
+      body: switch (gatewayAsync) {
+        AsyncLoading() => const AppLoadingState(),
+        AsyncError(:final error) => AppErrorState(
+          title: 'Error loading gateway details',
+          message: AppErrorFormatter.format(error),
+        ),
+        AsyncData() => const AppErrorState(
+          title: 'Gateway not found',
+          message: 'Gateway not found.',
+        ),
+      },
     );
   }
 }

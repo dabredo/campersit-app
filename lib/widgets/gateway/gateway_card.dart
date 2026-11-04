@@ -190,11 +190,9 @@ class _ArmGatewayButton extends ConsumerWidget {
       borderColor: AppColors.armBorder,
       foregroundColor: AppColors.armText,
       isLoading: isLoading,
-      onPressed: isLoading
-          ? null
-          : () => ref
-              .read(armGatewayControllerProvider(gatewayId).notifier)
-              .armGateway(),
+      onPressed: () => ref
+          .read(armGatewayControllerProvider(gatewayId).notifier)
+          .armGateway(),
     );
   }
 }
@@ -218,11 +216,9 @@ class _DisarmGatewayButton extends ConsumerWidget {
       borderColor: AppColors.buttonBorder,
       foregroundColor: AppColors.disarmText,
       isLoading: isLoading,
-      onPressed: isLoading
-          ? null
-          : () => ref
-              .read(disarmGatewayControllerProvider(gatewayId).notifier)
-              .disarmGateway(),
+      onPressed: () => ref
+          .read(disarmGatewayControllerProvider(gatewayId).notifier)
+          .disarmGateway(),
     );
   }
 }

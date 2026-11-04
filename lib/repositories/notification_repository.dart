@@ -32,37 +32,37 @@ class NotificationRepository {
     // Firestore whereIn has a limit of 30 values
     final queryIds = gatewayIds.take(30).toList();
 
-    return _firestore
-        .collection('notifications')
-        .where('gatewayId', whereIn: queryIds)
-        .snapshots()
-        .map((snapshot) {
-          final items = snapshot.docs.map((doc) {
-            return GatewayNotification.fromMap(doc.id, doc.data());
-          }).toList();
-
-          // Sort in-memory to avoid requiring a composite index
-          items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          return items.take(limit).toList();
-        });
+    return _watchNotificationsQuery(
+      _firestore.collection('notifications').where('gatewayId', whereIn: queryIds),
+      limit: limit,
+    );
   }
 
   Stream<List<GatewayNotification>> watchGatewayNotifications(
     String gatewayId, {
     int limit = 50,
   }) {
-    return _firestore
-        .collection('notifications')
-        .where('gatewayId', isEqualTo: gatewayId)
-        .snapshots()
-        .map((snapshot) {
-          final items = snapshot.docs.map((doc) {
-            return GatewayNotification.fromMap(doc.id, doc.data());
-          }).toList();
+    return _watchNotificationsQuery(
+      _firestore
+          .collection('notifications')
+          .where('gatewayId', isEqualTo: gatewayId),
+      limit: limit,
+    );
+  }
 
-          items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          return items.take(limit).toList();
-        });
+  Stream<List<GatewayNotification>> _watchNotificationsQuery(
+    Query<Map<String, Object?>> query, {
+    required int limit,
+  }) {
+    return query.snapshots().map((snapshot) {
+      final items = snapshot.docs.map((doc) {
+        return GatewayNotification.fromMap(doc.id, doc.data());
+      }).toList();
+
+      // Sort in-memory to avoid requiring a composite index
+      items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return items.take(limit).toList();
+    });
   }
 
   Future<void> saveDeviceToken({
@@ -105,17 +105,10 @@ class NotificationRepository {
   Future<void> removeDeviceToken({
     required String userId,
     required String token,
-  }) async {
-    final tokenDocId = _resolveTokenDocId(token);
-
-    final tokenRef = _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('browsers')
-        .doc(tokenDocId);
-
-    await tokenRef.delete();
-  }
+  }) => removeDeviceTokenById(
+    userId: userId,
+    docId: _resolveTokenDocId(token),
+  );
 
   Stream<List<UserDeviceToken>> watchDeviceTokens(String userId) {
     return _firestore

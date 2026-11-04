@@ -120,10 +120,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('SENSORS'), findsOneWidget);
+      expect(find.text('Error loading gateway details'), findsOneWidget);
       expect(
-        find.text(
-          'Error loading gateway details:\nAn unexpected error occurred. Please try again.',
-        ),
+        find.text('An unexpected error occurred. Please try again.'),
         findsOneWidget,
       );
     });

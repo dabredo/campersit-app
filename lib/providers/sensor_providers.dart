@@ -1,8 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/sensor.dart';
+import 'async_action_helper.dart';
 import 'gateway_providers.dart';
 import 'notification_provider.dart';
 
@@ -13,75 +12,36 @@ final updateSensorTagControllerProvider = AsyncNotifierProvider.autoDispose
       UpdateSensorTagController.new,
     );
 
-class UpdateSensorTagController extends AsyncNotifier<void> {
+class UpdateSensorTagController extends AsyncActionNotifier {
   UpdateSensorTagController(this.key);
 
   final SensorKey key;
 
-  @override
-  FutureOr<void> build() {}
-
-  Future<bool> updateTag(String tag) async {
-    final link = ref.keepAlive();
-    try {
-      state = const AsyncLoading();
-      state = await AsyncValue.guard(() async {
-        final repository = ref.read(gatewayRepositoryProvider);
-        await repository.updateSensorTag(
+  Future<bool> updateTag(String tag) => runNotifiedAction(
+    () => ref.read(gatewayRepositoryProvider).updateSensorTag(
           gatewayId: key.gatewayId,
           sensorId: key.sensorId,
           tag: tag,
-        );
-      });
-
-      final error = state.error;
-      if (error != null) {
-        ref.read(notificationProvider.notifier).showError(error);
-        return false;
-      }
-
-      ref.read(notificationProvider.notifier).showSuccess('Sensor tag updated');
-      return true;
-    } finally {
-      link.close();
-    }
-  }
+        ),
+    successMessage: 'Sensor tag updated',
+  );
 }
 
 final addSensorControllerProvider = AsyncNotifierProvider.autoDispose
     .family<AddSensorController, void, String>(AddSensorController.new);
 
-class AddSensorController extends AsyncNotifier<void> {
+class AddSensorController extends AsyncActionNotifier {
   AddSensorController(this.gatewayId);
 
   final String gatewayId;
 
-  @override
-  FutureOr<void> build() {}
-
-  Future<bool> addSensor(String sensorId) async {
-    final link = ref.keepAlive();
-    try {
-      state = const AsyncLoading();
-      state = await AsyncValue.guard(() async {
-        final repository = ref.read(gatewayRepositoryProvider);
-        await repository.addSensor(gatewayId: gatewayId, sensorId: sensorId);
-      });
-
-      final error = state.error;
-      if (error != null) {
-        ref.read(notificationProvider.notifier).showError(error);
-        return false;
-      }
-
-      ref
-          .read(notificationProvider.notifier)
-          .showSuccess('Sensor added successfully');
-      return true;
-    } finally {
-      link.close();
-    }
-  }
+  Future<bool> addSensor(String sensorId) => runNotifiedAction(
+    () => ref.read(gatewayRepositoryProvider).addSensor(
+          gatewayId: gatewayId,
+          sensorId: sensorId,
+        ),
+    successMessage: 'Sensor added successfully',
+  );
 }
 
 final deleteSensorControllerProvider = NotifierProvider.autoDispose
@@ -170,41 +130,20 @@ final updateMotionActionControllerProvider = AsyncNotifierProvider.autoDispose
       UpdateMotionActionController.new,
     );
 
-class UpdateMotionActionController extends AsyncNotifier<void> {
+class UpdateMotionActionController extends AsyncActionNotifier {
   UpdateMotionActionController(this.key);
 
   final MotionActionKey key;
 
-  @override
-  FutureOr<void> build() {}
-
-  Future<bool> setActionEnabled(bool enabled) async {
-    final link = ref.keepAlive();
-    try {
-      state = const AsyncLoading();
-      state = await AsyncValue.guard(() async {
-        final repository = ref.read(gatewayRepositoryProvider);
-        await repository.updateSensorAction(
+  Future<bool> setActionEnabled(bool enabled) => runNotifiedAction(
+    () => ref.read(gatewayRepositoryProvider).updateSensorAction(
           gatewayId: key.gatewayId,
           sensorId: key.sensorId,
           actuatorId: key.actuatorId,
           enabled: enabled,
-        );
-      });
-
-      final error = state.error;
-      if (error != null) {
-        ref.read(notificationProvider.notifier).showError(error);
-        return false;
-      }
-
-      final message =
-          enabled ? 'Actuator action linked' : 'Actuator action unlinked';
-      ref.read(notificationProvider.notifier).showSuccess(message);
-      return true;
-    } finally {
-      link.close();
-    }
-  }
+        ),
+    successMessage:
+        enabled ? 'Actuator action linked' : 'Actuator action unlinked',
+  );
 }
 

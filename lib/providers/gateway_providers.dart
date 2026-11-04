@@ -1,11 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/gateway.dart';
 import '../repositories/gateway_repository.dart';
+import 'async_action_helper.dart';
 import 'auth_providers.dart';
-import 'notification_provider.dart';
 
 final gatewayRepositoryProvider = Provider<GatewayRepository>((ref) {
   return GatewayRepository();
@@ -34,115 +32,53 @@ final addGatewayControllerProvider =
       AddGatewayController.new,
     );
 
-class AddGatewayController extends AsyncNotifier<void> {
-  @override
-  FutureOr<void> build() {}
-
-  Future<bool> addGateway(String gatewayId) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final repository = ref.read(gatewayRepositoryProvider);
-      await repository.addGateway(gatewayId);
-    });
-
-    final error = state.error;
-    if (error != null) {
-      ref.read(notificationProvider.notifier).showError(error);
-      return false;
-    }
-
-    ref
-        .read(notificationProvider.notifier)
-        .showSuccess('Gateway added successfully');
-    return true;
-  }
+class AddGatewayController extends AsyncActionNotifier {
+  Future<bool> addGateway(String gatewayId) => runNotifiedAction(
+    () => ref.read(gatewayRepositoryProvider).addGateway(gatewayId),
+    successMessage: 'Gateway added successfully',
+  );
 }
 
 final deleteGatewayControllerProvider = AsyncNotifierProvider.autoDispose
     .family<DeleteGatewayController, void, String>(DeleteGatewayController.new);
 
-class DeleteGatewayController extends AsyncNotifier<void> {
+class DeleteGatewayController extends AsyncActionNotifier {
   DeleteGatewayController(this.gatewayId);
 
   final String gatewayId;
 
-  @override
-  FutureOr<void> build() {}
-
-  Future<bool> deleteGateway() async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final repository = ref.read(gatewayRepositoryProvider);
-      await repository.deleteGateway(gatewayId);
-    });
-
-    final error = state.error;
-    if (error != null) {
-      ref.read(notificationProvider.notifier).showError(error);
-      return false;
-    }
-
-    ref.read(notificationProvider.notifier).showSuccess('Gateway deleted');
-    return true;
-  }
+  Future<bool> deleteGateway() => runNotifiedAction(
+    () => ref.read(gatewayRepositoryProvider).deleteGateway(gatewayId),
+    successMessage: 'Gateway deleted',
+  );
 }
 
 final armGatewayControllerProvider = AsyncNotifierProvider.autoDispose
     .family<ArmGatewayController, void, String>(ArmGatewayController.new);
 
-class ArmGatewayController extends AsyncNotifier<void> {
+class ArmGatewayController extends AsyncActionNotifier {
   ArmGatewayController(this.gatewayId);
 
   final String gatewayId;
 
-  @override
-  FutureOr<void> build() {}
-
-  Future<bool> armGateway() async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final repository = ref.read(gatewayRepositoryProvider);
-      await repository.armGateway(gatewayId);
-    });
-
-    final error = state.error;
-    if (error != null) {
-      ref.read(notificationProvider.notifier).showError(error);
-      return false;
-    }
-
-    ref.read(notificationProvider.notifier).showSuccess('Gateway armed');
-    return true;
-  }
+  Future<bool> armGateway() => runNotifiedAction(
+    () => ref.read(gatewayRepositoryProvider).armGateway(gatewayId),
+    successMessage: 'Gateway armed',
+  );
 }
 
 final disarmGatewayControllerProvider = AsyncNotifierProvider.autoDispose
     .family<DisarmGatewayController, void, String>(DisarmGatewayController.new);
 
-class DisarmGatewayController extends AsyncNotifier<void> {
+class DisarmGatewayController extends AsyncActionNotifier {
   DisarmGatewayController(this.gatewayId);
 
   final String gatewayId;
 
-  @override
-  FutureOr<void> build() {}
-
-  Future<bool> disarmGateway() async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final repository = ref.read(gatewayRepositoryProvider);
-      await repository.disarmGateway(gatewayId);
-    });
-
-    final error = state.error;
-    if (error != null) {
-      ref.read(notificationProvider.notifier).showError(error);
-      return false;
-    }
-
-    ref.read(notificationProvider.notifier).showSuccess('Gateway disarmed');
-    return true;
-  }
+  Future<bool> disarmGateway() => runNotifiedAction(
+    () => ref.read(gatewayRepositoryProvider).disarmGateway(gatewayId),
+    successMessage: 'Gateway disarmed',
+  );
 }
 
 final toggleLocalizationControllerProvider = AsyncNotifierProvider.autoDispose
@@ -150,32 +86,19 @@ final toggleLocalizationControllerProvider = AsyncNotifierProvider.autoDispose
       ToggleLocalizationController.new,
     );
 
-class ToggleLocalizationController extends AsyncNotifier<void> {
+class ToggleLocalizationController extends AsyncActionNotifier {
   ToggleLocalizationController(this.gatewayId);
 
   final String gatewayId;
 
-  @override
-  FutureOr<void> build() {}
-
-  Future<bool> toggleLocalization({required bool isCurrentlyLocalizing}) async {
-    state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      final repository = ref.read(gatewayRepositoryProvider);
-      if (isCurrentlyLocalizing) {
-        await repository.stopLocation(gatewayId);
-      } else {
-        await repository.requestLocation(gatewayId);
-      }
-    });
-
-    final error = state.error;
-    if (error != null) {
-      ref.read(notificationProvider.notifier).showError(error);
-      return false;
-    }
-
-    return true;
-  }
+  Future<bool> toggleLocalization({required bool isCurrentlyLocalizing}) =>
+      runNotifiedAction(() async {
+        final repository = ref.read(gatewayRepositoryProvider);
+        if (isCurrentlyLocalizing) {
+          await repository.stopLocation(gatewayId);
+        } else {
+          await repository.requestLocation(gatewayId);
+        }
+      });
 }
 

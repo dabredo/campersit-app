@@ -11,6 +11,7 @@ import 'screens/login_screen.dart';
 import 'screens/main_navigation_shell.dart';
 import 'services/fcm_service.dart';
 import 'theme/app_theme.dart';
+import 'widgets/common/app_loading_state.dart';
 import 'widgets/common/app_notification_listener.dart';
 
 void main() async {
@@ -107,11 +108,7 @@ class CampersitApplication extends ConsumerWidget {
         },
         loading: () => const Scaffold(
           backgroundColor: AppColors.mainBackground,
-          body: Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primaryAccent,
-            ),
-          ),
+          body: AppLoadingState(),
         ),
         error: (error, stack) => const Scaffold(
           backgroundColor: AppColors.mainBackground,

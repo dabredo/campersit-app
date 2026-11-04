@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../models/notification_preference.dart';
 import '../../theme/app_theme.dart';
+import '../common/app_icon_badge.dart';
 import '../common/app_inline_spinner.dart';
+import '../common/surface_card.dart';
 
 class NotificationChannelCard extends StatelessWidget {
   final NotificationEventDefinition event;
@@ -26,12 +28,7 @@ class NotificationChannelCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: AppRadius.border2Xl,
-        border: Border.all(color: AppColors.borderLight),
-      ),
+    return SurfaceCard(
       padding: const EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +36,7 @@ class NotificationChannelCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _EventIconBadge(icon: event.icon),
+              AppIconBadge(icon: event.icon),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -94,29 +91,6 @@ class NotificationChannelCard extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _EventIconBadge extends StatelessWidget {
-  final IconData icon;
-
-  const _EventIconBadge({required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: AppColors.primaryAccent.withValues(alpha: 0.1),
-        borderRadius: AppRadius.borderXl,
-      ),
-      child: Icon(
-        icon,
-        color: AppColors.primaryAccent,
-        size: 20,
       ),
     );
   }

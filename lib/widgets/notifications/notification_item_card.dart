@@ -4,6 +4,8 @@ import '../../models/gateway_notification.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
 import '../common/app_device_id_text.dart';
+import '../common/app_icon_badge.dart';
+import '../common/surface_card.dart';
 
 class NotificationItemCard extends StatelessWidget {
   final GatewayNotification notification;
@@ -23,17 +25,12 @@ class NotificationItemCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: AppRadius.border2Xl,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.cardSurface,
-          borderRadius: AppRadius.border2Xl,
-          border: Border.all(color: AppColors.borderLight),
-        ),
+      child: SurfaceCard(
         padding: const EdgeInsets.all(14),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _NotificationIconBadge(
+            AppIconBadge(
               icon: definition.icon,
               color: definition.color,
             ),
@@ -71,33 +68,6 @@ class NotificationItemCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _NotificationIconBadge extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-
-  const _NotificationIconBadge({
-    required this.icon,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: AppRadius.borderXl,
-      ),
-      child: Icon(
-        icon,
-        color: color,
-        size: 20,
       ),
     );
   }

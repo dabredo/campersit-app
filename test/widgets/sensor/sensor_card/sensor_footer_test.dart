@@ -4,20 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:campersit_app/widgets/sensor/sensor_card/sensor_footer.dart';
 
 void main() {
-  group('SensorFooter', () {
-    testWidgets('renders seenAt and battery indicators when provided', (
-      tester,
-    ) async {
-      final seenAt = DateTime(2026, 10, 18, 9, 15).millisecondsSinceEpoch;
+  group('SensorBatteryIndicator', () {
+    testWidgets('renders full battery percentage and icon', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SensorFooter(seenAt: seenAt, battery: 85),
-          ),
+        const MaterialApp(
+          home: Scaffold(body: SensorBatteryIndicator(battery: 85)),
         ),
       );
 
-      expect(find.text('18/10/2026 09:15'), findsOneWidget);
       expect(find.text('85'), findsOneWidget);
       expect(find.byIcon(Icons.battery_full_rounded), findsOneWidget);
     });

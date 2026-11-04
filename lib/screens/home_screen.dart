@@ -25,38 +25,34 @@ class HomeScreen extends ConsumerWidget {
     return CustomScaffold(
       title: title,
       showBottomNavBar: false,
-      body: gatewaysAsyncValue.when(
-        data: (gateways) {
-          return ListView(
-            padding: const EdgeInsets.only(top: 16, bottom: 80),
-            children: [
-              const SectionHeader(
-                title: 'Registered Gateways',
-                subtitle: 'Manage and monitor your connected IoT gateways.',
-                padding: EdgeInsets.symmetric(horizontal: 20),
-              ),
-              const SizedBox(height: 8),
-              if (gateways.isEmpty) ...[
-                const AppEmptyState(
-                  icon: Icons.router_rounded,
-                  title: 'No Gateways',
-                  message: 'You currently have no gateways configured.',
-                ),
-                const SizedBox(height: 12),
-                const _AddGatewayCard(),
-              ] else ...[
-                for (final gateway in gateways) GatewayCard(gateway: gateway),
-                const _AddGatewayCard(),
-              ],
-            ],
-          );
-        },
-        loading: () => const AppLoadingState(),
-        error: (error, stack) => AppErrorState(
+      body: switch (gatewaysAsyncValue) {
+        AsyncLoading() => const AppLoadingState(),
+        AsyncError(:final error) => AppErrorState(
           title: 'Error loading gateways',
           message: AppErrorFormatter.format(error),
         ),
-      ),
+        AsyncData(value: final gateways) => ListView(
+          padding: const EdgeInsets.only(top: 16, bottom: 80),
+          children: [
+            const SectionHeader(
+              title: 'Registered Gateways',
+              subtitle: 'Manage and monitor your connected IoT gateways.',
+              padding: EdgeInsets.symmetric(horizontal: 20),
+            ),
+            const SizedBox(height: 8),
+            if (gateways.isEmpty) ...[
+              const AppEmptyState(
+                icon: Icons.router_rounded,
+                title: 'No Gateways',
+                message: 'You currently have no gateways configured.',
+              ),
+              const SizedBox(height: 12),
+            ] else
+              for (final gateway in gateways) GatewayCard(gateway: gateway),
+            const _AddGatewayCard(),
+          ],
+        ),
+      },
     );
   }
 }

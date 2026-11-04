@@ -5,6 +5,7 @@ import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
 import '../common/app_confirm_dialog.dart';
 import '../common/app_delete_button.dart';
+import '../common/app_icon_badge.dart';
 import '../common/surface_card.dart';
 
 class DeviceTokenCard extends StatelessWidget {
@@ -64,7 +65,11 @@ class DeviceTokenCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _DeviceIconBadge(icon: _resolveDeviceIcon()),
+          AppIconBadge(
+            icon: _resolveDeviceIcon(),
+            dimension: 44,
+            iconSize: 22,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -109,25 +114,6 @@ class DeviceTokenCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _DeviceIconBadge extends StatelessWidget {
-  final IconData icon;
-
-  const _DeviceIconBadge({required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 44,
-      height: 44,
-      decoration: BoxDecoration(
-        color: AppColors.primaryAccent.withValues(alpha: 0.1),
-        borderRadius: AppRadius.borderXl,
-      ),
-      child: Icon(icon, color: AppColors.primaryAccent, size: 22),
     );
   }
 }

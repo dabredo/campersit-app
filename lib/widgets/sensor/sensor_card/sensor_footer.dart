@@ -1,55 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../theme/app_theme.dart';
-import '../../../utils/date_time_formatter.dart';
-
-class SensorFooter extends StatelessWidget {
-  const SensorFooter({super.key, this.seenAt, this.battery});
-
-  final int? seenAt;
-  final num? battery;
-
-  @override
-  Widget build(BuildContext context) {
-    final seenAtTimestamp = seenAt;
-    final batteryLevel = battery;
-
-    return Row(
-      children: [
-        if (seenAtTimestamp != null)
-          SensorSeenAtIndicator(seenAt: seenAtTimestamp),
-        const Spacer(),
-        if (batteryLevel != null)
-          SensorBatteryIndicator(battery: batteryLevel),
-      ],
-    );
-  }
-}
-
-class SensorSeenAtIndicator extends StatelessWidget {
-  const SensorSeenAtIndicator({super.key, required this.seenAt});
-
-  final int seenAt;
-
-  @override
-  Widget build(BuildContext context) {
-    final textStyle = Theme.of(context).textTheme.labelSmall
-        ?.copyWith(color: AppColors.textSecondary);
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Icon(
-          Icons.access_time_rounded,
-          size: 13,
-          color: AppColors.textSecondary,
-        ),
-        const SizedBox(width: 4),
-        Text(formatDateTime(seenAt), style: textStyle),
-      ],
-    );
-  }
-}
 
 enum _BatteryStatus {
   low,

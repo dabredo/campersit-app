@@ -23,9 +23,7 @@ class AccountScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(notificationSettingsControllerProvider, (_, next) {
       if (next is AsyncError) {
-        ref
-            .read(notificationProvider.notifier)
-            .showError(AppErrorFormatter.format(next.error));
+        ref.read(notificationProvider.notifier).showError(next.error);
       }
     });
 
