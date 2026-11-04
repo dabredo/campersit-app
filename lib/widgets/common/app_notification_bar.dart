@@ -32,7 +32,7 @@ class AppNotificationBar extends StatelessWidget {
             border: Border.all(color: style.borderColor, width: 1),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
+                color: AppColors.shadow.withValues(alpha: 0.08),
                 blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
@@ -50,9 +50,8 @@ class AppNotificationBar extends StatelessWidget {
               Expanded(
                 child: Text(
                   notification.message,
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: style.foregroundColor,
-                    fontSize: 14,
                     fontWeight: FontWeight.w500,
                     height: 1.3,
                   ),
@@ -94,19 +93,19 @@ class _NotificationStyle {
     NotificationType.success => const _NotificationStyle(
       backgroundColor: AppColors.primaryAccent,
       borderColor: AppColors.secondaryAccent,
-      foregroundColor: Colors.white,
+      foregroundColor: AppColors.onAccent,
       icon: Icons.check_circle_rounded,
     ),
     NotificationType.error => const _NotificationStyle(
-      backgroundColor: Color(0xFF9B1C1C),
-      borderColor: Color(0xFFB91C1C),
-      foregroundColor: Colors.white,
+      backgroundColor: AppColors.alertDangerBackground,
+      borderColor: AppColors.alertDangerBorder,
+      foregroundColor: AppColors.onAccent,
       icon: Icons.error_rounded,
     ),
     NotificationType.warning => const _NotificationStyle(
-      backgroundColor: Color(0xFFB45309),
-      borderColor: Color(0xFFD97706),
-      foregroundColor: Colors.white,
+      backgroundColor: AppColors.alertWarningBackground,
+      borderColor: AppColors.alertWarningBorder,
+      foregroundColor: AppColors.onAccent,
       icon: Icons.warning_rounded,
     ),
     NotificationType.info => const _NotificationStyle(

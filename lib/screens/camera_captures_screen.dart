@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/capture.dart';
 import '../models/sensor.dart';
 import '../providers/capture_providers.dart';
-import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/camera/capture_card.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
+import '../widgets/common/app_loading_state.dart';
 import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/section_header.dart';
 
@@ -35,9 +35,7 @@ class CameraCapturesScreen extends ConsumerWidget {
       title: title,
       showBackButton: true,
       body: switch (capturesAsync) {
-        AsyncLoading() => const Center(
-            child: CircularProgressIndicator(color: AppColors.primaryAccent),
-          ),
+        AsyncLoading() => const AppLoadingState(),
         AsyncError(:final error) => AppErrorState(
             title: 'Error loading recordings',
             message: AppErrorFormatter.format(error),

@@ -16,11 +16,11 @@ class AlertsList extends StatelessWidget {
   final IconData? icon;
   final double topSpacing;
 
-  static bool isAlertActive(Object? value) {
-    if (value is bool) return value;
-    if (value is String) return value.isNotEmpty;
-    return value != null;
-  }
+  static bool isAlertActive(Object? value) => switch (value) {
+    final bool isActive => isActive,
+    final String text => text.isNotEmpty,
+    _ => value != null,
+  };
 
   static IconData resolveAlertIcon(String key) {
     final lowerKey = key.toLowerCase();
@@ -63,9 +63,8 @@ class AlertsList extends StatelessWidget {
         .toList();
     if (activeAlerts.isEmpty) return const SizedBox.shrink();
 
-    final alertItemStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+    final alertItemStyle = Theme.of(context).textTheme.labelSmall?.copyWith(
           color: AppColors.danger,
-          fontSize: 11,
           fontWeight: FontWeight.w600,
         );
 

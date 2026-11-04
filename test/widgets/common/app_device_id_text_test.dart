@@ -21,7 +21,7 @@ void main() {
       expect(textFinder, findsOneWidget);
 
       final textWidget = tester.widget<Text>(textFinder);
-      expect(textWidget.style?.fontSize, equals(15));
+      expect(textWidget.style?.fontSize, equals(14));
       expect(textWidget.style?.fontWeight, equals(FontWeight.w700));
       expect(textWidget.style?.color, equals(AppColors.textPrimary));
       expect(textWidget.maxLines, equals(1));

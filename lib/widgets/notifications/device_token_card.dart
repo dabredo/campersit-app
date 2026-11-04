@@ -89,11 +89,12 @@ class DeviceTokenCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  token.lastUpdated != null
-                      ? 'Active: ${formatDateTime(token.lastUpdated!)}'
-                      : 'Active recently',
-                  style: textTheme.bodySmall?.copyWith(
-                    fontSize: 11,
+                  switch (token.lastUpdated) {
+                    final lastUpdated? =>
+                      'Active: ${formatDateTime(lastUpdated)}',
+                    null => 'Active recently',
+                  },
+                  style: textTheme.labelSmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),

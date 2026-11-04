@@ -53,8 +53,8 @@ class CampersitApplication extends ConsumerWidget {
       final user = next.value;
       if (user != null) {
         _initializeFcm(ref, user.uid, user.email);
-      } else if (previous?.value != null) {
-        ref.read(fcmServiceProvider).unregisterToken(previous!.value!.uid);
+      } else if (previous?.value case final previousUser?) {
+        ref.read(fcmServiceProvider).unregisterToken(previousUser.uid);
       }
     });
 

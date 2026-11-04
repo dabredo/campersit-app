@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../theme/app_theme.dart';
+import '../../common/app_inline_spinner.dart';
 
 class EditSensorTagButton extends StatelessWidget {
   const EditSensorTagButton({
@@ -131,16 +132,7 @@ class _EditSensorTagDialogState extends State<EditSensorTagDialog> {
           ),
           onPressed: _isLoading ? null : _handleSave,
           child: _isLoading
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      AppColors.cardSurface,
-                    ),
-                  ),
-                )
+              ? const AppInlineSpinner(color: AppColors.cardSurface)
               : const Text('Save'),
         ),
       ],

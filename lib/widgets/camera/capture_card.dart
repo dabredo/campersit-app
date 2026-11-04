@@ -73,7 +73,6 @@ class CaptureCard extends ConsumerWidget {
                       'ID: ${capture.id}',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: AppColors.textSecondary,
-                        fontSize: 11,
                       ),
                     ),
                   ],

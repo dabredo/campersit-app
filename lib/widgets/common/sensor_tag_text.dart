@@ -14,8 +14,7 @@ class SensorTagText extends StatelessWidget {
 
     return Text(
       hasTag ? currentTag : 'Empty tag',
-      style: TextStyle(
-        fontSize: 12,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
         fontWeight: FontWeight.w600,
         color: hasTag
             ? AppColors.primaryAccent

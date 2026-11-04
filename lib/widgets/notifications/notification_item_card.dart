@@ -58,9 +58,8 @@ class NotificationItemCard extends StatelessWidget {
                       ),
                       Text(
                         formatDateTime(notification.createdAt),
-                        style: textTheme.bodySmall?.copyWith(
+                        style: textTheme.labelSmall?.copyWith(
                           color: AppColors.textSecondary,
-                          fontSize: 11,
                         ),
                       ),
                     ],

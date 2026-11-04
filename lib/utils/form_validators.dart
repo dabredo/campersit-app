@@ -7,7 +7,7 @@ String? validateEmail(String? value) {
   final requiredFieldError = validateRequiredField(value, 'email address');
   if (requiredFieldError != null) return requiredFieldError;
 
-  final trimmed = value!.trim();
+  final trimmed = value?.trim() ?? '';
   final isValidEmailPattern = RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(trimmed);
   if (!isValidEmailPattern) {
     return 'Please enter a valid email format';
@@ -30,7 +30,7 @@ String? validateMacAddress(String? value, {String fieldName = 'MAC address'}) {
   final requiredFieldError = validateRequiredField(value, fieldName);
   if (requiredFieldError != null) return requiredFieldError;
 
-  final trimmed = value!.trim();
+  final trimmed = value?.trim() ?? '';
   final isValidMacPattern = RegExp(
     r'^([0-9A-F]{2}:){5}[0-9A-F]{2}$',
   ).hasMatch(trimmed);

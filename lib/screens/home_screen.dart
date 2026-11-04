@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/gateway_providers.dart';
-import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/common/add_device_card.dart';
 import '../widgets/common/app_empty_state.dart';
-import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/app_error_state.dart';
+import '../widgets/common/app_loading_state.dart';
+import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/section_header.dart';
 import '../widgets/gateway/add_gateway_bottom_sheet.dart';
 import '../widgets/gateway/gateway_card.dart';
@@ -51,9 +51,7 @@ class HomeScreen extends ConsumerWidget {
             ],
           );
         },
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.primaryAccent),
-        ),
+        loading: () => const AppLoadingState(),
         error: (error, stack) => AppErrorState(
           title: 'Error loading gateways',
           message: AppErrorFormatter.format(error),

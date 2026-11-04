@@ -27,13 +27,14 @@ class CustomScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final PreferredSizeWidget? effectiveAppBar = appBar ??
-        (title != null
-            ? NavBar(
-                title: title!,
-                showBackButton: showBackButton,
-                onBackPressed: onBackPressed,
-              )
-            : null);
+        switch (title) {
+          final titleText? => NavBar(
+            title: titleText,
+            showBackButton: showBackButton,
+            onBackPressed: onBackPressed,
+          ),
+          null => null,
+        };
 
     return Scaffold(
       backgroundColor: AppColors.mainBackground,

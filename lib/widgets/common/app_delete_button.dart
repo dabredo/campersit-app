@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
+import 'app_inline_spinner.dart';
 
 class AppDeleteButton extends StatelessWidget {
   const AppDeleteButton({
@@ -31,14 +32,7 @@ class AppDeleteButton extends StatelessWidget {
             width: 1,
           ),
         ),
-        child: const SizedBox(
-          width: 14,
-          height: 14,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: AppColors.danger,
-          ),
-        ),
+        child: const AppInlineSpinner(color: AppColors.danger, size: 14),
       );
     }
 
@@ -69,9 +63,9 @@ class AppDeleteButton extends StatelessWidget {
       ),
     );
 
-    if (tooltip != null) {
+    if (tooltip case final tooltipMessage?) {
       return Tooltip(
-        message: tooltip!,
+        message: tooltipMessage,
         child: button,
       );
     }

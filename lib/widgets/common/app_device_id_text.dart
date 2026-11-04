@@ -14,8 +14,7 @@ class AppDeviceIdText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       deviceId,
-      style: const TextStyle(
-        fontSize: 15,
+      style: Theme.of(context).textTheme.titleSmall?.copyWith(
         fontWeight: FontWeight.w700,
         color: AppColors.textPrimary,
       ),

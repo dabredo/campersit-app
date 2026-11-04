@@ -26,14 +26,16 @@ class BottomNavBar extends ConsumerWidget {
         0;
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppColors.cardSurface,
-        border: Border(top: BorderSide(color: AppColors.borderLight, width: 1)),
+        border: const Border(
+          top: BorderSide(color: AppColors.borderLight, width: 1),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Color(0x0A000000),
+            color: AppColors.shadow.withValues(alpha: 0.04),
             blurRadius: 8,
-            offset: Offset(0, -2),
+            offset: const Offset(0, -2),
           ),
         ],
       ),
@@ -122,10 +124,9 @@ class _NavBarItem extends StatelessWidget {
       iconWidget = Badge(
         label: Text(
           badgeCount > 99 ? '99+' : '$badgeCount',
-          style: const TextStyle(
-            fontSize: 9,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: AppColors.onAccent,
           ),
         ),
         backgroundColor: AppColors.danger,
@@ -164,8 +165,7 @@ class _NavBarItem extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 10,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 color: isSelected ? activeColor : inactiveColor,
                 letterSpacing: -0.1,

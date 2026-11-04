@@ -96,7 +96,7 @@ class SensorBatteryIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final status = _BatteryStatus.fromLevel(battery);
     final textStyle = Theme.of(context).textTheme.labelSmall
-        ?.copyWith(fontWeight: FontWeight.w600, color: status.color, fontSize: 11);
+        ?.copyWith(fontWeight: FontWeight.w600, color: status.color);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -108,7 +108,6 @@ class SensorBatteryIndicator extends StatelessWidget {
           '%',
           style: textStyle?.copyWith(
             fontWeight: FontWeight.normal,
-            fontSize: 10,
           ),
         ),
       ],

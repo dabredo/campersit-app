@@ -3,11 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/gateway_notification.dart';
 import '../providers/gateway_notification_providers.dart';
-import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/common/app_empty_state.dart';
-import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/app_error_state.dart';
+import '../widgets/common/app_loading_state.dart';
+import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/section_header.dart';
 import '../widgets/notifications/notification_item_card.dart';
 import 'gateway_detail_screen.dart';
@@ -31,9 +31,7 @@ class NotificationsScreen extends ConsumerWidget {
       title: 'NOTIFICATIONS',
       showBottomNavBar: false,
       body: switch (notificationsAsync) {
-        AsyncLoading() => const Center(
-            child: CircularProgressIndicator(color: AppColors.primaryAccent),
-          ),
+        AsyncLoading() => const AppLoadingState(),
         AsyncError(:final error) => AppErrorState(
             title: 'Failed to load notifications',
             message: AppErrorFormatter.format(error),

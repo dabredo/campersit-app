@@ -98,14 +98,11 @@ class _AddDeviceBottomSheetState extends State<AddDeviceBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    final textTheme = Theme.of(context).textTheme;
 
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.cardSurface,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.fromLTRB(24, 12, 24, 24 + bottomInset),
       child: SafeArea(
@@ -124,105 +121,20 @@ class _AddDeviceBottomSheetState extends State<AddDeviceBottomSheet> {
                   isLoading: widget.isLoading,
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  widget.idLabel,
-                  style: textTheme.labelSmall?.copyWith(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.8,
-                    color: AppColors.primaryAccent,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                TextFormField(
+                _DeviceIdField(
                   controller: _idController,
-                  autofocus: true,
-                  inputFormatters: [MacAddressInputFormatter()],
-                  style: const TextStyle(
-                    fontFamily: 'monospace',
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    letterSpacing: 1.2,
-                    color: AppColors.textPrimary,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'XX:XX:XX:XX:XX:XX',
-                    hintStyle: TextStyle(
-                      fontFamily: 'monospace',
-                      color: AppColors.textSecondary.withValues(alpha: 0.5),
-                      fontSize: 14,
-                      letterSpacing: 1.2,
-                    ),
-                    prefixIcon: Icon(
-                      widget.icon,
-                      color: AppColors.primaryAccent,
-                      size: 20,
-                    ),
-                    suffixIcon: IconButton(
-                      icon: const Icon(
-                        Icons.content_paste_rounded,
-                        size: 18,
-                        color: AppColors.textSecondary,
-                      ),
-                      tooltip: 'Paste',
-                      onPressed: _handlePaste,
-                    ),
-                    filled: true,
-                    fillColor: const Color(0xFFFBFDFB),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 14,
-                    ),
-                    border: const OutlineInputBorder(
-                      borderRadius: AppRadius.borderXl,
-                      borderSide: BorderSide(color: AppColors.borderLight),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: AppRadius.borderXl,
-                      borderSide: BorderSide(
-                        color: AppColors.secondaryAccent.withValues(alpha: 0.7),
-                        width: 1.2,
-                      ),
-                    ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderRadius: AppRadius.borderXl,
-                      borderSide: BorderSide(
-                        color: AppColors.primaryAccent,
-                        width: 2.0,
-                      ),
-                    ),
-                  ),
-                  validator: (value) =>
-                      validateMacAddress(value, fieldName: widget.idLabel),
+                  label: widget.idLabel,
+                  icon: widget.icon,
+                  helperText: widget.helperText,
+                  onPaste: _handlePaste,
                 ),
-                if (widget.helperText case final helperText?) ...[
-                  const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.info_outline_rounded,
-                        size: 14,
-                        color: AppColors.primaryAccent,
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          helperText,
-                          style: textTheme.bodySmall?.copyWith(
-                            fontSize: 11,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
                 const SizedBox(height: 12),
                 const _OrDivider(),
                 const SizedBox(height: 12),
                 _ScanQrButton(
                   label: widget.qrButtonLabel ?? 'Scan device QR code',
-                  onPressed: widget.onScanQr ?? () => _showQrUnavailable(context),
+                  onPressed:
+                      widget.onScanQr ?? () => _showQrUnavailable(context),
                 ),
                 const SizedBox(height: 12),
                 AppLoadingButton(
@@ -232,14 +144,13 @@ class _AddDeviceBottomSheetState extends State<AddDeviceBottomSheet> {
                   icon: const Icon(Icons.add_rounded, size: 20),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryAccent,
-                    foregroundColor: Colors.white,
+                    foregroundColor: AppColors.onAccent,
                     elevation: 2,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: const RoundedRectangleBorder(
                       borderRadius: AppRadius.borderXl,
                     ),
-                    textStyle: const TextStyle(
-                      fontSize: 14,
+                    textStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.2,
                     ),
@@ -262,6 +173,117 @@ class _AddDeviceBottomSheetState extends State<AddDeviceBottomSheet> {
   }
 }
 
+class _DeviceIdField extends StatelessWidget {
+  const _DeviceIdField({
+    required this.controller,
+    required this.label,
+    required this.icon,
+    required this.helperText,
+    required this.onPaste,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final String? helperText;
+  final VoidCallback onPaste;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          label,
+          style: textTheme.labelSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.8,
+            color: AppColors.primaryAccent,
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextFormField(
+          controller: controller,
+          autofocus: true,
+          inputFormatters: [MacAddressInputFormatter()],
+          style: textTheme.bodyMedium?.copyWith(
+            fontFamily: 'monospace',
+            fontWeight: FontWeight.w600,
+            letterSpacing: 1.2,
+            color: AppColors.textPrimary,
+          ),
+          decoration: InputDecoration(
+            hintText: 'XX:XX:XX:XX:XX:XX',
+            hintStyle: textTheme.bodyMedium?.copyWith(
+              fontFamily: 'monospace',
+              color: AppColors.textSecondary.withValues(alpha: 0.5),
+              letterSpacing: 1.2,
+            ),
+            prefixIcon: Icon(icon, color: AppColors.primaryAccent, size: 20),
+            suffixIcon: IconButton(
+              icon: const Icon(
+                Icons.content_paste_rounded,
+                size: 18,
+                color: AppColors.textSecondary,
+              ),
+              tooltip: 'Paste',
+              onPressed: onPaste,
+            ),
+            filled: true,
+            fillColor: AppColors.inputFill,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 14,
+            ),
+            border: const OutlineInputBorder(
+              borderRadius: AppRadius.borderXl,
+              borderSide: BorderSide(color: AppColors.borderLight),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: AppRadius.borderXl,
+              borderSide: BorderSide(
+                color: AppColors.secondaryAccent.withValues(alpha: 0.7),
+                width: 1.2,
+              ),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderRadius: AppRadius.borderXl,
+              borderSide: BorderSide(
+                color: AppColors.primaryAccent,
+                width: 2.0,
+              ),
+            ),
+          ),
+          validator: (value) => validateMacAddress(value, fieldName: label),
+        ),
+        if (helperText case final helperText?) ...[
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              const Icon(
+                Icons.info_outline_rounded,
+                size: 14,
+                color: AppColors.primaryAccent,
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  helperText,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+}
+
 class _DragHandle extends StatelessWidget {
   const _DragHandle();
 
@@ -273,7 +295,7 @@ class _DragHandle extends StatelessWidget {
         height: 6,
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFFD5DCD6),
+          color: AppColors.buttonBorder,
           borderRadius: BorderRadius.circular(3),
         ),
       ),
@@ -307,7 +329,6 @@ class _HeaderRow extends StatelessWidget {
                 title,
                 style: textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
-                  fontSize: 20,
                   letterSpacing: -0.5,
                   color: AppColors.textPrimary,
                 ),
@@ -317,7 +338,6 @@ class _HeaderRow extends StatelessWidget {
                 description,
                 style: textTheme.bodySmall?.copyWith(
                   color: AppColors.textSecondary,
-                  fontSize: 12,
                   height: 1.4,
                 ),
               ),
@@ -334,7 +354,7 @@ class _HeaderRow extends StatelessWidget {
               width: 32,
               height: 32,
               decoration: const BoxDecoration(
-                color: Color(0xFFEFF5EF),
+                color: AppColors.iconBadgeBackground,
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -357,34 +377,26 @@ class _OrDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Expanded(
-          child: Divider(color: AppColors.borderLight, height: 1),
-        ),
+        const Expanded(child: Divider(color: AppColors.borderLight, height: 1)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
             'OR',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontSize: 10,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.8,
               color: AppColors.textSecondary,
             ),
           ),
         ),
-        const Expanded(
-          child: Divider(color: AppColors.borderLight, height: 1),
-        ),
+        const Expanded(child: Divider(color: AppColors.borderLight, height: 1)),
       ],
     );
   }
 }
 
 class _ScanQrButton extends StatelessWidget {
-  const _ScanQrButton({
-    required this.label,
-    required this.onPressed,
-  });
+  const _ScanQrButton({required this.label, required this.onPressed});
 
   final String label;
   final VoidCallback onPressed;
@@ -392,7 +404,7 @@ class _ScanQrButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFFF7FAF8),
+      color: AppColors.subtleSurface,
       borderRadius: AppRadius.borderXl,
       child: InkWell(
         onTap: onPressed,
@@ -417,7 +429,6 @@ class _ScanQrButton extends StatelessWidget {
                   label,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
-                    fontSize: 12,
                     color: AppColors.textPrimary,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -432,11 +443,7 @@ class _ScanQrButton extends StatelessWidget {
 }
 
 class _TipCard extends StatelessWidget {
-  const _TipCard({
-    required this.icon,
-    this.highlight,
-    required this.text,
-  });
+  const _TipCard({required this.icon, this.highlight, required this.text});
 
   final IconData icon;
   final String? highlight;
@@ -449,36 +456,30 @@ class _TipCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF7FAF8),
+        color: AppColors.subtleSurface,
         borderRadius: AppRadius.borderXl,
         border: Border.all(color: AppColors.borderLight),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            size: 18,
-            color: AppColors.primaryAccent,
-          ),
+          Icon(icon, size: 18, color: AppColors.primaryAccent),
           const SizedBox(width: 10),
           Expanded(
             child: Text.rich(
               TextSpan(
                 text: highlight != null ? '$highlight ' : null,
-                style: textTheme.bodySmall?.copyWith(
+                style: textTheme.labelSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
-                  fontSize: 11,
                   height: 1.3,
                 ),
                 children: [
                   TextSpan(
                     text: text,
-                    style: textTheme.bodySmall?.copyWith(
+                    style: textTheme.labelSmall?.copyWith(
                       fontWeight: FontWeight.normal,
                       color: AppColors.textSecondary,
-                      fontSize: 11,
                       height: 1.3,
                     ),
                   ),

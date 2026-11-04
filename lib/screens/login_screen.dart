@@ -19,8 +19,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailAddressController = TextEditingController();
   final _accountPasswordController = TextEditingController();
 
-  bool _isPasswordObscured = true;
-
   @override
   void dispose() {
     _emailAddressController.dispose();
@@ -69,9 +67,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _buildHeader(),
+                    const _LoginHeader(),
                     const SizedBox(height: 28),
-                    _buildLoginForm(isAuthenticating),
+                    _LoginFormCard(
+                      emailController: _emailAddressController,
+                      passwordController: _accountPasswordController,
+                      isAuthenticating: isAuthenticating,
+                      onSubmit: _handleUserLogin,
+                    ),
                   ],
                 ),
               ),
@@ -81,8 +84,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ),
     );
   }
+}
 
-  Widget _buildHeader() {
+class _LoginHeader extends StatelessWidget {
+  const _LoginHeader();
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
@@ -94,7 +102,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             border: Border.all(color: AppColors.borderLight),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
+                color: AppColors.shadow.withValues(alpha: 0.04),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -117,11 +125,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           'Campersit Security Portal',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
             color: AppColors.textSecondary,
           ),
@@ -129,8 +136,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ],
     );
   }
+}
 
-  Widget _buildLoginForm(bool isAuthenticating) {
+class _LoginFormCard extends StatelessWidget {
+  const _LoginFormCard({
+    required this.emailController,
+    required this.passwordController,
+    required this.isAuthenticating,
+    required this.onSubmit,
+  });
+
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final bool isAuthenticating;
+  final VoidCallback onSubmit;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.cardSurface,
@@ -138,7 +160,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         border: Border.all(color: AppColors.borderLight),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: AppColors.shadow.withValues(alpha: 0.03),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -148,19 +170,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildEmailField(),
+          _EmailField(controller: emailController),
           const SizedBox(height: 16),
-          _buildPasswordField(),
+          _PasswordField(controller: passwordController),
           const SizedBox(height: 24),
-          _buildSubmitButton(isAuthenticating),
+          AppLoadingButton(
+            isLoading: isAuthenticating,
+            onPressed: onSubmit,
+            label: 'Login',
+            icon: const Icon(Icons.lock_rounded, size: 18),
+          ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildEmailField() {
+class _EmailField extends StatelessWidget {
+  const _EmailField({required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
     return TextFormField(
-      controller: _emailAddressController,
+      controller: controller,
       keyboardType: TextInputType.emailAddress,
       autocorrect: false,
       enableSuggestions: false,
@@ -173,10 +207,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       validator: validateEmail,
     );
   }
+}
 
-  Widget _buildPasswordField() {
+class _PasswordField extends StatefulWidget {
+  const _PasswordField({required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  State<_PasswordField> createState() => _PasswordFieldState();
+}
+
+class _PasswordFieldState extends State<_PasswordField> {
+  bool _isPasswordObscured = true;
+
+  @override
+  Widget build(BuildContext context) {
     return TextFormField(
-      controller: _accountPasswordController,
+      controller: widget.controller,
       obscureText: _isPasswordObscured,
       style: const TextStyle(color: AppColors.textPrimary),
       decoration: InputDecoration(
@@ -196,15 +244,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       ),
       validator: validatePassword,
-    );
-  }
-
-  Widget _buildSubmitButton(bool isAuthenticating) {
-    return AppLoadingButton(
-      isLoading: isAuthenticating,
-      onPressed: _handleUserLogin,
-      label: 'Login',
-      icon: const Icon(Icons.lock_rounded, size: 18),
     );
   }
 }

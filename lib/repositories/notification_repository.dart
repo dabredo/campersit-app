@@ -160,14 +160,14 @@ class NotificationRepository {
         .map((doc) {
           final data = doc.data();
           final notificationsMap =
-              data?['notifications'] as Map<String, dynamic>?;
+              data?['notifications'] as Map<String, Object?>?;
           if (notificationsMap == null) {
             return const {};
           }
 
           final preferences = <String, NotificationPreference>{};
           for (final entry in notificationsMap.entries) {
-            final value = entry.value as Map<String, dynamic>;
+            final value = entry.value as Map<String, Object?>;
             preferences[entry.key] = NotificationPreference.fromMap(
               entry.key,
               value,

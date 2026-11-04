@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_theme.dart';
+import 'app_inline_spinner.dart';
+
 class AppLoadingButton extends StatelessWidget {
   const AppLoadingButton({
     super.key,
@@ -16,11 +19,8 @@ class AppLoadingButton extends StatelessWidget {
   final Widget? icon;
   final ButtonStyle? style;
 
-  static const _loadingIndicator = SizedBox(
-    width: 20,
-    height: 20,
-    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-  );
+  static const _loadingIndicator =
+      AppInlineSpinner(color: AppColors.onAccent, size: 20);
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +34,8 @@ class AppLoadingButton extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (icon != null) ...[
-                    icon!,
+                  if (icon case final leadingIcon?) ...[
+                    leadingIcon,
                     const SizedBox(width: 8),
                   ],
                   Flexible(

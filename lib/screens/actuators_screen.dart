@@ -11,6 +11,8 @@ import '../widgets/common/app_device_id_text.dart';
 import '../widgets/common/app_device_type_badge.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
+import '../widgets/common/app_inline_spinner.dart';
+import '../widgets/common/app_loading_state.dart';
 import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/section_header.dart';
 import '../widgets/common/sensor_tag_text.dart';
@@ -40,33 +42,24 @@ class ActuatorsScreen extends ConsumerWidget {
       title: title,
       showBackButton: true,
       body: switch (gatewayAsync) {
-        AsyncLoading() => const Center(
-            child: CircularProgressIndicator(color: AppColors.primaryAccent),
-          ),
+        AsyncLoading() => const AppLoadingState(),
         AsyncError(:final error) => AppErrorState(
             title: 'Error loading configuration',
             message: AppErrorFormatter.format(error),
           ),
-        AsyncData(value: final gateway?) => _buildBody(gateway),
+        AsyncData(value: final gateway?) => _ActuatorsContent(
+            gatewayId: gatewayId,
+            motionSensor: gateway.sensors.firstWhere(
+              (s) => s.id == sensor.id,
+              orElse: () => sensor,
+            ),
+            actuators: gateway.sensors.where((s) => s.isActuator).toList(),
+          ),
         AsyncData() => const AppErrorState(
             title: 'Error loading configuration',
             message: 'Gateway not found',
           ),
       },
-    );
-  }
-
-  Widget _buildBody(Gateway gateway) {
-    final currentMotionSensor = gateway.sensors.firstWhere(
-      (s) => s.id == sensor.id,
-      orElse: () => sensor,
-    );
-    final actuators = gateway.sensors.where((s) => s.isActuator).toList();
-
-    return _ActuatorsContent(
-      gatewayId: gatewayId,
-      motionSensor: currentMotionSensor,
-      actuators: actuators,
     );
   }
 }
@@ -173,14 +166,7 @@ class _ActuatorActionTile extends ConsumerWidget {
               width: 32,
               height: 32,
               child: Center(
-                child: SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.primaryAccent,
-                  ),
-                ),
+                child: AppInlineSpinner(color: AppColors.primaryAccent),
               ),
             )
           else

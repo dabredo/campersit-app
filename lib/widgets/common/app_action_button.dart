@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
+import 'app_inline_spinner.dart';
 
 class AppActionButton extends StatelessWidget {
   const AppActionButton({
@@ -46,14 +47,7 @@ class AppActionButton extends StatelessWidget {
         ),
         onPressed: isInteractive ? onPressed : null,
         child: isLoading
-            ? SizedBox(
-                width: 14,
-                height: 14,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(effectiveForeground),
-                ),
-              )
+            ? AppInlineSpinner(color: effectiveForeground, size: 14)
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,

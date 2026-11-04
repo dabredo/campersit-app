@@ -49,7 +49,6 @@ class AppDeviceTypeBadge extends StatelessWidget {
           child: Text(
             typeLabel.toUpperCase(),
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontSize: 9,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.5,
               color: AppColors.textSecondary,

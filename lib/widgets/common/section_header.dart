@@ -30,10 +30,10 @@ class SectionHeader extends StatelessWidget {
               color: AppColors.textPrimary,
             ),
           ),
-          if (subtitle != null && subtitle!.isNotEmpty) ...[
+          if (subtitle case final subtitleText? when subtitleText.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
-              subtitle!,
+              subtitleText,
               style: textTheme.bodySmall?.copyWith(
                 color: AppColors.textSecondary,
               ),

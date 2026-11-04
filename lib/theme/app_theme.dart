@@ -16,6 +16,17 @@ class AppColors {
   static const Color armText = Color(0xFF166534);
   static const Color disarmText = Color(0xFF3E4942);
   static const Color buttonBorder = Color(0xFFD5DCD6);
+  static const Color onAccent = Color(0xFFFFFFFF);
+  static const Color shadow = Color(0xFF000000);
+  static const Color inputFill = Color(0xFFFBFDFB);
+  static const Color subtleSurface = Color(0xFFF7FAF8);
+  static const Color iconBadgeBackground = Color(0xFFEFF5EF);
+  static const Color alertDangerBackground = Color(0xFF9B1C1C);
+  static const Color alertDangerBorder = Color(0xFFB91C1C);
+  static const Color alertWarningBackground = Color(0xFFB45309);
+  static const Color alertWarningBorder = Color(0xFFD97706);
+  static const Color mediaBackdrop = Color(0xFF000000);
+  static const Color mediaForeground = Color(0xFFFFFFFF);
 }
 
 class AppRadius {
@@ -37,6 +48,12 @@ class AppTheme {
         surface: AppColors.cardSurface,
       ),
       textTheme: const TextTheme(
+        titleLarge: TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.5,
+        ),
         titleMedium: TextStyle(
           color: AppColors.textPrimary,
           fontSize: 16,

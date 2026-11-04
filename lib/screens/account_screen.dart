@@ -10,6 +10,7 @@ import '../theme/app_theme.dart';
 import '../utils/error_formatter.dart';
 import '../widgets/common/app_empty_state.dart';
 import '../widgets/common/app_error_state.dart';
+import '../widgets/common/app_loading_state.dart';
 import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/section_header.dart';
 import '../widgets/notifications/device_token_card.dart';
@@ -43,14 +44,7 @@ class AccountScreen extends ConsumerWidget {
                 'Enable or disable app push notifications and email alerts for each event.',
             child: switch (preferencesAsync) {
               AsyncData(:final value) => _PreferencesList(preferences: value),
-              AsyncLoading() => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryAccent,
-                  ),
-                ),
-              ),
+              AsyncLoading() => const AppLoadingState(),
               AsyncError(:final error) => AppErrorState(
                 title: 'Failed to load preferences',
                 message: AppErrorFormatter.format(error),
@@ -64,14 +58,7 @@ class AccountScreen extends ConsumerWidget {
                 'Devices currently receiving push notifications. You can delete individual tokens manually at any time.',
             child: switch (tokensAsync) {
               AsyncData(:final value) => _DeviceTokensList(tokens: value),
-              AsyncLoading() => const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryAccent,
-                  ),
-                ),
-              ),
+              AsyncLoading() => const AppLoadingState(),
               AsyncError(:final error) => AppErrorState(
                 title: 'Failed to load device tokens',
                 message: AppErrorFormatter.format(error),

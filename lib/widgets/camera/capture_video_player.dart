@@ -24,11 +24,11 @@ class _CaptureVideoPlayerState extends State<CaptureVideoPlayer> {
   }
 
   Future<void> _startPlayback() async {
-    if (_controller != null) {
-      if (_controller!.value.isPlaying) {
-        await _controller!.pause();
+    if (_controller case final existingController?) {
+      if (existingController.value.isPlaying) {
+        await existingController.pause();
       } else {
-        await _controller!.play();
+        await existingController.play();
       }
       if (mounted) setState(() {});
       return;
@@ -76,7 +76,7 @@ class _CaptureVideoPlayerState extends State<CaptureVideoPlayer> {
     return ClipRRect(
       borderRadius: AppRadius.borderXl,
       child: Container(
-        color: Colors.black,
+        color: AppColors.mediaBackdrop,
         child: AspectRatio(
           aspectRatio: controller?.value.isInitialized == true &&
                   controller != null &&
@@ -121,7 +121,7 @@ class _CaptureVideoPlayerState extends State<CaptureVideoPlayer> {
                         Text(
                           _errorMessage ?? '',
                           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Colors.white,
+                            color: AppColors.mediaForeground,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -185,7 +185,7 @@ class _VideoOverlayControls extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: onTogglePlay,
       child: Container(
-        color: Colors.black38,
+        color: AppColors.mediaBackdrop.withValues(alpha: 0.38),
         child: Center(
           child: Container(
             width: 52,
@@ -196,7 +196,7 @@ class _VideoOverlayControls extends StatelessWidget {
             ),
             child: Icon(
               hasEnded ? Icons.replay_rounded : Icons.play_arrow_rounded,
-              color: Colors.white,
+              color: AppColors.mediaForeground,
               size: 32,
             ),
           ),
@@ -224,11 +224,14 @@ class _VideoProgressIndicatorBar extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Colors.transparent, Colors.black87],
+          colors: [
+            Colors.transparent,
+            AppColors.mediaBackdrop.withValues(alpha: 0.87),
+          ],
         ),
       ),
       child: Row(
@@ -237,10 +240,12 @@ class _VideoProgressIndicatorBar extends StatelessWidget {
             child: VideoProgressIndicator(
               controller,
               allowScrubbing: true,
-              colors: const VideoProgressColors(
+              colors: VideoProgressColors(
                 playedColor: AppColors.primaryAccent,
-                bufferedColor: Colors.white24,
-                backgroundColor: Colors.white10,
+                bufferedColor:
+                    AppColors.mediaForeground.withValues(alpha: 0.24),
+                backgroundColor:
+                    AppColors.mediaForeground.withValues(alpha: 0.1),
               ),
               padding: const EdgeInsets.symmetric(vertical: 4),
             ),
@@ -248,7 +253,9 @@ class _VideoProgressIndicatorBar extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             '${_formatDuration(position)} / ${_formatDuration(duration)}',
-            style: const TextStyle(color: Colors.white, fontSize: 10),
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: AppColors.mediaForeground,
+            ),
           ),
         ],
       ),

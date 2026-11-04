@@ -81,7 +81,6 @@ class ScalarMetric extends StatelessWidget {
         Text(
           label,
           style: textTheme.labelSmall?.copyWith(
-            fontSize: 9,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.5,
             color: AppColors.textSecondary,

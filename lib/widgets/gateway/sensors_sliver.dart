@@ -19,13 +19,6 @@ class SensorsSliver extends StatelessWidget {
   final String gatewayId;
   final List<Sensor> sensors;
 
-  Widget _buildItem(int index) {
-    if (index < sensors.length) {
-      return SensorCard(sensor: sensors[index], gatewayId: gatewayId);
-    }
-    return AddSensorCard(gatewayId: gatewayId);
-  }
-
   @override
   Widget build(BuildContext context) {
     if (sensors.isEmpty) {
@@ -59,9 +52,15 @@ class SensorsSliver extends StatelessWidget {
               final firstIndex = rowIndex * 2;
               final secondIndex = firstIndex + 1;
               return _SensorGridRow(
-                firstWidget: _buildItem(firstIndex),
+                firstWidget: _SensorSlot(
+                  gatewayId: gatewayId,
+                  sensor: sensors.elementAtOrNull(firstIndex),
+                ),
                 secondWidget: secondIndex < totalItemCount
-                    ? _buildItem(secondIndex)
+                    ? _SensorSlot(
+                        gatewayId: gatewayId,
+                        sensor: sensors.elementAtOrNull(secondIndex),
+                      )
                     : null,
                 spacing: _sensorSpacing,
               );
@@ -72,10 +71,29 @@ class SensorsSliver extends StatelessWidget {
         return SliverList.separated(
           itemCount: totalItemCount,
           separatorBuilder: (_, _) => const SizedBox(height: _sensorSpacing),
-          itemBuilder: (_, index) => _buildItem(index),
+          itemBuilder: (_, index) => _SensorSlot(
+            gatewayId: gatewayId,
+            sensor: sensors.elementAtOrNull(index),
+          ),
         );
       },
     );
+  }
+}
+
+class _SensorSlot extends StatelessWidget {
+  const _SensorSlot({required this.gatewayId, required this.sensor});
+
+  final String gatewayId;
+  final Sensor? sensor;
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (sensor) {
+      final existingSensor? =>
+        SensorCard(sensor: existingSensor, gatewayId: gatewayId),
+      null => AddSensorCard(gatewayId: gatewayId),
+    };
   }
 }
 

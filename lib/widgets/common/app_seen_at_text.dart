@@ -22,9 +22,8 @@ class AppSeenAtText extends StatelessWidget {
 
     return Text(
       text,
-      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(
         fontFamily: 'monospace',
-        fontSize: 11,
         color: AppColors.textSecondary,
       ),
     );

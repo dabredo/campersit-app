@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/notification_preference.dart';
 import '../../theme/app_theme.dart';
+import '../common/app_inline_spinner.dart';
 
 class NotificationChannelCard extends StatelessWidget {
   final NotificationEventDefinition event;
@@ -64,14 +65,7 @@ class NotificationChannelCard extends StatelessWidget {
               if (isUpdating)
                 const Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.primaryAccent,
-                    ),
-                  ),
+                  child: AppInlineSpinner(color: AppColors.primaryAccent),
                 ),
             ],
           ),
