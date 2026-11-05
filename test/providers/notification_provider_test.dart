@@ -45,20 +45,6 @@ void main() {
       expect(state.duration, equals(const Duration(seconds: 4)));
     });
 
-    test('showWarning sets warning notification with custom duration', () {
-      const customDuration = Duration(seconds: 8);
-      container.read(notificationProvider.notifier).showWarning(
-            'Battery level below 15%',
-            duration: customDuration,
-          );
-
-      final state = container.read(notificationProvider);
-      expect(state, isNotNull);
-      expect(state!.type, equals(NotificationType.warning));
-      expect(state.message, equals('Battery level below 15%'));
-      expect(state.duration, equals(customDuration));
-    });
-
     test('showInfo sets info notification', () {
       container
           .read(notificationProvider.notifier)

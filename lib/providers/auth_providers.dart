@@ -14,6 +14,18 @@ final authStateProvider = StreamProvider<User?>((ref) {
   return authService.observeAuthenticationState();
 });
 
+Stream<T> watchAuthenticatedUserStream<T>(
+  Ref ref, {
+  required T emptyValue,
+  required Stream<T> Function(String userId) watch,
+}) {
+  final user = ref.watch(authStateProvider).value;
+  if (user == null) {
+    return Stream.value(emptyValue);
+  }
+  return watch(user.uid);
+}
+
 final currentUserEmailProvider = Provider<String?>((ref) {
   try {
     return ref.watch(authServiceProvider).currentAuthenticatedUser?.email;

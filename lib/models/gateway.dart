@@ -89,11 +89,7 @@ class Gateway {
     this.sensors = const [],
   });
 
-  String get stateLabel => gatewayStateLabel(state);
   bool get isLocalizing => state == GatewayStates.localizing;
-  bool get isConnected => state == GatewayStates.connected;
-  bool get isInitialized => state == GatewayStates.initialized;
-  bool get isUnpaired => state == GatewayStates.unpaired;
 
   factory Gateway.fromMap(String id, Map<String, Object?> map) {
     final rawSensors = (map['sensors'] as Map?)?.cast<String, Object?>();

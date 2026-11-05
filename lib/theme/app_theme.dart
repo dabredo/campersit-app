@@ -5,7 +5,6 @@ class AppColors {
   static const Color cardSurface = Color(0xFFFFFFFF);
   static const Color primaryAccent = Color(0xFF1E6B37);
   static const Color secondaryAccent = Color(0xFF68B04D);
-  static const Color securityHighlight = Color(0xFF1E6B37);
   static const Color borderLight = Color(0xFFE2ECE4);
   static const Color textPrimary = Color(0xFF102216);
   static const Color textSecondary = Color(0xFF5A7163);

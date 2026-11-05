@@ -32,37 +32,19 @@ class NotificationRepository {
     // Firestore whereIn has a limit of 30 values
     final queryIds = gatewayIds.take(30).toList();
 
-    return _watchNotificationsQuery(
-      _firestore.collection('notifications').where('gatewayId', whereIn: queryIds),
-      limit: limit,
-    );
-  }
+    return _firestore
+        .collection('notifications')
+        .where('gatewayId', whereIn: queryIds)
+        .snapshots()
+        .map((snapshot) {
+          final items = snapshot.docs.map((doc) {
+            return GatewayNotification.fromMap(doc.id, doc.data());
+          }).toList();
 
-  Stream<List<GatewayNotification>> watchGatewayNotifications(
-    String gatewayId, {
-    int limit = 50,
-  }) {
-    return _watchNotificationsQuery(
-      _firestore
-          .collection('notifications')
-          .where('gatewayId', isEqualTo: gatewayId),
-      limit: limit,
-    );
-  }
-
-  Stream<List<GatewayNotification>> _watchNotificationsQuery(
-    Query<Map<String, Object?>> query, {
-    required int limit,
-  }) {
-    return query.snapshots().map((snapshot) {
-      final items = snapshot.docs.map((doc) {
-        return GatewayNotification.fromMap(doc.id, doc.data());
-      }).toList();
-
-      // Sort in-memory to avoid requiring a composite index
-      items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      return items.take(limit).toList();
-    });
+          // Sort in-memory to avoid requiring a composite index
+          items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return items.take(limit).toList();
+        });
   }
 
   Future<void> saveDeviceToken({

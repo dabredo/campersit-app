@@ -26,12 +26,6 @@ final userNotificationsProvider =
   return repository.watchNotificationsForGateways(gatewayIds);
 });
 
-final gatewayNotificationsProvider =
-    StreamProvider.family<List<GatewayNotification>, String>((ref, gatewayId) {
-  final repository = ref.watch(notificationRepositoryProvider);
-  return repository.watchGatewayNotifications(gatewayId);
-});
-
 class LastSeenNotificationTimestampNotifier extends Notifier<int> {
   @override
   int build() => 0;

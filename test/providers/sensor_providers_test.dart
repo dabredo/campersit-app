@@ -204,7 +204,7 @@ void main() {
       },
     );
 
-    test('returns false and resets state to false when repository throws', () async {
+    test('returns false and captures error when repository throws', () async {
       when(
         () => mockRepository.deleteSensor(
           gatewayId: testGatewayId,
@@ -220,10 +220,10 @@ void main() {
       final controllerState = container.read(
         deleteSensorControllerProvider(testKey),
       );
-      expect(controllerState, isFalse);
+      expect(controllerState.hasError, isTrue);
     });
 
-    test('sets deleting state to true while deleting and clears on completion', () async {
+    test('sets deleting state to loading while deleting and settles on completion', () async {
       when(
         () => mockRepository.deleteSensor(
           gatewayId: testGatewayId,
@@ -237,14 +237,14 @@ void main() {
 
       expect(
         container.read(deleteSensorControllerProvider(testKey)),
-        isTrue,
+        isA<AsyncLoading>(),
       );
 
       await future;
 
       expect(
         container.read(deleteSensorControllerProvider(testKey)),
-        isFalse,
+        isA<AsyncData<void>>(),
       );
     });
   });

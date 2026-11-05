@@ -8,9 +8,9 @@ import '../../theme/app_theme.dart';
 import '../../utils/date_time_formatter.dart';
 import '../common/app_confirm_dialog.dart';
 import '../common/app_delete_button.dart';
-import 'capture_video_player.dart';
-
+import '../common/app_icon_badge.dart';
 import '../common/surface_card.dart';
+import 'capture_video_player.dart';
 
 class CaptureCard extends ConsumerWidget {
   final Capture capture;
@@ -35,7 +35,8 @@ class CaptureCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final formattedDate = formatDateTime(capture.createdAt);
-    final isDeleting = ref.watch(deleteCaptureControllerProvider(capture.id));
+    final isDeleting =
+        ref.watch(deleteCaptureControllerProvider(capture.id)).isLoading;
 
     return SurfaceCard(
       padding: const EdgeInsets.all(12),
@@ -44,18 +45,10 @@ class CaptureCard extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: AppColors.primaryAccent.withValues(alpha: 0.1),
-                  borderRadius: AppRadius.borderXl,
-                ),
-                child: const Icon(
-                  Icons.videocam_rounded,
-                  color: AppColors.primaryAccent,
-                  size: 18,
-                ),
+              const AppIconBadge(
+                icon: Icons.videocam_rounded,
+                dimension: 32,
+                iconSize: 18,
               ),
               const SizedBox(width: 10),
               Expanded(

@@ -13,6 +13,7 @@ import '../widgets/common/app_error_state.dart';
 import '../widgets/common/app_loading_state.dart';
 import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/section_header.dart';
+import '../widgets/common/surface_card.dart';
 import '../widgets/notifications/device_token_card.dart';
 import '../widgets/notifications/notification_channel_card.dart';
 
@@ -104,12 +105,8 @@ class _CollapsibleSectionState extends State<_CollapsibleSection> {
           child: InkWell(
             onTap: _toggle,
             borderRadius: AppRadius.border2Xl,
-            child: Container(
+            child: SurfaceCard(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              decoration: BoxDecoration(
-                borderRadius: AppRadius.border2Xl,
-                border: Border.all(color: AppColors.borderLight),
-              ),
               child: Row(
                 children: [
                   Expanded(

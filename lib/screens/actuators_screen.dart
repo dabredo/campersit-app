@@ -16,6 +16,7 @@ import '../widgets/common/app_loading_state.dart';
 import '../widgets/common/custom_scaffold.dart';
 import '../widgets/common/section_header.dart';
 import '../widgets/common/sensor_tag_text.dart';
+import '../widgets/common/surface_card.dart';
 
 class ActuatorsScreen extends ConsumerWidget {
   final String gatewayId;
@@ -131,17 +132,7 @@ class _ActuatorActionTile extends ConsumerWidget {
         ref.watch(updateMotionActionControllerProvider(actionKey));
     final isUpdating = controllerState.isLoading;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: AppRadius.border2Xl,
-        border: Border.all(
-          color: isActionActive
-              ? AppColors.primaryAccent.withValues(alpha: 0.35)
-              : AppColors.borderLight,
-          width: isActionActive ? 1.5 : 1,
-        ),
-      ),
+    return SurfaceCard(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
         children: [

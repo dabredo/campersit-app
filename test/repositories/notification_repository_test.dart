@@ -146,31 +146,6 @@ void main() {
       expect(results[0].id, equals('notif_2'));
     });
 
-    test('watchGatewayNotifications queries single gateway notifications', () async {
-      final mockQuery = MockQuery();
-      final mockSnapshot = MockQuerySnapshot();
-      final doc1 = MockQueryDocumentSnapshot();
-
-      when(() => mockNotificationsCollection.where('gatewayId', isEqualTo: any(named: 'isEqualTo')))
-          .thenReturn(mockQuery);
-      when(() => mockQuery.snapshots()).thenAnswer((_) => Stream.value(mockSnapshot));
-
-      when(() => doc1.id).thenReturn('notif_1');
-      when(() => doc1.data()).thenReturn({
-        'type': 'device-initializing',
-        'gatewayId': 'gw_1',
-        'createdAt': 1000,
-      });
-
-      when(() => mockSnapshot.docs).thenReturn([doc1]);
-
-      final stream = repository.watchGatewayNotifications('gw_1');
-      final results = await stream.first;
-
-      expect(results.length, equals(1));
-      expect(results.first.id, equals('notif_1'));
-    });
-
     test('saveDeviceToken commits strictly fcmToken, lastUpdated, and userAgent to browsers', () async {
       when(() => mockBatch.set<Map<String, dynamic>>(any(), any(), any())).thenReturn(null);
 

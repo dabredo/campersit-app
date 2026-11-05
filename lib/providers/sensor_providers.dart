@@ -44,41 +44,23 @@ class AddSensorController extends AsyncActionNotifier {
   );
 }
 
-final deleteSensorControllerProvider = NotifierProvider.autoDispose
-    .family<DeleteSensorController, bool, SensorKey>(
+final deleteSensorControllerProvider = AsyncNotifierProvider.autoDispose
+    .family<DeleteSensorController, void, SensorKey>(
       DeleteSensorController.new,
     );
 
-class DeleteSensorController extends Notifier<bool> {
+class DeleteSensorController extends AsyncActionNotifier {
   DeleteSensorController(this.key);
 
   final SensorKey key;
 
-  @override
-  bool build() => false;
-
-  Future<bool> deleteSensor() async {
-    final link = ref.keepAlive();
-    state = true;
-    try {
-      final repository = ref.read(gatewayRepositoryProvider);
-      await repository.deleteSensor(
-        gatewayId: key.gatewayId,
-        sensorId: key.sensorId,
-      );
-
-      ref
-          .read(notificationProvider.notifier)
-          .showSuccess('Sensor unlinked successfully');
-      return true;
-    } catch (error) {
-      ref.read(notificationProvider.notifier).showError(error);
-      return false;
-    } finally {
-      state = false;
-      link.close();
-    }
-  }
+  Future<bool> deleteSensor() => runNotifiedAction(
+    () => ref.read(gatewayRepositoryProvider).deleteSensor(
+          gatewayId: key.gatewayId,
+          sensorId: key.sensorId,
+        ),
+    successMessage: 'Sensor unlinked successfully',
+  );
 }
 
 final requestSensorStateControllerProvider = NotifierProvider.autoDispose

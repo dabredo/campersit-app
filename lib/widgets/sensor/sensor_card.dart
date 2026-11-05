@@ -17,6 +17,7 @@ import '../common/app_device_id_text.dart';
 import '../common/app_device_type_badge.dart';
 import '../common/sensor_tag_text.dart';
 import '../common/app_state_chip.dart';
+import '../common/surface_card.dart';
 import 'sensor_card/sensor_dialogs.dart';
 import 'sensor_card/sensor_footer.dart';
 
@@ -89,22 +90,16 @@ class SensorCard extends ConsumerWidget {
     final hasActiveAlerts = sensor.alerts.values.any(AlertsList.isAlertActive);
     final isTriggered = sensor.state == SensorState.triggered;
     final isAlerting = isTriggered || hasActiveAlerts;
-    final isDeleting = ref.watch(
-      deleteSensorControllerProvider((
-        gatewayId: gatewayId,
-        sensorId: sensor.id,
-      )),
-    );
+    final isDeleting = ref
+        .watch(
+          deleteSensorControllerProvider((
+            gatewayId: gatewayId,
+            sensorId: sensor.id,
+          )),
+        )
+        .isLoading;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: AppRadius.border2Xl,
-        border: Border.all(
-          color: isAlerting ? AppColors.danger : AppColors.borderLight,
-          width: isAlerting ? 1.5 : 1,
-        ),
-      ),
+    return SurfaceCard(
       padding: const EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

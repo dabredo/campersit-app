@@ -9,32 +9,21 @@ import 'gateway_notification_providers.dart';
 
 final userDeviceTokensProvider =
     StreamProvider<List<UserDeviceToken>>((ref) {
-  final authAsync = ref.watch(authStateProvider);
-  final user = authAsync.value;
-  if (user == null) {
-    if (authAsync.isLoading) {
-      return const Stream.empty();
-    }
-    return Stream.value(const []);
-  }
-
-  final repository = ref.watch(notificationRepositoryProvider);
-  return repository.watchDeviceTokens(user.uid);
+  return watchAuthenticatedUserStream(
+    ref,
+    emptyValue: const [],
+    watch: ref.watch(notificationRepositoryProvider).watchDeviceTokens,
+  );
 });
 
 final userNotificationPreferencesProvider =
     StreamProvider<Map<String, NotificationPreference>>((ref) {
-  final authAsync = ref.watch(authStateProvider);
-  final user = authAsync.value;
-  if (user == null) {
-    if (authAsync.isLoading) {
-      return const Stream.empty();
-    }
-    return Stream.value(const {});
-  }
-
-  final repository = ref.watch(notificationRepositoryProvider);
-  return repository.watchNotificationPreferences(user.uid);
+  return watchAuthenticatedUserStream(
+    ref,
+    emptyValue: const {},
+    watch:
+        ref.watch(notificationRepositoryProvider).watchNotificationPreferences,
+  );
 });
 
 final notificationSettingsControllerProvider =

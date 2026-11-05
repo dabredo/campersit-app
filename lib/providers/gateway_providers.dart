@@ -10,13 +10,11 @@ final gatewayRepositoryProvider = Provider<GatewayRepository>((ref) {
 });
 
 final userGatewaysProvider = StreamProvider<List<Gateway>>((ref) {
-  final user = ref.watch(authStateProvider).value;
-  if (user == null) {
-    return Stream.value([]);
-  }
-
-  final repository = ref.watch(gatewayRepositoryProvider);
-  return repository.watchUserGateways(user.uid);
+  return watchAuthenticatedUserStream(
+    ref,
+    emptyValue: const [],
+    watch: ref.watch(gatewayRepositoryProvider).watchUserGateways,
+  );
 });
 
 final singleGatewayProvider = StreamProvider.family<Gateway?, String>((

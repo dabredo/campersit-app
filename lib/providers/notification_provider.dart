@@ -23,14 +23,6 @@ class NotificationNotifier extends Notifier<AppNotification?> {
     );
   }
 
-  void showWarning(String message, {Duration duration = const Duration(seconds: 4)}) {
-    state = _createNotification(
-      message: message,
-      type: NotificationType.warning,
-      duration: duration,
-    );
-  }
-
   void showInfo(String message, {Duration duration = const Duration(seconds: 4)}) {
     if (state?.message == message) return;
     state = _createNotification(

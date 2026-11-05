@@ -83,37 +83,6 @@ void main() {
       verify(() => mockRepository.watchNotificationsForGateways(['gw_1'])).called(1);
     });
 
-    test('gatewayNotificationsProvider watches single gateway notifications', () async {
-      const sampleNotification = GatewayNotification(
-        id: 'notif_2',
-        type: 'device-initializing',
-        gatewayId: 'gw_2',
-        createdAt: 1778320000000,
-      );
-
-      when(() => mockRepository.watchGatewayNotifications('gw_2'))
-          .thenAnswer((_) => Stream.value([sampleNotification]));
-
-      final container = ProviderContainer(
-        overrides: [
-          notificationRepositoryProvider.overrideWithValue(mockRepository),
-        ],
-      );
-      addTearDown(container.dispose);
-
-      final subscription = container.listen(
-        gatewayNotificationsProvider('gw_2'),
-        (_, _) {},
-      );
-      addTearDown(subscription.close);
-
-      final notifications =
-          await container.read(gatewayNotificationsProvider('gw_2').future);
-      expect(notifications.length, equals(1));
-      expect(notifications.first.id, equals('notif_2'));
-      verify(() => mockRepository.watchGatewayNotifications('gw_2')).called(1);
-    });
-
     test('userNotificationsCountProvider counts only notifications from the last 24 hours', () async {
       final now = DateTime.now().millisecondsSinceEpoch;
       final recentNotif = GatewayNotification(

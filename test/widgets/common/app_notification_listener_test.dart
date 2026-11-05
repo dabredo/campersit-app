@@ -68,8 +68,8 @@ void main() {
       await tester.pumpWidget(buildTestWidget(container: container));
 
       const notificationDuration = Duration(seconds: 2);
-      container.read(notificationProvider.notifier).showWarning(
-            'Timed warning',
+      container.read(notificationProvider.notifier).showInfo(
+            'Timed notification',
             duration: notificationDuration,
           );
       await tester.pumpAndSettle();

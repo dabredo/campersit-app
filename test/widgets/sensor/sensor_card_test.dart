@@ -257,7 +257,7 @@ void main() {
                 sensorId: 'sensor-1',
               )).notifier,
             )
-            .state = true;
+            .state = const AsyncLoading();
         await tester.pump();
 
         // Sensor 1 should show loading indicator and no delete button
